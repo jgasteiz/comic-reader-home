@@ -1,0 +1,12 @@
+{% extends 'reader/base.html' %}
+{% load static %}
+
+{% block content %}
+    <ul>
+    {% for page in comic_pages %}
+        <li>
+            <img src="{{ page }}" alt="">
+        </li>
+    {% endfor %}
+    </ul>
+{% endblock %}
