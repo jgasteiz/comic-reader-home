@@ -22,5 +22,5 @@ from reader import urls as reader_urls
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('reader/', include(reader_urls, namespace='reader'))
+    path('', include(reader_urls, namespace='reader'))
 ]

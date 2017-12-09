@@ -1,3 +1,7 @@
+body {
+    padding: 0 20px;
+}
+
 ul, li {
     list-style: none;
     margin: 0;
@@ -7,4 +11,8 @@ ul, li {
 img {
     display: block;
     max-width: 100%;
+}
+
+.pages-list {
+    margin: 0 -20px;
 }

@@ -1,8 +1,8 @@
 import base64
 import os
-from zipfile import (
-    ZipFile,
-)
+import subprocess
+
+from zipfile import ZipFile
 
 from django.conf import settings
 from django.shortcuts import render
@@ -12,7 +12,7 @@ def comic_index(request):
     comic_list = os.listdir(settings.COMICS_ROOT)
     comic_list = [(f, base64.encodebytes(bytes(f, 'utf-8')).decode('utf-8'))
                   for f in comic_list
-                  if f.endswith('.cbz')]
+                  if f.endswith('.cbz') or f.endswith('.cbr') or f.endswith('.rar')]
     return render(
         request,
         template_name='reader/comic_index.html',
@@ -25,7 +25,10 @@ def comic_index(request):
 def comic_detail(request, file_name):
     file_name = base64.decodebytes(bytes(file_name, 'utf-8')).decode('utf-8')
     _clear_tmp()
-    _extract_comic(comic_path=os.path.join(settings.COMICS_ROOT, file_name))
+    if file_name.endswith('.cbz'):
+        _extract_cbz_comic(comic_path=os.path.join(settings.COMICS_ROOT, file_name))
+    else:
+        _extract_cbr_comic(comic_path=os.path.join(settings.COMICS_ROOT, file_name))
     return render(
         request,
         template_name='reader/comic_detail.html',
@@ -43,9 +46,9 @@ def _clear_tmp():
     os.system('rm -rf {}/*'.format(settings.COMIC_TMP_PATH))
 
 
-def _extract_comic(comic_path):
+def _extract_cbz_comic(comic_path):
     """
-    Extract the comic for the given comic path.
+    Extract the cbz file for the given comic path.
     :param comic_path:
     :return:
     """
@@ -59,6 +62,20 @@ def _extract_comic(comic_path):
 
             # Extract to tmp
             cbz.extract(file.filename, settings.COMIC_TMP_PATH)
+
+
+def _extract_cbr_comic(comic_path):
+    """
+    Extract the cbr file for the given comic path.
+
+    This requires `unrar` to be installed: `brew install unrar`.
+    :param comic_path:
+    :return:
+    """
+    subprocess.call(
+        'unrar x "{}" "{}"'.format(comic_path, settings.COMIC_TMP_PATH),
+        shell=True
+    )
 
 
 def _get_extracted_comic_pages():
