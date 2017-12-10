@@ -2,11 +2,9 @@
 {% load static %}
 
 {% block content %}
-    <ul class="pages-list">
+    <div class="pages-list">
     {% for page in comic_pages %}
-        <li>
-            <img src="{{ page }}" alt="">
-        </li>
+        <img src="{{ page }}" alt="">>
     {% endfor %}
-    </ul>
+    </div>
 {% endblock %}

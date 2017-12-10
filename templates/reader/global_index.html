@@ -1,0 +1,11 @@
+{% extends 'reader/base.html' %}
+
+{% block content %}
+    <h1>Global index</h1>
+
+    <ul>
+    {% for section, section_name in comic_sections %}
+        <li><a href="{% url 'reader:comic_index' section %}">{{ section_name }}</a></li>
+    {% endfor %}
+    </ul>
+{% endblock %}

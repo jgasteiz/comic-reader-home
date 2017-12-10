@@ -1,0 +1,7 @@
+# Set an actual secret key.
+SECRET_KEY = ''
+# Absolute path to the root of the cbr/cbz files.
+COMICS_ROOT = {
+    'marvel': '',
+    'european': '',
+}

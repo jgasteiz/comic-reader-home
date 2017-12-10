@@ -3,9 +3,5 @@
 {% block content %}
     <h1>Comic index</h1>
 
-    <ul>
-        {% for comic_name, comic_urlsafe in comic_list %}
-        <li><a href="{% url 'reader:comic_detail' comic_urlsafe %}">{{ comic_name }}</a></li>
-        {% endfor %}
-    </ul>
+    {{ tree_html|safe }}
 {% endblock %}
