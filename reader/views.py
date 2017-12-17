@@ -15,8 +15,9 @@ def global_index(request):
         template_name='reader/global_index.html',
         context={
             'comic_sections': [
-                ('marvel', 'Marvel Comics'),
+                ('dark-horse-comics', 'Dark Horse Comics'),
                 ('european', 'European comic'),
+                ('marvel', 'Marvel Comics'),
             ],
         }
     )
@@ -36,9 +37,9 @@ def comic_detail(request, comic_path):
     comic_path = base64.decodebytes(bytes(comic_path, 'utf-8')).decode('utf-8')
     _clear_tmp()
     if comic_path.endswith('.cbz'):
-        _extract_cbz_comic(comic_path=os.path.join(settings.COMICS_ROOT, comic_path))
+        _extract_cbz_comic(comic_path=comic_path)
     else:
-        _extract_cbr_comic(comic_path=os.path.join(settings.COMICS_ROOT, comic_path))
+        _extract_cbr_comic(comic_path=comic_path)
     return render(
         request,
         template_name='reader/comic_detail.html',
