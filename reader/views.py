@@ -2,6 +2,8 @@ import base64
 import os
 import subprocess
 
+from django.http import HttpResponse
+from rarfile import RarFile
 from zipfile import ZipFile
 
 from django.conf import settings
@@ -24,13 +26,18 @@ def global_index(request):
 
 
 def comic_index(request, comic_section):
-    return render(
-        request,
-        template_name='reader/comic_index.html',
-        context={
-            'tree_html': _get_html_for_path(_get_path_contents(settings.COMICS_ROOT[comic_section], 'root')),
-        }
-    )
+    try:
+        section_path = settings.comics_root[comic_section]
+        tree_html = _get_html_for_path(_get_path_contents(section_path, 'root'))
+        return render(
+            request,
+            template_name='reader/comic_index.html',
+            context={
+                'tree_html': tree_html,
+            }
+        )
+    except AttributeError as e:
+        return HttpResponse('')
 
 
 def comic_detail(request, comic_path):
@@ -83,10 +90,8 @@ def _extract_cbr_comic(comic_path):
     :param comic_path:
     :return:
     """
-    subprocess.call(
-        'unrar x "{}" "{}"'.format(comic_path, settings.COMIC_TMP_PATH),
-        shell=True
-    )
+    cbr = RarFile(comic_path)
+    cbr.extractall(path=settings.COMIC_TMP_PATH)
 
 
 def _get_extracted_comic_pages():
