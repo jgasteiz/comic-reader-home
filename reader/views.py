@@ -27,7 +27,7 @@ def global_index(request):
 
 def comic_index(request, comic_section):
     try:
-        section_path = settings.comics_root[comic_section]
+        section_path = settings.COMICS_ROOT[comic_section]
         tree_html = _get_html_for_path(_get_path_contents(section_path, 'root'))
         return render(
             request,
