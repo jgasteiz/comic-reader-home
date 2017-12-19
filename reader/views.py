@@ -16,18 +16,14 @@ def global_index(request):
         request,
         template_name='reader/global_index.html',
         context={
-            'comic_sections': [
-                ('dark-horse-comics', 'Dark Horse Comics'),
-                ('european', 'European comic'),
-                ('marvel', 'Marvel Comics'),
-            ],
+            'comic_sections': settings.COMIC_INDEX_CHOICES,
         }
     )
 
 
 def comic_index(request, comic_section):
     try:
-        section_path = settings.COMICS_ROOT[comic_section]
+        section_path = settings.COMICS_SECTION_PATHS[comic_section]
         tree_html = _get_html_for_path(_get_path_contents(section_path, 'root'))
         return render(
             request,
@@ -36,7 +32,8 @@ def comic_index(request, comic_section):
                 'tree_html': tree_html,
             }
         )
-    except AttributeError as e:
+    # TODO: A /favicon.ico request keeps causing KeyErrors, fix it.
+    except KeyError as e:
         return HttpResponse('')
 
 
