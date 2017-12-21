@@ -1,39 +1,5 @@
 # Set an actual secret key.
 SECRET_KEY = ''
 
-DARK_HORSE_COMICS = {
-    'key': 'dark-horse',
-    'label': 'Dark Horse Comics',
-    'path': '/comics/Dark Horse Comics',
-}
-DC_COMICS = {
-    'key': 'dc',
-    'label': 'DC Comics',
-    'path': '/comics/DC Comics',
-}
-EUROPEAN_COMICS = {
-    'key': 'european',
-    'label': 'European Comics',
-    'path': '/comics/European Comics',
-}
-MARVEL_COMICS = {
-    'key': 'marvel',
-    'label': 'Marvel Comics',
-    'path': '/comics/Marvel Comics',
-}
-
-# Choices for initial comics.
-COMIC_INDEX_CHOICES = [
-    (DARK_HORSE_COMICS['key'], DARK_HORSE_COMICS['label']),
-    (DC_COMICS['key'], DC_COMICS['label']),
-    (EUROPEAN_COMICS['key'], EUROPEAN_COMICS['label']),
-    (MARVEL_COMICS['key'], MARVEL_COMICS['label']),
-]
-
-# Relative path to the root of the cbr/cbz files per section.
-COMICS_SECTION_PATHS = {
-    DARK_HORSE_COMICS['key']: DARK_HORSE_COMICS['path'],
-    DC_COMICS['key']: DC_COMICS['path'],
-    EUROPEAN_COMICS['key']: EUROPEAN_COMICS['path'],
-    MARVEL_COMICS['key']: MARVEL_COMICS['path'],
-}
+COMICS_ROOT = ''
+STATIC_ROOT = ''
