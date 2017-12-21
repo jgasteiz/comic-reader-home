@@ -14,3 +14,15 @@
     {% endfor %}
     </div>
 {% endblock %}
+
+{% block extra_js %}
+    <script>
+        var reader = {};
+        {% if previous_page %}
+            reader.previousPageUrl = "{% url 'reader:comic_detail' comic_path previous_page %}";
+        {% endif %}
+        {% if next_page %}
+            reader.nextPageUrl = "{% url 'reader:comic_detail' comic_path next_page %}";
+        {% endif %}
+    </script>
+{% endblock %}
