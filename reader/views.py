@@ -38,19 +38,23 @@ def comic_index(request, comic_section):
 
 
 def comic_detail(request, comic_path):
-    comic_path = base64.decodebytes(bytes(comic_path, 'utf-8')).decode('utf-8')
-    _clear_tmp()
-    if comic_path.endswith('.cbz'):
-        _extract_cbz_comic(comic_path=comic_path)
-    else:
-        _extract_cbr_comic(comic_path=comic_path)
-    return render(
-        request,
-        template_name='reader/comic_detail.html',
-        context={
-            'comic_pages': _get_extracted_comic_pages()
-        }
-    )
+    try:
+        comic_path = base64.decodebytes(bytes(comic_path, 'utf-8')).decode('utf-8')
+        _clear_tmp()
+        if comic_path.endswith('.cbz'):
+            _extract_cbz_comic(comic_path=comic_path)
+        else:
+            _extract_cbr_comic(comic_path=comic_path)
+        return render(
+            request,
+            template_name='reader/comic_detail.html',
+            context={
+                'comic_pages': _get_extracted_comic_pages()
+            }
+        )
+    # TODO: A /favicon.ico request keeps causing KeyErrors, fix it.
+    except KeyError as e:
+        return HttpResponse('')
 
 
 def _clear_tmp():
