@@ -1,3 +1,4 @@
 Django==2.0
 ipdb==0.10.3
 rarfile==3.0
+Celery==4.1.0
