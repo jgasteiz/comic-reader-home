@@ -14,7 +14,7 @@
         <ul>
         {% for comic in path_contents.comics %}
             <li>
-                <a target="_blank" href="{% url 'reader:comic_detail' comic.path %}">{{ comic.name }}</a>
+                <a target="_blank" href="{% url 'reader:comic_detail' comic.path 0 %}">{{ comic.name }}</a>
             </li>
         {% endfor %}
         </ul>

@@ -2,6 +2,12 @@
 {% load static %}
 
 {% block content %}
+    {% if previous_page %}
+        <a href="{% url 'reader:comic_detail' comic_path previous_page %}">Previous page</a>
+    {% endif %}
+    {% if next_page %}
+        <a href="{% url 'reader:comic_detail' comic_path next_page %}">Next page</a>
+    {% endif %}
     <div class="pages-list">
     {% for page in comic_pages %}
         <img src="{{ page }}" alt="">

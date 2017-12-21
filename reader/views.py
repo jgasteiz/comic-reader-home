@@ -29,19 +29,30 @@ def directory_detail(request, directory_path=None):
         return HttpResponse('')
 
 
-def comic_detail(request, comic_path):
+def comic_detail(request, comic_path, page_number=None):
     try:
-        comic_path = base64.decodebytes(bytes(comic_path, 'utf-8')).decode('utf-8')
+        decoded_comic_path = base64.decodebytes(bytes(comic_path, 'utf-8')).decode('utf-8')
         _clear_tmp()
-        if comic_path.endswith('.cbz'):
-            _extract_cbz_comic(comic_path=comic_path)
+        if decoded_comic_path.endswith('.cbz'):
+            _extract_cbz_comic(comic_path=decoded_comic_path, page_number=page_number)
         else:
-            _extract_cbr_comic(comic_path=comic_path)
+            _extract_cbr_comic(comic_path=decoded_comic_path, page_number=page_number)
+
+        previous_page = None
+        next_page = None
+        if page_number is not None:
+            if page_number > 0:
+                previous_page = page_number - 1
+            next_page = page_number + 1
+
         return render(
             request,
             template_name='reader/comic_detail.html',
             context={
-                'comic_pages': _get_extracted_comic_pages()
+                'comic_pages': _get_extracted_comic_pages(),
+                'previous_page': previous_page,
+                'next_page': next_page,
+                'comic_path': comic_path,
             }
         )
     # TODO: A /favicon.ico request keeps causing KeyErrors, fix it.
@@ -57,29 +68,35 @@ def _clear_tmp():
     os.system('rm -rf {}/*'.format(settings.COMIC_TMP_PATH))
 
 
-def _extract_cbz_comic(comic_path):
+def _extract_cbz_comic(comic_path, page_number=None):
     """
     Extract the cbz file for the given comic path.
     :param comic_path:
     :return:
     """
-    with ZipFile(comic_path) as cbz:
-        for file in cbz.filelist:
-            try:
-                assert file.file_size > 1000
-                assert file.filename.endswith('.jpg')
-            except AssertionError:
-                continue
+    cbz = ZipFile(comic_path)
 
-            # Extract to tmp
-            cbz.extract(file.filename, settings.COMIC_TMP_PATH)
+    # if there's a page number, extract only that page.
+    if page_number is not None:
+        page = cbz.filelist[page_number]
+        cbz.extract(page.filename, settings.COMIC_TMP_PATH)
+        return
+
+    cbz.extractall(path=settings.COMIC_TMP_PATH)
 
 
-def _extract_cbr_comic(comic_path):
+def _extract_cbr_comic(comic_path, page_number=None):
     """
     Extract the cbr file for the given comic path.
     """
     cbr = RarFile(comic_path)
+
+    # if there's a page number, extract only that page.
+    if page_number is not None:
+        page_filename = cbr.namelist()[page_number]
+        cbr.extract(page_filename, settings.COMIC_TMP_PATH)
+        return
+
     cbr.extractall(path=settings.COMIC_TMP_PATH)
 
 
