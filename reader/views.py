@@ -45,7 +45,7 @@ def comic_detail(request, comic_path, page_number=1):
 
         # Calculate page numbers.
         previous_page = None
-        if page_number > 1:
+        if page_number > 0:
             previous_page = page_number - 1
         next_page = page_number + 1
 
@@ -75,7 +75,8 @@ def _extract_comic_page(cb_file, page_number):
     """
     Extract the given page for the given comic file.
     """
-    page_names = [p for p in cb_file.namelist() if p.endswith('.jpg')]
+    page_names = sorted(cb_file.namelist())
+    page_names = [p for p in page_names if p.endswith('.jpg') or p.endswith('.png')]
     cb_file.extract(page_names[page_number], settings.COMIC_TMP_PATH)
 
 

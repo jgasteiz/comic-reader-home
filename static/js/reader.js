@@ -21,4 +21,8 @@
             goToNextPage();
         }
     });
+
+    var $comicPages = $(".comic-page");
+    $comicPages.on("swipeleft", goToNextPage);
+    $comicPages.on("swiperight", goToPreviousPage);
 })();

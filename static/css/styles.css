@@ -2,11 +2,18 @@ body {
     padding: 0 20px;
 }
 
-img {
+.comic-page {
     display: block;
     max-width: 100%;
 }
 
-.pages-list {
+.reader {
+    background: #000;
     margin: 0 -20px;
+}
+
+.page-navigation {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 20px;
 }
