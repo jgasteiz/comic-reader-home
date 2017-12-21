@@ -1,3 +1,4 @@
+// TODO: please, do this properly one day.
 (function () {
 
     function goToNextPage() {

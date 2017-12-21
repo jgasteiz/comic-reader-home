@@ -11,7 +11,7 @@
 
     {% if path_contents.comics %}
         <h2>Comics</h2>
-        <ul>
+        <ul class="comic-list">
         {% for comic in path_contents.comics %}
             <li>
                 <a target="_blank" href="{% url 'reader:comic_detail' comic.path 0 %}">{{ comic.name }}</a>
@@ -22,7 +22,7 @@
 
     {% if path_contents.children %}
         <h2>Directories</h2>
-        <ul>
+        <ul class="directory-list">
         {% for directory in path_contents.children %}
             <li>
                 <a href="{% url 'reader:directory_detail' directory.path %}">{{ directory.name }}</a>

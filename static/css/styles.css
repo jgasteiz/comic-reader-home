@@ -17,3 +17,8 @@ body {
     justify-content: space-between;
     padding: 12px 20px;
 }
+
+.comic-list li,
+.directory-list li {
+    margin: 0 0 6px;
+}
