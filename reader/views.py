@@ -29,21 +29,25 @@ def directory_detail(request, directory_path=None):
         return HttpResponse('')
 
 
-def comic_detail(request, comic_path, page_number=None):
+def comic_detail(request, comic_path, page_number=1):
     try:
         decoded_comic_path = base64.decodebytes(bytes(comic_path, 'utf-8')).decode('utf-8')
         _clear_tmp()
-        if decoded_comic_path.endswith('.cbz'):
-            _extract_cbz_comic(comic_path=decoded_comic_path, page_number=page_number)
-        else:
-            _extract_cbr_comic(comic_path=decoded_comic_path, page_number=page_number)
 
+        # Create a zip or a rar file depending on the comic file type.
+        if decoded_comic_path.endswith('.cbz'):
+            cb_file = ZipFile(decoded_comic_path)
+        else:
+            cb_file = RarFile(decoded_comic_path)
+
+        # Extract the page.
+        _extract_comic_page(cb_file=cb_file, page_number=page_number)
+
+        # Calculate page numbers.
         previous_page = None
-        next_page = None
-        if page_number is not None:
-            if page_number > 0:
-                previous_page = page_number - 1
-            next_page = page_number + 1
+        if page_number > 1:
+            previous_page = page_number - 1
+        next_page = page_number + 1
 
         return render(
             request,
@@ -63,41 +67,16 @@ def comic_detail(request, comic_path, page_number=None):
 def _clear_tmp():
     """
     Clear the tmp directory.
-    :return:
     """
     os.system('rm -rf {}/*'.format(settings.COMIC_TMP_PATH))
 
 
-def _extract_cbz_comic(comic_path, page_number=None):
+def _extract_comic_page(cb_file, page_number):
     """
-    Extract the cbz file for the given comic path.
-    :param comic_path:
-    :return:
+    Extract the given page for the given comic file.
     """
-    cbz = ZipFile(comic_path)
-
-    # if there's a page number, extract only that page.
-    if page_number is not None:
-        page = cbz.filelist[page_number]
-        cbz.extract(page.filename, settings.COMIC_TMP_PATH)
-        return
-
-    cbz.extractall(path=settings.COMIC_TMP_PATH)
-
-
-def _extract_cbr_comic(comic_path, page_number=None):
-    """
-    Extract the cbr file for the given comic path.
-    """
-    cbr = RarFile(comic_path)
-
-    # if there's a page number, extract only that page.
-    if page_number is not None:
-        page_filename = cbr.namelist()[page_number]
-        cbr.extract(page_filename, settings.COMIC_TMP_PATH)
-        return
-
-    cbr.extractall(path=settings.COMIC_TMP_PATH)
+    page_names = [p for p in cb_file.namelist() if p.endswith('.jpg')]
+    cb_file.extract(page_names[page_number], settings.COMIC_TMP_PATH)
 
 
 def _get_extracted_comic_pages():
