@@ -2,6 +2,10 @@ body {
     padding: 0 20px;
 }
 
+a:visited {
+    color: #800080;
+}
+
 .comic-page {
     display: block;
     max-width: 100%;
