@@ -123,5 +123,6 @@ STATICFILES_DIRS = [
 COMIC_TMP_PATH = os.path.join(BASE_DIR, 'static/comics/tmp')
 
 IGNORED_FILE_NAMES = [
-    '.DS_Store'
+    '.DS_Store',
+    '.yacreaderlibrary',
 ]

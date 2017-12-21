@@ -1,35 +1,27 @@
 import base64
 import os
-import subprocess
 
-from django.http import HttpResponse
 from rarfile import RarFile
 from zipfile import ZipFile
 
 from django.conf import settings
+from django.http import HttpResponse
 from django.shortcuts import render
-from django.urls import reverse
 
 
-def global_index(request):
-    return render(
-        request,
-        template_name='reader/global_index.html',
-        context={
-            'comic_sections': settings.COMIC_INDEX_CHOICES,
-        }
-    )
-
-
-def comic_index(request, comic_section):
+def directory_detail(request, directory_path=None):
     try:
-        section_path = settings.COMICS_SECTION_PATHS[comic_section]
-        tree_html = _get_html_for_path(_get_path_contents(section_path, 'root'))
+        if directory_path:
+            directory_path = base64.decodebytes(bytes(directory_path, 'utf-8')).decode('utf-8')
+        else:
+            directory_path = settings.COMICS_ROOT
+        directory_name = directory_path.split('/')[-1]
+        path_contents = _get_path_contents(directory_path, directory_name)
         return render(
             request,
-            template_name='reader/comic_index.html',
+            template_name='reader/directory_detail.html',
             context={
-                'tree_html': tree_html,
+                'path_contents': path_contents
             }
         )
     # TODO: A /favicon.ico request keeps causing KeyErrors, fix it.
@@ -86,10 +78,6 @@ def _extract_cbz_comic(comic_path):
 def _extract_cbr_comic(comic_path):
     """
     Extract the cbr file for the given comic path.
-
-    This requires `unrar` to be installed: `brew install unrar`.
-    :param comic_path:
-    :return:
     """
     cbr = RarFile(comic_path)
     cbr.extractall(path=settings.COMIC_TMP_PATH)
@@ -98,7 +86,6 @@ def _extract_cbr_comic(comic_path):
 def _get_extracted_comic_pages():
     """
     Get the urls of the extracted comic pages.
-    :return:
     """
     comic_pages = []
     for file_name in os.listdir(settings.COMIC_TMP_PATH):
@@ -124,14 +111,9 @@ def _get_path_contents(path, path_name):
     """
     For a given path and path name:
     - get the comic files in that path
-    - get the children paths in that path and their data.
-
-    :param path: object
-    :param path_name: str
-    :return: object
-    :rtype: object
+    - get the children directory paths in that path.
     """
-    # The the path comic files
+    # Get the path comic files
     path_comics = []
     for comic_file_name in os.listdir(path):
         if not comic_file_name.endswith('.cbz') and not comic_file_name.endswith('.cbr'):
@@ -162,40 +144,13 @@ def _get_path_contents(path, path_name):
         ]):
             continue
 
-        path_info['children'].append(
-            _get_path_contents(path=child_path, path_name=path_name)
-        )
+        path_info['children'].append({
+            'name': path_name,
+            'path': base64.encodebytes(bytes(child_path, 'utf-8')).decode('utf-8'),
+        })
 
     # Sort the comic names and child path names by name.
     path_info['comics'] = sorted(path_info['comics'], key=lambda x: x['name'])
     path_info['children'] = sorted(path_info['children'], key=lambda x: x['name'])
 
     return path_info
-
-
-def _get_html_for_path(path):
-    """
-    Return an <ul> item with an <li> per comic or child path in the given path.
-    :param path: object
-    :return: string
-    """
-    html = ''
-
-    if len(path['comics']) > 0:
-        html += '<ul>'
-        for comic in path['comics']:
-            html += '<li><a target="_blank" href="{comic_detail_url}">{comic_name}</a></li>'.format(
-                comic_detail_url=reverse('reader:comic_detail', kwargs={'comic_path': comic['path']}),
-                comic_name=comic['name']
-            )
-        html += '</ul>'
-
-    if len(path['children']) > 0:
-        html += '<ul>'
-        for child_path in path['children']:
-            html += '<li><strong>{}</strong>'.format(child_path['name'])
-            html += _get_html_for_path(child_path)
-            html += '</li>'
-        html += '</ul>'
-
-    return html

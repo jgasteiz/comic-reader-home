@@ -7,7 +7,7 @@ app_name = 'reader'
 
 
 urlpatterns = [
-    path('', views.global_index, name='global_index'),
-    path('<str:comic_section>/', views.comic_index, name='comic_index'),
-    path('detail/<str:comic_path>/', views.comic_detail, name='comic_detail'),
+    path('', views.directory_detail, name='global_index'),
+    path('dir/<str:directory_path>/', views.directory_detail, name='directory_detail'),
+    path('comic/<str:comic_path>/', views.comic_detail, name='comic_detail'),
 ]
