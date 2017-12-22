@@ -45,15 +45,17 @@ def comic_detail(request, comic_path, page_number=1):
 
         # Calculate page numbers.
         previous_page = None
+        next_page = None
         if page_number > 0:
             previous_page = page_number - 1
-        next_page = page_number + 1
+        if page_number < len(_get_comic_page_names(cb_file)) - 1:
+            next_page = page_number + 1
 
         return render(
             request,
             template_name='reader/comic_detail.html',
             context={
-                'comic_pages': _get_extracted_comic_pages(),
+                'comic_page': _get_extracted_comic_page(),
                 'previous_page': previous_page,
                 'next_page': next_page,
                 'comic_path': comic_path,
@@ -75,12 +77,18 @@ def _extract_comic_page(cb_file, page_number):
     """
     Extract the given page for the given comic file.
     """
+    cb_file.extract(_get_comic_page_names(cb_file)[page_number], settings.COMIC_TMP_PATH)
+
+
+def _get_comic_page_names(cb_file):
+    """
+    Get the given cb_file filenames which are .jpg or .png.
+    """
     page_names = sorted(cb_file.namelist())
-    page_names = [p for p in page_names if p.endswith('.jpg') or p.endswith('.png')]
-    cb_file.extract(page_names[page_number], settings.COMIC_TMP_PATH)
+    return [p for p in page_names if p.endswith('.jpg') or p.endswith('.png')]
 
 
-def _get_extracted_comic_pages():
+def _get_extracted_comic_page():
     """
     Get the urls of the extracted comic pages.
     """
@@ -101,7 +109,7 @@ def _get_extracted_comic_pages():
     # Remove the absolute path from the comic urls
     comic_pages = [p.replace(settings.BASE_DIR, '') for p in comic_pages]
 
-    return sorted(comic_pages)
+    return comic_pages[0]
 
 
 def _get_path_contents(path, path_name):
