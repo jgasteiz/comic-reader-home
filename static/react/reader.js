@@ -26,6 +26,10 @@ class Reader extends React.Component {
                 <ComicPage
                     pageSrc={this.state.pageSrc}
                 />
+                <Navigation
+                    nextPageUrl={this.state.nextPageUrl}
+                    previousPageUrl={this.state.previousPageUrl}
+                />
                 <BatmanSpinner/>
             </div>
         );
