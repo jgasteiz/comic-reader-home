@@ -1,38 +1,11 @@
 {% extends 'reader/base.html' %}
 {% load static %}
 
+{% block body_class %}reader-mode{% endblock %}
+
 {% block content %}
-    <div class="reader">
-        <nav class="page-navigation">
-            {% if previous_page != None %}
-                <a class="btn btn-light" href="{% url 'reader:comic_detail' comic_path previous_page %}">Previous page</a>
-            {% endif %}
-            {% if next_page != None %}
-                <a class="btn btn-light" href="{% url 'reader:comic_detail' comic_path next_page %}">Next page</a>
-            {% endif %}
-        </nav>
-
-        <div id="page" data-src="{{ comic_page }}"></div>
-
-        <nav class="page-navigation">
-            {% if previous_page != None %}
-                <a class="btn btn-light" href="{% url 'reader:comic_detail' comic_path previous_page %}">Previous page</a>
-            {% endif %}
-            {% if next_page != None %}
-                <a class="btn btn-light" href="{% url 'reader:comic_detail' comic_path next_page %}">Next page</a>
-            {% endif %}
-        </nav>
-    </div>
-{% endblock %}
-
-{% block extra_js %}
-    <script>
-        var reader = {};
-        {% if previous_page %}
-            reader.previousPageUrl = "{% url 'reader:comic_detail' comic_path previous_page %}";
-        {% endif %}
-        {% if next_page %}
-            reader.nextPageUrl = "{% url 'reader:comic_detail' comic_path next_page %}";
-        {% endif %}
-    </script>
+    <div id="reader"
+         data-comic-path="{{ comic_path }}"
+         data-comic-page="{{ page_number }}"
+    ></div>
 {% endblock %}
