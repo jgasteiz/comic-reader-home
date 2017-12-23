@@ -2,27 +2,73 @@ body {
     padding: 0 20px;
 }
 
+body.reader-mode {
+    background: #000;
+}
+
 a:visited {
     color: #800080;
 }
 
+.comic-list li,
+.directory-list li {
+    margin: 0 0 6px;
+}
+
+/* Reader component */
+.reader {
+    margin: 0 -20px;
+}
+.reader--loading {
+    align-items: center;
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+}
+.reader--loading .batman-spinner {
+    display: block;
+}
+.reader--loading .comic-page,
+.reader--loading .page-navigation {
+    display: none;
+}
+.reader--show .comic-page,
+.reader--show .page-navigation {
+    display: flex;
+}
+
+/* Navigation component */
 .comic-page {
     display: block;
     max-width: 100%;
 }
 
-.reader {
-    background: #000;
-    margin: 0 -20px;
-}
-
+/* ComicPage component */
 .page-navigation {
     display: flex;
     justify-content: space-between;
     padding: 12px 20px;
 }
 
-.comic-list li,
-.directory-list li {
-    margin: 0 0 6px;
+/* BatmanSpinner component */
+.batman-spinner {
+    display: none;
+    -webkit-animation-name: rotate;
+    -webkit-animation-duration:2s;
+    -webkit-animation-iteration-count:infinite;
+    -webkit-animation-timing-function:linear;
+    -moz-animation-name: rotate;
+    -moz-animation-duration:2s;
+    -moz-animation-iteration-count:infinite;
+    -moz-animation-timing-function:linear;
+}
+
+@-webkit-keyframes rotate {
+    from {-webkit-transform:rotate(0deg);}
+    to {  -webkit-transform:rotate(360deg);}
+}
+
+@-moz-keyframes rotate {
+    from {-moz-transform:rotate(0deg);}
+    to {  -moz-transform:rotate(360deg);}
 }
