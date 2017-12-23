@@ -12,9 +12,7 @@
             {% endif %}
         </nav>
 
-        {% for page in comic_pages %}
-        <img class="comic-page" src="{{ page }}" alt="">
-        {% endfor %}
+        <div id="page" data-src="{{ comic_page }}"></div>
 
         <nav class="page-navigation">
             {% if previous_page != None %}

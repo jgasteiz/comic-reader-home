@@ -7,3 +7,6 @@ env/
 /static/comics
 
 local_settings.py
+/node_modules
+/yarn-error.log
+/static/dist
