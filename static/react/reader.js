@@ -36,7 +36,21 @@ class Reader extends React.Component {
     }
 
     componentDidMount() {
+        const component = this;
         this.getImageSrc();
+
+        // Listen for key events and go to next/previous page when
+        // pressing certain keys.
+        document.addEventListener('keydown', function(ev) {
+            const keyName = ev.key;
+            if (keyName === 'ArrowRight' || keyName === 'ArrowDown') {
+                window.location = component.state.nextPageUrl;
+                ev.preventDefault();
+            } else if (keyName === 'ArrowLeft' || keyName === 'ArrowUp') {
+                window.location = component.state.previousPageUrl;
+                ev.preventDefault();
+            }
+        });
     }
 
     getImageSrc() {
