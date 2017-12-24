@@ -28,11 +28,13 @@ def directory_detail(request, directory_path=None):
 
 
 def comic_detail(request, comic_path, page_number):
+    _comic_path = base64.decodebytes(bytes(comic_path, 'utf-8')).decode('utf-8')
     return render(
         request,
         template_name='reader/comic_detail.html',
         context={
             'comic_path': comic_path,
             'page_number': page_number,
+            'comic_name': _comic_path.split('/')[-1],
         }
     )
