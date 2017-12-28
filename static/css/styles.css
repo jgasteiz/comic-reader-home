@@ -4,6 +4,8 @@ body {
 
 body.reader-mode {
     background: #000;
+    margin: 0 auto;
+    max-width: 1200px;
 }
 
 a:visited {
