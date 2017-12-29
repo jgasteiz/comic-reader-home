@@ -11,61 +11,70 @@ class Reader extends React.Component {
 
         this.state = {
             pageSrc: '',
-            previousPageUrl: '',
-            nextPageUrl: '',
-        }
+            comicPath: READER.dataset.comicPath,
+            currentPage: parseInt(READER.dataset.comicPage, 10),
+        };
+
+        // Bind the event handlers to `this`
+        this.previousPageHandler = this.previousPageHandler.bind(this);
+        this.nextPageHandler = this.nextPageHandler.bind(this);
     }
 
     render() {
         return (
             <div className={"reader reader--" + (this.state.pageSrc ? 'show' : 'loading')}>
                 <Navigation
-                    nextPageUrl={this.state.nextPageUrl}
-                    previousPageUrl={this.state.previousPageUrl}
+                    previousPageHandler={this.previousPageHandler}
+                    nextPageHandler={this.nextPageHandler}
                 />
                 <ComicPage
                     pageSrc={this.state.pageSrc}
                 />
                 <Navigation
-                    nextPageUrl={this.state.nextPageUrl}
-                    previousPageUrl={this.state.previousPageUrl}
+                    previousPageHandler={this.previousPageHandler}
+                    nextPageHandler={this.nextPageHandler}
                 />
                 <BatmanSpinner/>
             </div>
         );
     }
 
-    componentDidMount() {
-        const component = this;
-        this.getImageSrc();
-
-        // Listen for key events and go to next/previous page when
-        // pressing certain keys.
-        document.addEventListener('keydown', function(ev) {
-            const keyName = ev.key;
-            if (keyName === 'ArrowRight' || keyName === 'ArrowDown') {
-                window.location = component.state.nextPageUrl;
-                ev.preventDefault();
-            } else if (keyName === 'ArrowLeft' || keyName === 'ArrowUp') {
-                window.location = component.state.previousPageUrl;
-                ev.preventDefault();
-            }
+    previousPageHandler() {
+        this.setState({
+            pageSrc: '',
         });
+        this.fetchPageSrc(this.state.currentPage - 1);
     }
 
-    getImageSrc() {
+    nextPageHandler() {
+        this.setState({
+            pageSrc: '',
+        });
+        this.fetchPageSrc(this.state.currentPage + 1);
+    }
+
+    updatePageUrl(pageNum) {
+        if (typeof (history.pushState) !== "undefined") {
+            const obj = {
+                title: `Page ${pageNum}`,
+                url: `/comic/${this.state.comicPath}/${pageNum}/`
+            };
+            history.pushState(obj, obj.title, obj.url);
+        }
+    }
+
+    fetchPageSrc(pageNum) {
         const component = this;
 
         const httpRequest = new XMLHttpRequest();
-        httpRequest.open('GET', `/api/${READER.dataset.comicPath}/${READER.dataset.comicPage}/`);
+        httpRequest.open('GET', `/api/${this.state.comicPath}/${pageNum}/`);
         httpRequest.setRequestHeader('Content-Type', 'application/json');
         httpRequest.onreadystatechange = function () {
             if (httpRequest.readyState === XMLHttpRequest.DONE) {
                 if (httpRequest.status === 200) {
                     component.setState({
                         pageSrc: JSON.parse(this.response)['page_src'],
-                        nextPageUrl: JSON.parse(this.response)['next_page'],
-                        previousPageUrl: JSON.parse(this.response)['previous_page'],
+                        currentPage: pageNum
                     });
                 } else {
                     alert('There was a problem with the request.');
@@ -73,6 +82,25 @@ class Reader extends React.Component {
             }
         };
         httpRequest.send();
+        this.updatePageUrl(pageNum);
+    }
+
+    componentDidMount() {
+        const component = this;
+        this.fetchPageSrc(this.state.currentPage);
+
+        // Listen for key events and go to next/previous page when
+        // pressing certain keys.
+        document.addEventListener('keydown', function(ev) {
+            const keyName = ev.key;
+            if (keyName === 'ArrowRight') {
+                component.nextPageHandler();
+                ev.preventDefault();
+            } else if (keyName === 'ArrowLeft') {
+                component.previousPageHandler();
+                ev.preventDefault();
+            }
+        });
     }
 }
 
@@ -82,10 +110,10 @@ class Navigation extends React.Component {
         return (
             <nav className="page-navigation">
                 <a className="btn btn-light"
-                   href={this.props.previousPageUrl}
+                   onClick={this.props.previousPageHandler}
                 >Previous page</a>
                 <a className="btn btn-light"
-                   href={this.props.nextPageUrl}
+                   onClick={this.props.nextPageHandler}
                 >Next page</a>
             </nav>
         );
@@ -114,7 +142,9 @@ class ComicPage extends React.Component {
     }
 }
 
-ReactDOM.render(
-    <Reader/>,
-    document.getElementById('reader')
-);
+if (document.getElementById('reader')) {
+    ReactDOM.render(
+        <Reader/>,
+        document.getElementById('reader')
+    );
+}
