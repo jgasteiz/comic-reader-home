@@ -25,12 +25,6 @@ class Reader extends React.Component {
     render() {
         return (
             <div className={"reader reader--" + (this.state.pageSrc ? 'show' : 'loading')}>
-                <Navigation
-                    previousPageHandler={this.previousPageHandler}
-                    nextPageHandler={this.nextPageHandler}
-                    hasPreviousPage={this.state.hasPreviousPage}
-                    hasNextPage={this.state.hasNextPage}
-                />
                 <ComicPage
                     pageSrc={this.state.pageSrc}
                 />
@@ -123,12 +117,14 @@ class Navigation extends React.Component {
     render() {
         return (
             <nav className="page-navigation">
-                <a className={"btn btn-light page-navigation-item--" + (this.props.hasPreviousPage ? 'show' : 'hidden')}
+                <a className={"page-navigation-item page-navigation-item--previous page-navigation-item--" + (this.props.hasPreviousPage ? 'show' : 'hidden')}
                    onClick={this.props.previousPageHandler}
-                >Previous page</a>
-                <a className={"btn btn-light page-navigation-item--" + (this.props.hasNextPage ? 'show' : 'hidden')}
+                   title="Previous page"
+                />
+                <a className={"page-navigation-item page-navigation-item--next page-navigation-item--" + (this.props.hasNextPage ? 'show' : 'hidden')}
                    onClick={this.props.nextPageHandler}
-                >Next page</a>
+                   title="Next page"
+                />
             </nav>
         );
     }

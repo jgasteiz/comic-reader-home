@@ -51,6 +51,19 @@ a:visited {
     justify-content: space-between;
     padding: 12px 20px;
 }
+.page-navigation-item {
+    bottom: 0;
+    cursor: pointer;
+    position: fixed;
+    top: 0;
+    width: 140px;
+}
+.page-navigation-item--previous {
+    left: 0;
+}
+.page-navigation-item--next {
+    right: 0;
+}
 .page-navigation-item--hidden {
     user-input: none;
     visibility: hidden;
