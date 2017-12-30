@@ -6,6 +6,8 @@ from zipfile import ZipFile
 
 from django.http import HttpResponse
 
+from comicreader import settings
+from reader.tasks import extract_comic_file
 from reader.utils import (
     get_extracted_comic_page,
     get_num_comic_pages
@@ -15,6 +17,9 @@ from reader.utils import (
 def comic_page(request, comic_path, page_number):
     try:
         decoded_comic_path = base64.decodebytes(bytes(comic_path, 'utf-8')).decode('utf-8')
+
+        # Extract the entire comic file on a task
+        extract_comic_file.delay(decoded_comic_path, settings.COMIC_TMP_PATH)
 
         # Create a zip or a rar file depending on the comic file type.
         if decoded_comic_path.endswith('.cbz'):
