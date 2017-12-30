@@ -51,6 +51,10 @@ a:visited {
     justify-content: space-between;
     padding: 12px 20px;
 }
+.page-navigation-item--hidden {
+    user-input: none;
+    visibility: hidden;
+}
 
 /* BatmanSpinner component */
 .batman-spinner {
