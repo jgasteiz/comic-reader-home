@@ -1,9 +1,6 @@
 import base64
 import os
 
-from rarfile import RarFile
-from zipfile import ZipFile
-
 from django.conf import settings
 
 
@@ -11,14 +8,28 @@ def clear_tmp():
     """
     Clear the tmp directory.
     """
-    os.system('rm -rf {}/*'.format(settings.COMIC_TMP_PATH))
+    if os.name != 'nt':
+        os.system('rm -rf {}/*'.format(settings.COMIC_TMP_PATH))
+    else:
+        os.system('del /s /q "{}"'.format(settings.COMIC_TMP_PATH))
 
 
-def extract_comic_page(cb_file, page_number):
+def extract_comic_page(cb_file, page_number, comic_path):
     """
     Extract the given page for the given comic file.
     """
-    cb_file.extract(get_comic_page_names(cb_file)[page_number], settings.COMIC_TMP_PATH)
+    if comic_path.endswith('.cbz'):
+        cb_file.extract(get_comic_page_names(cb_file)[page_number], settings.COMIC_TMP_PATH)
+    else:
+        if os.name != 'nt':
+            cb_file.extract(get_comic_page_names(cb_file)[page_number], settings.COMIC_TMP_PATH)
+        else:
+            command = 'unrar x /y "{cbr_path}" "{page_name}"'.format(
+                cbr_path=comic_path,
+                page_name=get_comic_page_names(cb_file)[page_number].replace('/', '\\'),
+            )
+            print(command)
+            os.system(command)
 
 
 def get_comic_page_names(cb_file):

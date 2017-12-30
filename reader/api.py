@@ -27,7 +27,7 @@ def comic_page(request, comic_path, page_number):
             cb_file = RarFile(decoded_comic_path)
 
         # Extract the page.
-        extract_comic_page(cb_file=cb_file, page_number=page_number)
+        extract_comic_page(cb_file=cb_file, page_number=page_number, comic_path=decoded_comic_path)
 
         # Calculate page numbers.
         previous_page_url = None
