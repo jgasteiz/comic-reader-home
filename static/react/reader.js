@@ -13,6 +13,8 @@ class Reader extends React.Component {
             pageSrc: '',
             comicPath: READER.dataset.comicPath,
             currentPage: parseInt(READER.dataset.comicPage, 10),
+            hasPreviousPage: false,
+            hasNextPage: true,
         };
 
         // Bind the event handlers to `this`
@@ -26,6 +28,8 @@ class Reader extends React.Component {
                 <Navigation
                     previousPageHandler={this.previousPageHandler}
                     nextPageHandler={this.nextPageHandler}
+                    hasPreviousPage={this.state.hasPreviousPage}
+                    hasNextPage={this.state.hasNextPage}
                 />
                 <ComicPage
                     pageSrc={this.state.pageSrc}
@@ -33,6 +37,8 @@ class Reader extends React.Component {
                 <Navigation
                     previousPageHandler={this.previousPageHandler}
                     nextPageHandler={this.nextPageHandler}
+                    hasPreviousPage={this.state.hasPreviousPage}
+                    hasNextPage={this.state.hasNextPage}
                 />
                 <BatmanSpinner/>
             </div>
@@ -40,6 +46,9 @@ class Reader extends React.Component {
     }
 
     previousPageHandler() {
+        if (!this.state.hasPreviousPage) {
+            return;
+        }
         this.setState({
             pageSrc: '',
         });
@@ -47,6 +56,9 @@ class Reader extends React.Component {
     }
 
     nextPageHandler() {
+        if (!this.state.hasNextPage) {
+            return;
+        }
         this.setState({
             pageSrc: '',
         });
@@ -74,7 +86,9 @@ class Reader extends React.Component {
                 if (httpRequest.status === 200) {
                     component.setState({
                         pageSrc: JSON.parse(this.response)['page_src'],
-                        currentPage: pageNum
+                        currentPage: pageNum,
+                        hasPreviousPage: JSON.parse(this.response)['has_previous_page'],
+                        hasNextPage: JSON.parse(this.response)['has_next_page'],
                     });
                 } else {
                     alert('There was a problem with the request.');
@@ -109,10 +123,10 @@ class Navigation extends React.Component {
     render() {
         return (
             <nav className="page-navigation">
-                <a className="btn btn-light"
+                <a className={"btn btn-light page-navigation-item--" + (this.props.hasPreviousPage ? 'show' : 'hidden')}
                    onClick={this.props.previousPageHandler}
                 >Previous page</a>
-                <a className="btn btn-light"
+                <a className={"btn btn-light page-navigation-item--" + (this.props.hasNextPage ? 'show' : 'hidden')}
                    onClick={this.props.nextPageHandler}
                 >Next page</a>
             </nav>

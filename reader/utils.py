@@ -1,56 +1,88 @@
 import base64
 import os
 
-from rarfile import RarFile
-from zipfile import ZipFile
-
 from django.conf import settings
+
+
+class PageNotFoundError(Exception):
+    pass
 
 
 def clear_tmp():
     """
     Clear the tmp directory.
     """
-    os.system('rm -rf {}/*'.format(settings.COMIC_TMP_PATH))
+    if os.name != 'nt':
+        os.system('rm -rf {}/*'.format(settings.COMIC_TMP_PATH))
+    else:
+        os.system('del /s /q "{}"'.format(settings.COMIC_TMP_PATH))
 
 
-def extract_comic_page(cb_file, page_number):
+def extract_comic_page(cb_file, page_number, comic_path):
     """
-    Extract the given page for the given comic file.
+    Extract the given page for the given comic file or do nothing if it's
+    in place alreday.
     """
-    cb_file.extract(get_comic_page_names(cb_file)[page_number], settings.COMIC_TMP_PATH)
+    page_file_name = get_comic_page_name(cb_file, page_number)
+    page_file_path = os.path.join(settings.COMIC_TMP_PATH, page_file_name)
 
+    # If it exists already, return it.
+    if os.path.exists(page_file_path):
+        print('Page exists, returning its path')
+        return page_file_path
 
-def get_comic_page_names(cb_file):
-    """
-    Get the given cb_file filenames which are .jpg or .png.
-    """
-    page_names = sorted(cb_file.namelist())
-    return [p for p in page_names if p.endswith('.jpg') or p.endswith('.png')]
-
-
-def get_extracted_comic_page():
-    """
-    Get the urls of the extracted comic pages.
-    """
-    comic_pages = []
-    for file_name in os.listdir(settings.COMIC_TMP_PATH):
-        file_path = os.path.join(settings.COMIC_TMP_PATH, file_name)
-
-        if file_name in settings.IGNORED_FILE_NAMES:
-            continue
-
-        if os.path.isdir(file_path):
-            for file_name_2 in os.listdir(file_path):
-                file_path_2 = os.path.join(file_path, file_name_2)
-                comic_pages.append(file_path_2)
+    # Otherwise extract it.
+    if os.name != 'nt':
+        cb_file.extract(page_file_name, settings.COMIC_TMP_PATH)
+    else:
+        if comic_path.endswith('.cbz'):
+            cb_file.extract(page_file_name, settings.COMIC_TMP_PATH)
         else:
-            comic_pages.append(file_path)
+            command = 'unrar x /y "{cbr_path}" "{page_name}"'.format(
+                cbr_path=comic_path,
+                page_name=page_file_name.replace('/', '\\'),
+            )
+            print(command)
+            os.system(command)
 
-    # Remove the absolute path from the comic urls
-    comic_pages = [p.replace(settings.BASE_DIR, '') for p in comic_pages]
+    # And if it exists, return it.
+    if os.path.exists(page_file_path):
+        print('PAGE EXTRACTED')
+        return page_file_path
 
-    return comic_pages[0]
+    # Otherwise something went wrong, return None.
+    raise PageNotFoundError
+
+
+def get_all_comic_pages(cb_file):
+    return [p for p in cb_file.namelist()
+            if p.endswith('.jpg') or p.endswith('.png')]
+
+
+def get_num_comic_pages(cb_file):
+    return len(get_all_comic_pages(cb_file))
+
+
+def get_comic_page_name(cb_file, page_number):
+    """
+    Get the given cb_file page file name in the page_number position.
+    """
+    all_pages = sorted(get_all_comic_pages(cb_file))
+    try:
+        return all_pages[page_number]
+    except IndexError:
+        raise PageNotFoundError
+
+
+def get_extracted_comic_page(cb_file, page_number, comic_path):
+    """
+    Extract a page from the given cb file given its page number
+    """
+    try:
+        page_file_path = extract_comic_page(cb_file=cb_file, page_number=page_number, comic_path=comic_path)
+        return page_file_path.replace(settings.BASE_DIR, '')
+    except PageNotFoundError:
+        return settings.PAGE_NOT_FOUND
 
 
 def get_path_contents(path, path_name):

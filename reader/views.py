@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 
 from reader.utils import get_path_contents
+from reader.tasks import extract_comic_file
 
 
 def directory_detail(request, directory_path=None):
@@ -29,6 +30,8 @@ def directory_detail(request, directory_path=None):
 
 def comic_detail(request, comic_path, page_number):
     _comic_path = base64.decodebytes(bytes(comic_path, 'utf-8')).decode('utf-8')
+    # Extract the entire comic file on a task
+    extract_comic_file.delay(_comic_path, settings.COMIC_TMP_PATH)
     return render(
         request,
         template_name='reader/comic_detail.html',

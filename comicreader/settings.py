@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'reader',
 ]
 
 MIDDLEWARE = [
@@ -126,3 +127,5 @@ IGNORED_FILE_NAMES = [
     '.DS_Store',
     '.yacreaderlibrary',
 ]
+
+PAGE_NOT_FOUND = '/static/img/404.jpg'
