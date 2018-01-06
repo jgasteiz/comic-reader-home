@@ -56,7 +56,7 @@ def extract_comic_page(cb_file, page_number, comic_path):
 
 def get_all_comic_pages(cb_file):
     return [p for p in cb_file.namelist()
-            if p.endswith('.jpg') or p.endswith('.png')]
+            if p.endswith('.jpg') or p.endswith('.png') or p.endswith('.webp')]
 
 
 def get_num_comic_pages(cb_file):
