@@ -1,4 +1,5 @@
 import base64
+import logging
 import os
 
 from django.conf import settings
@@ -28,7 +29,7 @@ def extract_comic_page(cb_file, page_number, comic_path):
 
     # If it exists already, return it.
     if os.path.exists(page_file_path):
-        print('Page exists, returning its path')
+        logging.info('Page exists, returning its path')
         return page_file_path
 
     # Otherwise extract it.
@@ -42,12 +43,12 @@ def extract_comic_page(cb_file, page_number, comic_path):
                 cbr_path=comic_path,
                 page_name=page_file_name.replace('/', '\\'),
             )
-            print(command)
+            logging.info(command)
             os.system(command)
 
     # And if it exists, return it.
     if os.path.exists(page_file_path):
-        print('PAGE EXTRACTED')
+        logging.info('PAGE EXTRACTED')
         return page_file_path
 
     # Otherwise something went wrong, return None.
