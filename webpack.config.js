@@ -1,8 +1,8 @@
 var path = require('path');
-var webpack = require('webpack');
+
 
 module.exports = {
-    entry: './static/react/reader.js',
+    entry: './static/react/main.js',
     output: {
         path: path.resolve(__dirname, 'static/dist'),
         filename: 'app.bundle.js'
