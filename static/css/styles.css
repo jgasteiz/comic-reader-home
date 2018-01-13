@@ -5,7 +5,6 @@ body {
 body.reader-mode {
     background: #000;
     margin: 0 auto;
-    max-width: 1200px;
 }
 
 a:visited {
@@ -20,6 +19,18 @@ a:visited {
 /* Reader component */
 .reader {
     margin: 0 -20px;
+    padding-bottom: 60px;
+}
+.reader--standard-view {
+    margin: 0 auto;
+    max-width: 1200px;
+}
+.reader--fit-width {
+    max-width: none;
+}
+.reader--fit-height .comic-page {
+    height: 100vh;
+    margin: 0 auto;
 }
 .reader--loading {
     align-items: center;
@@ -49,7 +60,7 @@ a:visited {
 .page-navigation {
     display: flex;
     justify-content: space-between;
-    padding: 12px 20px;
+    padding: 0 20px;
 }
 .page-navigation-item {
     bottom: 0;
@@ -90,4 +101,17 @@ a:visited {
 @-moz-keyframes rotate {
     from {-moz-transform:rotate(0deg);}
     to {  -moz-transform:rotate(360deg);}
+}
+
+/* ReadingControls component */
+.reading-controls {
+    background: rgba(0, 0, 0, 0.6);
+    bottom: 0;
+    color: #fff;
+    display: flex;
+    left: 0;
+    justify-content: center;
+    padding: 12px 0;
+    position: fixed;
+    right: 0;
 }

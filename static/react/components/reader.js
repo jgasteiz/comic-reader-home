@@ -4,6 +4,7 @@ import BatmanSpinner from './batman-spinner';
 import ComicPage from './comic-page';
 import Navigation from './navigation';
 import fetchPageSrc from '../services/comic-service';
+import ReadingControls from "./reading-controls";
 
 
 const READER = document.getElementById('reader');
@@ -15,6 +16,7 @@ export default class Reader extends React.Component {
 
         this.state = {
             pageSrc: '',
+            readingMode: 'standard-view',
             comicPath: READER.dataset.comicPath,
             currentPage: parseInt(READER.dataset.comicPage, 10),
             hasPreviousPage: false,
@@ -24,11 +26,13 @@ export default class Reader extends React.Component {
         // Bind the event handlers to `this`
         this.previousPageHandler = this.previousPageHandler.bind(this);
         this.nextPageHandler = this.nextPageHandler.bind(this);
+        this.readingModeHandler = this.readingModeHandler.bind(this);
     }
 
     render() {
         return (
-            <div className={"reader reader--" + (this.state.pageSrc ? 'show' : 'loading')}>
+            <div className={
+                `reader reader--${this.state.readingMode} reader--${this.state.pageSrc ? 'show' : 'loading'}`}>
                 <ComicPage
                     pageSrc={this.state.pageSrc}
                 />
@@ -39,8 +43,17 @@ export default class Reader extends React.Component {
                     hasNextPage={this.state.hasNextPage}
                 />
                 <BatmanSpinner/>
+                <ReadingControls
+                    readingModeHandler={this.readingModeHandler}
+                />
             </div>
         );
+    }
+
+    readingModeHandler(readingMode) {
+        this.setState({
+            readingMode: readingMode
+        });
     }
 
     previousPageHandler() {
