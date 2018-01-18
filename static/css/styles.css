@@ -28,6 +28,9 @@ a:visited {
 .reader--fit-width {
     max-width: none;
 }
+.reader--fit-width .comic-page {
+    width: 100%;
+}
 .reader--fit-height .comic-page {
     height: 100vh;
     margin: 0 auto;
