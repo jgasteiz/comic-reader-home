@@ -14,13 +14,15 @@ def directory_detail(request, directory_path=None):
             directory_path = base64.decodebytes(bytes(directory_path, 'utf-8')).decode('utf-8')
         else:
             directory_path = settings.COMICS_ROOT
+
         directory_name = directory_path.split('/')[-1]
         path_contents = get_path_contents(directory_path, directory_name)
         return render(
             request,
             template_name='reader/directory_detail.html',
             context={
-                'path_contents': path_contents
+                'path_contents': path_contents,
+                'is_root': directory_path == settings.COMICS_ROOT
             }
         )
     # TODO: A /favicon.ico request keeps causing KeyErrors, fix it.

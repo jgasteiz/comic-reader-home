@@ -1,24 +1,18 @@
-body {
-    padding: 0 20px;
-}
-
 body.reader-mode {
     background: #000;
     margin: 0 auto;
 }
 
-a:visited {
-    color: #800080;
+h1 {
+    margin-bottom: 24px;
 }
 
-.comic-list li,
-.directory-list li {
-    margin: 0 0 6px;
+.navbar {
+    margin-bottom: 24px;
 }
 
 /* Reader component */
 .reader {
-    margin: 0 -20px;
     padding-bottom: 60px;
 }
 .reader--standard-view {

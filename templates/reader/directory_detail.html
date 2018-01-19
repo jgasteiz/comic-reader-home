@@ -1,34 +1,92 @@
 {% extends 'reader/base.html' %}
 
 {% block content %}
-    <h1>{{ path_contents.name }}</h1>
 
-    {% if path_contents.back_link %}
-        <div>
-            <a href="{{ path_contents.back_link.link }}">{{ path_contents.back_link.name }}</a>
+    <header class="navbar navbar-dark bg-dark sticky-top">
+        <div class="container d-flex justify-content-between">
+            <a href="/" class="navbar-brand d-flex align-items-center">
+                <strong>Comic Reader</strong>
+            </a>
         </div>
-    {% endif %}
+    </header>
 
-    {% if path_contents.comics %}
-        <h2>Comics</h2>
-        <ul class="comic-list">
-        {% for comic in path_contents.comics %}
-            <li>
-                <a target="_blank" href="{% url 'reader:comic_detail' comic.path 0 %}">{{ comic.name }}</a>
-            </li>
-        {% endfor %}
-        </ul>
-    {% endif %}
+    <div class="container">
+        {% if not is_root %}
+            <h1>{{ path_contents.name }}</h1>
+        {% endif %}
 
-    {% if path_contents.children %}
-        <h2>Directories</h2>
-        <ul class="directory-list">
-        {% for directory in path_contents.children %}
-            <li>
-                <a href="{% url 'reader:directory_detail' directory.path %}">{{ directory.name }}</a>
-            </li>
-        {% endfor %}
-        </ul>
-    {% endif %}
+        {% if path_contents.back_link %}
+            <div>
+                <a href="{{ path_contents.back_link.link }}">{{ path_contents.back_link.name }}</a>
+            </div>
+        {% endif %}
+
+        {% if path_contents.comics %}
+            <h2>Comics</h2>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Directory name</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for comic in path_contents.comics %}
+                    <tr>
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+                        <td>
+                            {{ comic.name }}
+                        </td>
+                        <td>
+                            <a class="btn btn-primary btn-sm btn-block"
+                               href="{% url 'reader:comic_detail' comic.path 0 %}"
+                               target="_blank"
+                            >
+                                Read
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+
+        {% if path_contents.children %}
+            <h2>Directories</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Directory name</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for directory in path_contents.children %}
+                    <tr>
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+                        <td>
+                            {{ directory.name }}
+                        </td>
+                        <td>
+                            <a class="btn btn-secondary btn-sm btn-block"
+                               href="{% url 'reader:directory_detail' directory.path %}"
+                            >
+                                Go
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+
+    </div>
 
 {% endblock %}
