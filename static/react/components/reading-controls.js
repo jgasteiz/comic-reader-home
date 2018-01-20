@@ -17,7 +17,6 @@ export default class ReadingControls extends React.Component {
         this.fitPageHeight = this.fitPageHeight.bind(this);
         this.fitPageWidth = this.fitPageWidth.bind(this);
         this.standardView = this.standardView.bind(this);
-        ReadingControls.toggleFullScreen = ReadingControls.toggleFullScreen.bind(this);
     }
 
     render() {
@@ -29,28 +28,28 @@ export default class ReadingControls extends React.Component {
                         onClick={this.fitPageHeight}
                         disabled={this.state.mode === 'fit-height'}
                     >
-                        Fit page height
+                        Fit height
                     </button>
                     <button
                         className="btn btn-secondary btn-sm"
                         onClick={this.fitPageWidth}
                         disabled={this.state.mode === 'fit-width'}
                     >
-                        Fit page width
+                        Fit width
                     </button>
                     <button
                         className="btn btn-secondary btn-sm"
                         onClick={this.standardView}
                         disabled={this.state.mode === 'standard-view'}
                     >
-                        Standard view
+                        Best fit
                     </button>
-                    <button
-                        className="btn btn-secondary btn-sm"
-                        onClick={ReadingControls.toggleFullScreen}
+                    <a
+                        className="btn btn-danger btn-sm"
+                        href={this.props.comicParentPath}
                     >
-                        Toggle full screen
-                    </button>
+                        Exit
+                    </a>
                 </div>
             </div>
         );
@@ -86,26 +85,5 @@ export default class ReadingControls extends React.Component {
             mode: 'standard-view'
         });
         this.props.readingModeHandler('standard-view');
-    }
-
-    /**
-     * If the browser supports full screen mode, toggles it.
-     */
-    static toggleFullScreen() {
-        if (!document.fullscreenElement) {
-            try {
-                document.documentElement.requestFullscreen();
-            } catch(error) {
-                document.documentElement.webkitRequestFullscreen();
-            }
-        } else {
-            if (document.exitFullscreen) {
-                try {
-                    document.exitFullscreen();
-                } catch(error) {
-                    document.webkitExitFullscreen();
-                }
-            }
-        }
     }
 }

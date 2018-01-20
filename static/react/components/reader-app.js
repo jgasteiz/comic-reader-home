@@ -22,6 +22,7 @@ export default class ReaderApp extends React.Component {
             pageSrc: '',
             readingMode: 'standard-view',
             comicPath: READER.dataset.comicPath,
+            parentPath: READER.dataset.parentPath,
             currentPage: parseInt(READER.dataset.comicPage, 10),
             hasPreviousPage: false,
             hasNextPage: true,
@@ -52,6 +53,7 @@ export default class ReaderApp extends React.Component {
                     onPageClickHandler={this.onPageClickHandler}
                 />
                 <Navigation
+                    exitReadingHandler={this.exitReadingHandler}
                     previousPageHandler={this.previousPageHandler}
                     nextPageHandler={this.nextPageHandler}
                     hasPreviousPage={this.state.hasPreviousPage}
@@ -61,6 +63,7 @@ export default class ReaderApp extends React.Component {
                 <ReadingControls
                     readingModeHandler={this.readingModeHandler}
                     readingControlsVisible={this.state.readingControlsVisible}
+                    comicParentPath={this.state.parentPath}
                 />
             </div>
         );

@@ -3,6 +3,7 @@ import base64
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.urls import reverse
 
 from reader.utils import get_path_contents
 from reader.tasks import extract_comic_file
@@ -32,6 +33,10 @@ def directory_detail(request, directory_path=None):
 
 def comic_detail(request, comic_path, page_number):
     _comic_path = base64.decodebytes(bytes(comic_path, 'utf-8')).decode('utf-8')
+    parent_path = _comic_path.split('/')[:-1]
+    parent_path = '/'.join(parent_path)
+    parent_path = base64.encodebytes(bytes(parent_path, 'utf-8')).decode('utf-8')
+    parent_page_url = reverse('reader:directory_detail', kwargs={'directory_path': parent_path})
     # Extract the entire comic file on a task
     extract_comic_file.delay(_comic_path, settings.COMIC_TMP_PATH)
     return render(
@@ -39,6 +44,7 @@ def comic_detail(request, comic_path, page_number):
         template_name='reader/comic_detail.html',
         context={
             'comic_path': comic_path,
+            'parent_path': parent_page_url,
             'page_number': page_number,
             'comic_name': _comic_path.split('/')[-1],
         }

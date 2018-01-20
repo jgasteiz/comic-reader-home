@@ -66,6 +66,13 @@ h1 {
     top: 0;
     width: 140px;
 }
+.page-navigation__exit-reading {
+    height: 80px;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+}
 .page-navigation-item--previous {
     left: 0;
 }
