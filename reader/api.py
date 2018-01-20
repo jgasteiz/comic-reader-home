@@ -25,15 +25,17 @@ def comic_page(request, comic_path, page_number):
         # Calculate page numbers.
         has_previous_page = False
         has_next_page = False
+        num_pages = get_num_comic_pages(cb_file)
         if page_number > 0:
             has_previous_page = True
-        if page_number < get_num_comic_pages(cb_file) - 1:
+        if page_number < num_pages - 1:
             has_next_page = True
 
         return HttpResponse(json.dumps({
             'page_src': get_extracted_comic_page(cb_file=cb_file, page_number=page_number, comic_path=decoded_comic_path),
             'has_previous_page': has_previous_page,
             'has_next_page': has_next_page,
+            'num_pages': num_pages
         }), content_type='application/json')
     # TODO: A /favicon.ico request keeps causing KeyErrors, fix it.
     except KeyError as e:
