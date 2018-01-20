@@ -1,6 +1,9 @@
 import React from "react";
 
-
+/**
+ * This component renders two invisible navigation items on the left/right
+ * sides of the screen for navigating to the previous/right pages.
+ */
 export default class Navigation extends React.Component {
     render() {
         return (

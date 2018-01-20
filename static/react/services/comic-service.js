@@ -6,11 +6,13 @@ export default function fetchPageSrc(pageNum, comicPath, callback) {
     httpRequest.onreadystatechange = function () {
         if (httpRequest.readyState === XMLHttpRequest.DONE) {
             if (httpRequest.status === 200) {
+                const jsonResponse = JSON.parse(this.response);
                 callback({
-                    pageSrc: JSON.parse(this.response)['page_src'],
+                    pageSrc: jsonResponse['page_src'],
                     currentPage: pageNum,
-                    hasPreviousPage: JSON.parse(this.response)['has_previous_page'],
-                    hasNextPage: JSON.parse(this.response)['has_next_page'],
+                    hasPreviousPage: jsonResponse['has_previous_page'],
+                    hasNextPage: jsonResponse['has_next_page'],
+                    numPages: jsonResponse['num_pages']
                 });
             }
         }

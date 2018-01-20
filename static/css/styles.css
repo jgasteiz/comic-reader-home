@@ -1,6 +1,13 @@
 body.reader-mode {
     background: #000;
+}
+
+#reader {
+    align-items: center;
+    display: flex;
+    justify-content: center;
     margin: 0 auto;
+    min-height: 100vh;
 }
 
 h1 {
@@ -12,15 +19,12 @@ h1 {
 }
 
 /* Reader component */
-.reader {
-    padding-bottom: 60px;
-}
 .reader--standard-view {
-    margin: 0 auto;
+    /*margin: 0 auto;*/
     max-width: 1200px;
 }
 .reader--fit-width {
-    max-width: none;
+    width: 100%;
 }
 .reader--fit-width .comic-page {
     width: 100%;
@@ -41,10 +45,6 @@ h1 {
 .reader--loading .comic-page,
 .reader--loading .page-navigation {
     display: none;
-}
-.reader--show .comic-page,
-.reader--show .page-navigation {
-    display: flex;
 }
 
 /* Navigation component */
@@ -102,7 +102,7 @@ h1 {
 
 /* ReadingControls component */
 .reading-controls {
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.4);
     bottom: 0;
     color: #fff;
     display: flex;
@@ -111,4 +111,7 @@ h1 {
     padding: 12px 0;
     position: fixed;
     right: 0;
+}
+.reading-controls--hidden {
+    display: none;
 }
