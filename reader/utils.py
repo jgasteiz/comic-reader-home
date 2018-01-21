@@ -4,6 +4,8 @@ import os
 
 from django.conf import settings
 
+from reader.models import Bookmark
+
 
 class PageNotFoundError(Exception):
     pass
@@ -100,9 +102,16 @@ def get_path_contents(path, path_name):
         if comic_file_name.startswith('.'):
             continue
         comic_file_path = os.path.join(path, comic_file_name)
+        comic_file_path = base64.encodebytes(bytes(comic_file_path, 'utf-8')).decode('utf-8')
+        comic_file_path = comic_file_path.replace('\n', '')
+        bookmark = None
+        qs = Bookmark.objects.filter(comic_path=comic_file_path)
+        if qs.exists():
+            bookmark = qs[0]
         path_comics.append({
             'name': comic_file_name,
-            'path': base64.encodebytes(bytes(comic_file_path, 'utf-8')).decode('utf-8'),
+            'path': comic_file_path,
+            'bookmark': bookmark,
         })
 
     # Build the path info object

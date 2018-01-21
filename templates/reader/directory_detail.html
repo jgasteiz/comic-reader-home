@@ -29,6 +29,7 @@
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Directory name</th>
+                        <th scope="col">Bookmarks</th>
                         <th scope="col">Actions</th>
                     </tr>
                 </thead>
@@ -40,6 +41,15 @@
                         </td>
                         <td>
                             {{ comic.name }}
+                        </td>
+                        <td>
+                            {% if comic.bookmark %}
+                                <a class="btn btn-primary btn-sm btn-block"
+                                   href="{% url 'reader:comic_detail' comic.path comic.bookmark.page_num %}"
+                                >
+                                    Continue from bookmark
+                                </a>
+                            {% endif %}
                         </td>
                         <td>
                             <a class="btn btn-primary btn-sm btn-block"

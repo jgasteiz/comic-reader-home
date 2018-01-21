@@ -44,6 +44,12 @@ export default class ReadingControls extends React.Component {
                     >
                         Best fit
                     </button>
+                    <button
+                        className="btn btn-secondary btn-sm"
+                        onClick={this.props.bookMarkPageHandler}
+                    >
+                        Bookmark
+                    </button>
                     <a
                         className="btn btn-danger btn-sm"
                         href={this.props.comicParentPath}

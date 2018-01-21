@@ -1,11 +1,14 @@
 import base64
 import json
+import logging
 
+from django.views.decorators.csrf import csrf_exempt
 from rarfile import RarFile
 from zipfile import ZipFile
 
 from django.http import HttpResponse
 
+from reader.models import Bookmark
 from reader.utils import (
     get_extracted_comic_page,
     get_num_comic_pages
@@ -40,3 +43,27 @@ def comic_page(request, comic_path, page_number):
     # TODO: A /favicon.ico request keeps causing KeyErrors, fix it.
     except KeyError as e:
         return HttpResponse('')
+
+
+# TODO: remove the `csrf_exempt` as soon as csrf is dealt with properly in the FE.
+@csrf_exempt
+def bookmark_comic_page(request):
+    try:
+        body_unicode = request.body.decode('utf-8')
+        payload = json.loads(body_unicode)
+        comic_path = payload.get('comic_path')
+        page_num = payload.get('page_num')
+        bookmark, created = Bookmark.objects.get_or_create(comic_path=comic_path)
+        bookmark.page_num = page_num
+        bookmark.save()
+        return HttpResponse(
+            json.dumps({'comic_path': comic_path, 'page_num': page_num}),
+            content_type='application/json',
+        )
+    except Exception as e:
+        logging.critical(e)
+        return HttpResponse(
+            json.dumps({'error': e}),
+            content_type='application/json',
+            status=400,
+        )

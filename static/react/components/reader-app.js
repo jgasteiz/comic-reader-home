@@ -3,7 +3,7 @@ import React from "react";
 import BatmanSpinner from './batman-spinner';
 import ComicPage from './comic-page';
 import Navigation from './navigation';
-import fetchPageSrc from '../services/comic-service';
+import ComicService from '../services/comic-service';
 import ReadingControls from "./reading-controls";
 
 
@@ -33,6 +33,7 @@ export default class ReaderApp extends React.Component {
         this.previousPageHandler = this.previousPageHandler.bind(this);
         this.nextPageHandler = this.nextPageHandler.bind(this);
         this.readingModeHandler = this.readingModeHandler.bind(this);
+        this.bookMarkPageHandler = this.bookMarkPageHandler.bind(this);
         this.onPageClickHandler = this.onPageClickHandler.bind(this);
     }
 
@@ -62,6 +63,7 @@ export default class ReaderApp extends React.Component {
                 <BatmanSpinner/>
                 <ReadingControls
                     readingModeHandler={this.readingModeHandler}
+                    bookMarkPageHandler={this.bookMarkPageHandler}
                     readingControlsVisible={this.state.readingControlsVisible}
                     comicParentPath={this.state.parentPath}
                 />
@@ -99,7 +101,7 @@ export default class ReaderApp extends React.Component {
      * @param pageNumber
      */
     fetchPage(pageNumber) {
-        fetchPageSrc(
+        ComicService.fetchPageSrc(
             pageNumber,
             this.state.comicPath,
             (newState) => this.setState(newState)
@@ -120,6 +122,19 @@ export default class ReaderApp extends React.Component {
         this.setState({
             readingMode: readingMode
         });
+    }
+
+    /**
+     * Bookmark the current page in the current comic.
+     *
+     * There can only be one bookmark per comic.
+     */
+    bookMarkPageHandler() {
+        ComicService.bookmarkPage(
+            this.state.currentPage,
+            this.state.comicPath,
+            (newState) => this.setState(newState)
+        )
     }
 
     /**

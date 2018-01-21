@@ -14,4 +14,5 @@ urlpatterns = [
 
     # API
     path('api/<str:comic_path>/<int:page_number>/', api.comic_page, name='comic_page'),
+    path('api/bookmark/', api.bookmark_comic_page, name='bookmark_comic_page'),
 ]
