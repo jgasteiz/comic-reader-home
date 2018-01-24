@@ -52,3 +52,17 @@ def comic_detail(request, comic_path, page_number):
             'comic_name': _comic_path.split('/')[-1],
         }
     )
+
+
+def delete_bookmark(request):
+    bookmark_id = request.POST.get('bookmark_id')
+    directory_path = request.POST.get('next')
+
+    if not bookmark_id or not directory_path:
+        return redirect(reverse('reader:global_index'))
+
+    try:
+        Bookmark.objects.get(id=bookmark_id).delete()
+        return redirect(reverse('reader:directory_detail', kwargs={'directory_path': directory_path}))
+    except Bookmark.DoesNotExist as e:
+        return redirect(reverse('reader:directory_detail', kwargs={'directory_path': directory_path}))

@@ -48,8 +48,7 @@
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Directory name</th>
-                        <th scope="col">Bookmarks</th>
-                        <th scope="col">Actions</th>
+                        <th scope="col" class="text-right">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -61,21 +60,33 @@
                         <td>
                             {{ comic.name }}
                         </td>
-                        <td>
+                        <td class="text-right">
                             {% if comic.bookmark %}
-                                <a class="btn btn-primary btn-sm btn-block"
+                                <a class="btn btn-link"
                                    href="{% url 'reader:comic_detail' comic.path comic.bookmark.page_num %}"
                                 >
-                                    Continue from bookmark
+                                    Read from bookmark (page {{ comic.bookmark.page_num }})
+                                </a>
+                                <form method="post" action="{% url 'reader:delete_bookmark' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="bookmark_id" value="{{ comic.bookmark.id }}">
+                                    <input type="hidden" name="next" value="{{ directory_path }}">
+                                    <button class="btn btn-link">
+                                        Remove bookmark
+                                    </button>
+                                </form>
+                                <a class="btn btn-link"
+                                   href="{% url 'reader:comic_detail' comic.path 0 %}"
+                                >
+                                    Read from beginning
+                                </a>
+                            {% else %}
+                                <a class="btn btn-primary btn-sm"
+                                   href="{% url 'reader:comic_detail' comic.path 0 %}"
+                                >
+                                    Read
                                 </a>
                             {% endif %}
-                        </td>
-                        <td>
-                            <a class="btn btn-primary btn-sm btn-block"
-                               href="{% url 'reader:comic_detail' comic.path 0 %}"
-                            >
-                                Read
-                            </a>
                         </td>
                     </tr>
                 {% endfor %}
@@ -90,7 +101,7 @@
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Directory name</th>
-                        <th scope="col">Actions</th>
+                        <th scope="col" class="text-right">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -102,8 +113,8 @@
                         <td>
                             {{ directory.name }}
                         </td>
-                        <td>
-                            <a class="btn btn-secondary btn-sm btn-block"
+                        <td class="text-right">
+                            <a class="btn btn-secondary btn-sm"
                                href="{% url 'reader:directory_detail' directory.path %}"
                             >
                                 Go
