@@ -52,8 +52,13 @@ def bookmark_comic_page(request):
         body_unicode = request.body.decode('utf-8')
         payload = json.loads(body_unicode)
         comic_path = payload.get('comic_path')
+        decoded_comic_path = base64.decodebytes(bytes(comic_path, 'utf-8')).decode('utf-8')
+        comic_path_components = decoded_comic_path.split('/')
         page_num = payload.get('page_num')
-        bookmark, created = Bookmark.objects.get_or_create(comic_path=comic_path)
+        bookmark, created = Bookmark.objects.get_or_create(
+            comic_path=comic_path,
+            title=comic_path_components[-1]
+        )
         bookmark.page_num = page_num
         bookmark.save()
         return HttpResponse(
