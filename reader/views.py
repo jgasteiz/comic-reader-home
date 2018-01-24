@@ -2,9 +2,10 @@ import base64
 
 from django.conf import settings
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 
+from reader.models import Bookmark, Favorite
 from reader.utils import get_path_contents
 from reader.tasks import extract_comic_file
 
@@ -12,18 +13,20 @@ from reader.tasks import extract_comic_file
 def directory_detail(request, directory_path=None):
     try:
         if directory_path:
-            directory_path = base64.decodebytes(bytes(directory_path, 'utf-8')).decode('utf-8')
+            decoded_directory_path = base64.decodebytes(bytes(directory_path, 'utf-8')).decode('utf-8')
         else:
-            directory_path = settings.COMICS_ROOT
+            decoded_directory_path = settings.COMICS_ROOT
 
-        directory_name = directory_path.split('/')[-1]
-        path_contents = get_path_contents(directory_path, directory_name)
+        directory_name = decoded_directory_path.split('/')[-1]
+        path_contents = get_path_contents(decoded_directory_path, directory_name)
         return render(
             request,
             template_name='reader/directory_detail.html',
             context={
                 'path_contents': path_contents,
-                'is_root': directory_path == settings.COMICS_ROOT
+                'is_root': decoded_directory_path == settings.COMICS_ROOT,
+                'directory_path': directory_path,
+                'favorite_list': Favorite.objects.all()
             }
         )
     # TODO: A /favicon.ico request keeps causing KeyErrors, fix it.

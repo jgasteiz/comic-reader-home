@@ -2,11 +2,30 @@
 
 {% block content %}
 
-    <header class="navbar navbar-dark bg-dark sticky-top">
+    <header class="navbar navbar-dark bg-dark sticky-top navbar-expand-md">
         <div class="container d-flex justify-content-between">
             <a href="/" class="navbar-brand d-flex align-items-center">
                 <strong>Comic Reader</strong>
             </a>
+
+            {% if favorite_list %}
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav mr-auto">
+                    {% for favorite in favorite_list %}
+                        <li class="nav-item {% if directory_path == favorite.directory_path %}active{% endif %}">
+                            <a class="nav-link"
+                               href="{% url 'reader:directory_detail' favorite.directory_path %}"
+                            >
+                                {{ favorite.title }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
         </div>
     </header>
 
