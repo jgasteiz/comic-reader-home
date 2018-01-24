@@ -9,14 +9,17 @@
 
     <title>{% block page_title %}Comic reader{% endblock %}</title>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'lazylibs/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body class="{% block body_class %}{% endblock %}">
     {% block content %}{% endblock %}
 
-    <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="{% static 'lazylibs/jquery-3.2.1.slim.min.js' %}"></script>
+    <script src="{% static 'lazylibs/popper.min.js' %}"></script>
+    <script src="{% static 'lazylibs/bootstrap.min.js' %}"></script>
+    <script src="{% static 'lazylibs/react.development.js' %}"></script>
+    <script src="{% static 'lazylibs/react-dom.development.js' %}"></script>
     <script src="{% static 'dist/app.bundle.js' %}"></script>
 </body>
 </html>
