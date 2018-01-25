@@ -4,7 +4,7 @@ export default class ComicService {
 
     static fetchPageSrc(pageNum, comicPath, callback) {
         const httpRequest = new XMLHttpRequest();
-        httpRequest.open('GET', `/api/${comicPath}/${pageNum}/`, true);
+        httpRequest.open('GET', `/api/comic/${comicPath}/${pageNum}/`, true);
         httpRequest.setRequestHeader('Content-Type', 'application/json');
         httpRequest.onload = function () {
             if (httpRequest.readyState === XMLHttpRequest.DONE) {
