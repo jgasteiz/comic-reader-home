@@ -94,7 +94,7 @@
             </table>
         {% endif %}
 
-        {% if path_contents.children %}
+        {% if path_contents.directories %}
             <h2>Directories</h2>
             <table class="table table-striped">
                 <thead>
@@ -105,7 +105,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                {% for directory in path_contents.children %}
+                {% for directory in path_contents.directories %}
                     <tr>
                         <td>
                             {{ forloop.counter }}

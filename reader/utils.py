@@ -125,7 +125,7 @@ def get_directory_details(directory_path=None):
     path_contents = {
         'name': directory_name,
         'comics': path_comics,
-        'children': []
+        'directories': []
     }
     # Per directory in the current path, get their path info.
     for path_name in os.listdir(decoded_directory_path):
@@ -139,14 +139,14 @@ def get_directory_details(directory_path=None):
         ]):
             continue
 
-        path_contents['children'].append({
+        path_contents['directories'].append({
             'name': path_name,
             'path': base64.encodebytes(bytes(child_path, 'utf-8')).decode('utf-8').replace('\n', ''),
         })
 
     # Sort the comic names and child path names by name.
     path_contents['comics'] = sorted(path_contents['comics'], key=lambda x: x['name'])
-    path_contents['children'] = sorted(path_contents['children'], key=lambda x: x['name'])
+    path_contents['directories'] = sorted(path_contents['directories'], key=lambda x: x['name'])
 
     return {
         'path_contents': path_contents,
