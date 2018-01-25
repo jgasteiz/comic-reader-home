@@ -40,8 +40,11 @@ def comic_detail(request, comic_path, page_number):
     parent_path = '/'.join(parent_path)
     parent_path = base64.encodebytes(bytes(parent_path, 'utf-8')).decode('utf-8')
     parent_page_url = reverse('reader:directory_detail', kwargs={'directory_path': parent_path})
-    # Extract the entire comic file on a task
-    extract_comic_file.delay(_comic_path, settings.COMIC_TMP_PATH)
+
+    if settings.USE_CELERY:
+        # Extract the entire comic file on a task
+        extract_comic_file.delay(_comic_path, settings.COMIC_TMP_PATH)
+
     return render(
         request,
         template_name='reader/comic_detail.html',

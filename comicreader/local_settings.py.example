@@ -3,3 +3,4 @@ SECRET_KEY = ''
 
 COMICS_ROOT = ''
 STATIC_ROOT = ''
+USE_CELERY = False
