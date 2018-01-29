@@ -2,26 +2,8 @@
 
 export default class ComicService {
 
-    static fetchPageSrc(pageNum, comicPath, callback) {
-        const httpRequest = new XMLHttpRequest();
-        httpRequest.open('GET', `/api/comic/${comicPath}/${pageNum}/`, true);
-        httpRequest.setRequestHeader('Content-Type', 'application/json');
-        httpRequest.onload = function () {
-            if (httpRequest.readyState === XMLHttpRequest.DONE) {
-                if (httpRequest.status === 200) {
-                    const jsonResponse = JSON.parse(this.response);
-                    callback({
-                        pageSrc: jsonResponse['page_src'],
-                        currentPage: pageNum,
-                        hasPreviousPage: jsonResponse['has_previous_page'],
-                        hasNextPage: jsonResponse['has_next_page'],
-                        numPages: jsonResponse['num_pages']
-                    });
-                }
-            }
-        };
-        httpRequest.send();
-        ComicService.updatePageUrl(pageNum, comicPath);
+    static getPageSrc(pageNum, comicPath) {
+        return `/api/page/${comicPath}/${pageNum}/`;
     }
 
 
