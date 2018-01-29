@@ -130,6 +130,9 @@ export default class ReaderApp extends React.Component {
      */
     previousPageHandler() {
         if (this.state.currentPage > 0) {
+            this.setState({
+                pageSrc: '',
+            });
             this.setPageSrc(this.state.currentPage - 1);
         }
     }
@@ -139,6 +142,9 @@ export default class ReaderApp extends React.Component {
      */
     nextPageHandler() {
         if (this.state.currentPage < this.state.numPages - 1) {
+            this.setState({
+                pageSrc: '',
+            });
             this.setPageSrc(this.state.currentPage + 1);
         }
     }
