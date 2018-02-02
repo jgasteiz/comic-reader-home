@@ -2,7 +2,6 @@ import base64
 import json
 import logging
 
-from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.static import serve
 from rarfile import RarFile
@@ -32,7 +31,6 @@ def comic_detail(request, comic_path):
     else:
         cb_file = RarFile(decoded_comic_path)
     return HttpResponse(json.dumps({
-
         'comic_name': decoded_comic_path.split('/')[-1],
         'num_pages': get_num_comic_pages(cb_file),
     }), content_type='application/json')
