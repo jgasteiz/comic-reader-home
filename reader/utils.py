@@ -109,15 +109,16 @@ def get_directory_details(directory_path=None):
         if comic_file_name.startswith('.'):
             continue
         comic_file_path = os.path.join(decoded_directory_path, comic_file_name)
-        comic_file_path = base64.encodebytes(bytes(comic_file_path, 'utf-8')).decode('utf-8')
-        comic_file_path = comic_file_path.replace('\n', '')
+        encoded_comic_file_path = base64.encodebytes(bytes(comic_file_path, 'utf-8')).decode('utf-8')
+        encoded_comic_file_path = encoded_comic_file_path.replace('\n', '')
+
         bookmark = None
-        qs = Bookmark.objects.filter(comic_path=comic_file_path)
+        qs = Bookmark.objects.filter(comic_path=encoded_comic_file_path)
         if qs.exists():
             bookmark = qs[0]
         path_comics.append({
             'name': comic_file_name,
-            'path': comic_file_path,
+            'path': encoded_comic_file_path,
             'bookmark': bookmark,
         })
 
