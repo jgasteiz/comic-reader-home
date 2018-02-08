@@ -9,6 +9,7 @@ from zipfile import ZipFile
 
 from django.http import HttpResponse
 
+from comicreader import settings
 from reader.models import Bookmark
 from reader.utils import (
     get_extracted_comic_page,
@@ -18,18 +19,24 @@ from reader.utils import (
 
 
 def directory(request, directory_path=None):
-    directory_details = get_directory_details(directory_path)
+    try:
+        directory_details = get_directory_details(directory_path)
+    except FileNotFoundError:
+        return HttpResponse('Directory not found', status=404)
     return HttpResponse(json.dumps(directory_details), content_type='application/json')
 
 
 def comic_detail(request, comic_path):
     decoded_comic_path = base64.decodebytes(bytes(comic_path, 'utf-8')).decode('utf-8')
 
-    # Create a zip or a rar file depending on the comic file type.
-    if decoded_comic_path.endswith('.cbz'):
-        cb_file = ZipFile(decoded_comic_path)
-    else:
-        cb_file = RarFile(decoded_comic_path)
+    try:
+        if decoded_comic_path.endswith('.cbz'):
+            cb_file = ZipFile(decoded_comic_path)
+        else:
+            cb_file = RarFile(decoded_comic_path)
+    except FileNotFoundError:
+        return HttpResponse('Comic not found', status=404)
+
     return HttpResponse(json.dumps({
         'comic_name': decoded_comic_path.split('/')[-1],
         'num_pages': get_num_comic_pages(cb_file),
@@ -39,15 +46,19 @@ def comic_detail(request, comic_path):
 def comic_page_src(request, comic_path, page_number):
     decoded_comic_path = base64.decodebytes(bytes(comic_path, 'utf-8')).decode('utf-8')
 
-    # Create a zip or a rar file depending on the comic file type.
-    if decoded_comic_path.endswith('.cbz'):
-        cb_file = ZipFile(decoded_comic_path)
-    else:
-        cb_file = RarFile(decoded_comic_path)
+    try:
+        if decoded_comic_path.endswith('.cbz'):
+            cb_file = ZipFile(decoded_comic_path)
+        else:
+            cb_file = RarFile(decoded_comic_path)
+    except FileNotFoundError:
+        return HttpResponse('Comic not found', status=404)
 
     file_src = get_extracted_comic_page(cb_file=cb_file, page_number=page_number, comic_path=decoded_comic_path)
 
-    return serve(request, file_src, document_root='')
+    if file_src != settings.PAGE_NOT_FOUND:
+        return serve(request, file_src, document_root='')
+    return HttpResponse('Page not found', status=404)
 
 
 # TODO: remove the `csrf_exempt` as soon as csrf is dealt with properly in the FE.
