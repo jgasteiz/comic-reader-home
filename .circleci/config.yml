@@ -47,7 +47,7 @@ jobs:
       - run:
           name: run tests
           command: |
-            . venv/bin/activate
+            . env/bin/activate
             python manage.py test --settings=comicreader.test_settings
 
       - store_artifacts:
