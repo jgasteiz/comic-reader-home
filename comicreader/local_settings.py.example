@@ -1,3 +1,5 @@
+from .settings import *
+
 # Set an actual secret key.
 SECRET_KEY = ''
 
