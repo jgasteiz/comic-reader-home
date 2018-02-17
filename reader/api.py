@@ -12,15 +12,17 @@ from django.http import HttpResponse
 from comicreader import settings
 from reader.models import Bookmark
 from reader.utils import (
+    get_decoded_directory_path,
+    get_directory_details,
     get_extracted_comic_page,
     get_num_comic_pages,
-    get_directory_details,
 )
 
 
 def directory(request, directory_path=None):
     try:
-        directory_details = get_directory_details(directory_path)
+        decoded_directory_path = get_decoded_directory_path(directory_path)
+        directory_details = get_directory_details(directory_path, decoded_directory_path)
     except FileNotFoundError:
         return HttpResponse('Directory not found', status=404)
     return HttpResponse(json.dumps(directory_details), content_type='application/json')

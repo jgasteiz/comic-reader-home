@@ -3,6 +3,7 @@ import logging
 import os
 
 from django.conf import settings
+from django.urls import reverse
 
 from reader.models import Bookmark
 
@@ -88,17 +89,12 @@ def get_extracted_comic_page(cb_file, page_number, comic_path):
         return settings.PAGE_NOT_FOUND
 
 
-def get_directory_details(directory_path=None):
+def get_directory_details(directory_path, decoded_directory_path):
     """
     For a given directory path:
     - get the comic files in that path
     - get the children directory paths in that path.
     """
-    if directory_path:
-        decoded_directory_path = base64.decodebytes(bytes(directory_path, 'utf-8')).decode('utf-8')
-    else:
-        decoded_directory_path = settings.COMICS_ROOT
-
     directory_name = decoded_directory_path.split('/')[-1]
 
     # Get the path comic files
@@ -151,6 +147,26 @@ def get_directory_details(directory_path=None):
 
     return {
         'path_contents': path_contents,
-        'is_root': decoded_directory_path == settings.COMICS_ROOT,
+        'is_root': decoded_directory_path.lower() == settings.COMICS_ROOT.lower(),
         'directory_path': directory_path
     }
+
+
+def get_decoded_directory_path(directory_path):
+    """
+    Given a base 64 encoded directory_path, decode it and return it.
+    """
+    if directory_path is not None:
+        return base64.decodebytes(bytes(directory_path, 'utf-8')).decode('utf-8')
+    return settings.COMICS_ROOT
+
+
+def get_parent_path_url(decoded_path):
+    """
+    Given a path (string), build and return a directory_detail url of its parent.
+    """
+    parent_path = decoded_path.split('/')[:-1]
+    parent_path = '/'.join(parent_path)
+    parent_path = base64.encodebytes(bytes(parent_path, 'utf-8')).decode('utf-8')
+    parent_path_url = reverse('reader:directory_detail', kwargs={'directory_path': parent_path})
+    return parent_path_url
