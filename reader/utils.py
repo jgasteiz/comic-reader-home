@@ -147,8 +147,8 @@ def get_directory_details(directory_path, decoded_directory_path):
 
     return {
         'path_contents': path_contents,
-        'is_root': decoded_directory_path.lower() == settings.COMICS_ROOT.lower(),
-        'directory_path': directory_path
+        'is_root': decoded_directory_path.lower().strip('/') == settings.COMICS_ROOT.lower().strip('/'),
+        'directory_path': directory_path,
     }
 
 
