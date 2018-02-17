@@ -5,7 +5,7 @@ export default class BatmanSpinner extends React.Component {
     render() {
         return (
             <div className="batman-spinner">
-                <img src="/static/img/batman.png"/>
+                <img src="/static/img/spinner.png"/>
             </div>
         )
     }

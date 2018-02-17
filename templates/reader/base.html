@@ -11,7 +11,19 @@
     <link rel="stylesheet" href="{% static 'lazylibs/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link rel="manifest" href="{% static 'manifest.json' %}">
-    <link rel="icon" sizes="192x192" href="{% static 'img/favicon192.png' %}">
+
+    <link rel="icon" type="image/png" href="{% static 'img/favicon16.png' %}" sizes="16x16">
+    <link rel="icon" type="image/png" href="{% static 'img/favicon32.png' %}" sizes="32x32">
+    <link rel="icon" type="image/png" href="{% static 'img/favicon96.png' %}" sizes="96x96">
+
+    <link rel="apple-touch-icon" sizes="57x57" href="{% static 'img/favicon57.png' %}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{% static 'img/favicon114.png' %}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{% static 'img/favicon72.png' %}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{% static 'img/favicon144.png' %}">
+    <link rel="apple-touch-icon" sizes="60x60" href="{% static 'img/favicon60.png' %}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{% static 'img/favicon120.png' %}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{% static 'img/favicon76.png' %}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{% static 'img/favicon152.png' %}">
 </head>
 <body class="{% block body_class %}{% endblock %}">
     {% block content %}{% endblock %}
