@@ -22,7 +22,7 @@ from reader.utils import (
 def directory(request, directory_path=None):
     try:
         decoded_directory_path = get_decoded_directory_path(directory_path)
-        directory_details = get_directory_details(directory_path, decoded_directory_path)
+        directory_details = get_directory_details(directory_path, decoded_directory_path, include_bookmarks=False)
     except FileNotFoundError:
         return HttpResponse('Directory not found', status=404)
     return HttpResponse(json.dumps(directory_details), content_type='application/json')

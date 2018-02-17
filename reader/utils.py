@@ -89,7 +89,7 @@ def get_extracted_comic_page(cb_file, page_number, comic_path):
         return settings.PAGE_NOT_FOUND
 
 
-def get_directory_details(directory_path, decoded_directory_path):
+def get_directory_details(directory_path, decoded_directory_path, include_bookmarks=True):
     """
     For a given directory path:
     - get the comic files in that path
@@ -108,15 +108,17 @@ def get_directory_details(directory_path, decoded_directory_path):
         encoded_comic_file_path = base64.encodebytes(bytes(comic_file_path, 'utf-8')).decode('utf-8')
         encoded_comic_file_path = encoded_comic_file_path.replace('\n', '')
 
-        bookmark = None
-        qs = Bookmark.objects.filter(comic_path=encoded_comic_file_path)
-        if qs.exists():
-            bookmark = qs[0]
-        path_comics.append({
+        comic = {
             'name': comic_file_name,
             'path': encoded_comic_file_path,
-            'bookmark': bookmark,
-        })
+        }
+
+        if include_bookmarks:
+            qs = Bookmark.objects.filter(comic_path=encoded_comic_file_path)
+            if qs.exists():
+                comic['bookmark'] = qs[0]
+
+        path_comics.append(comic)
 
     # Build the path info object
     path_contents = {
