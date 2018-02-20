@@ -1,4 +1,3 @@
-import base64
 from zipfile import ZipFile
 
 from django.conf import settings
@@ -12,7 +11,7 @@ from reader.utils import (
     get_directory_details,
     get_num_comic_pages,
     get_parent_path_url,
-)
+    get_decoded_path)
 from reader.tasks import extract_comic_file
 
 
@@ -36,7 +35,7 @@ def comic_read(request, comic_path, page_number):
     """
     View that renders the comic reader.
     """
-    decoded_comic_path = base64.decodebytes(bytes(comic_path, 'utf-8')).decode('utf-8')
+    decoded_comic_path = get_decoded_path(comic_path)
 
     if settings.USE_CELERY:
         # Extract the entire comic file on a task

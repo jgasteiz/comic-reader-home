@@ -1,9 +1,9 @@
-import base64
 import logging
 import os
 
 from django.conf import settings
 from django.urls import reverse
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 
 from reader.models import Bookmark
 
@@ -105,7 +105,7 @@ def get_directory_details(directory_path, decoded_directory_path, include_bookma
         if comic_file_name.startswith('.'):
             continue
         comic_file_path = os.path.join(decoded_directory_path, comic_file_name)
-        encoded_comic_file_path = base64.encodebytes(bytes(comic_file_path, 'utf-8')).decode('utf-8')
+        encoded_comic_file_path = get_encoded_path(comic_file_path)
         encoded_comic_file_path = encoded_comic_file_path.replace('\n', '')
 
         comic = {
@@ -140,7 +140,7 @@ def get_directory_details(directory_path, decoded_directory_path, include_bookma
 
         path_contents['directories'].append({
             'name': path_name,
-            'path': base64.encodebytes(bytes(child_path, 'utf-8')).decode('utf-8').replace('\n', ''),
+            'path': get_encoded_path(child_path),
         })
 
     # Sort the comic names and child path names by name.
@@ -154,12 +154,20 @@ def get_directory_details(directory_path, decoded_directory_path, include_bookma
     }
 
 
+def get_encoded_path(decoded_path):
+    return urlsafe_base64_encode(bytes(decoded_path, 'utf-8')).decode('utf-8').replace('\n', '')
+
+
+def get_decoded_path(encoded_path):
+    return urlsafe_base64_decode(bytes(encoded_path, 'utf-8')).decode('utf-8')
+
+
 def get_decoded_directory_path(directory_path):
     """
     Given a base 64 encoded directory_path, decode it and return it.
     """
     if directory_path is not None:
-        return base64.decodebytes(bytes(directory_path, 'utf-8')).decode('utf-8')
+        return get_decoded_path(directory_path)
     return settings.COMICS_ROOT
 
 
@@ -169,6 +177,6 @@ def get_parent_path_url(decoded_path):
     """
     parent_path = decoded_path.split('/')[:-1]
     parent_path = '/'.join(parent_path)
-    parent_path = base64.encodebytes(bytes(parent_path, 'utf-8')).decode('utf-8')
+    parent_path = get_encoded_path(parent_path)
     parent_path_url = reverse('reader:directory_detail', kwargs={'directory_path': parent_path})
     return parent_path_url

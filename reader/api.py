@@ -1,4 +1,3 @@
-import base64
 import json
 import logging
 
@@ -13,6 +12,7 @@ from comicreader import settings
 from reader.models import Bookmark
 from reader.utils import (
     get_decoded_directory_path,
+    get_decoded_path,
     get_directory_details,
     get_extracted_comic_page,
     get_num_comic_pages,
@@ -29,7 +29,7 @@ def directory(request, directory_path=None):
 
 
 def comic_detail(request, comic_path):
-    decoded_comic_path = base64.decodebytes(bytes(comic_path, 'utf-8')).decode('utf-8')
+    decoded_comic_path = get_decoded_path(comic_path)
 
     try:
         if decoded_comic_path.endswith('.cbz'):
@@ -46,7 +46,7 @@ def comic_detail(request, comic_path):
 
 
 def comic_page_src(request, comic_path, page_number):
-    decoded_comic_path = base64.decodebytes(bytes(comic_path, 'utf-8')).decode('utf-8')
+    decoded_comic_path = get_decoded_path(comic_path)
 
     try:
         if decoded_comic_path.endswith('.cbz'):
@@ -70,7 +70,7 @@ def bookmark_comic_page(request):
         body_unicode = request.body.decode('utf-8')
         payload = json.loads(body_unicode)
         comic_path = payload.get('comic_path')
-        decoded_comic_path = base64.decodebytes(bytes(comic_path, 'utf-8')).decode('utf-8')
+        decoded_comic_path = get_decoded_path(comic_path)
         comic_path_components = decoded_comic_path.split('/')
         page_num = payload.get('page_num')
         bookmark, created = Bookmark.objects.get_or_create(

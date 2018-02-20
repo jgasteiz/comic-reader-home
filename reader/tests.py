@@ -1,10 +1,11 @@
-import base64
 import os
 from unittest import TestCase
 
 from django.conf import settings
 from django.test import Client
 from django.urls import reverse
+
+from reader.utils import get_encoded_path
 
 
 class ApiTests(TestCase):
@@ -32,7 +33,7 @@ class ApiTests(TestCase):
 
     def test_image_comics_directory(self):
         image_comics_path = os.path.join(settings.COMICS_ROOT, 'Image Comics')
-        directory_path = base64.encodebytes(bytes(image_comics_path, 'utf-8')).decode('utf-8').replace('\n', '')
+        directory_path = get_encoded_path(image_comics_path)
 
         url = reverse('reader:api_directory', kwargs={'directory_path': directory_path})
         response = self.client.get(url)
@@ -52,7 +53,7 @@ class ApiTests(TestCase):
 
     def test_comic_detail(self):
         image_comics_path = os.path.join(settings.COMICS_ROOT, 'Image Comics')
-        directory_path = base64.encodebytes(bytes(image_comics_path, 'utf-8')).decode('utf-8').replace('\n', '')
+        directory_path = get_encoded_path(image_comics_path)
 
         # Get the path of the comic.
         url = reverse('reader:api_directory', kwargs={'directory_path': directory_path})
