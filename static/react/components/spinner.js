@@ -1,10 +1,10 @@
 import React from "react";
 
 
-export default class BatmanSpinner extends React.Component {
+export default class Spinner extends React.Component {
     render() {
         return (
-            <div className="batman-spinner">
+            <div className="spinner">
                 <img src="/static/img/spinner.png"/>
             </div>
         )

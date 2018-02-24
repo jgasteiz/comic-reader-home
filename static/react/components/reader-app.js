@@ -1,6 +1,6 @@
 import React from "react";
 
-import BatmanSpinner from './batman-spinner';
+import Spinner from './spinner';
 import ComicPage from './comic-page';
 import Navigation from './navigation';
 import ComicService from '../services/comic-service';
@@ -39,7 +39,7 @@ export default class ReaderApp extends React.Component {
     }
 
     /**
-     * Render the ComicPage, Navigation, BatmanSpinner and ReadingControls components.
+     * Render the ComicPage, Navigation, Spinner and ReadingControls components.
      *
      * Also render the reading mode class modifiers depending on the
      * readingMode state value
@@ -61,7 +61,7 @@ export default class ReaderApp extends React.Component {
                     hasPreviousPage={this.state.hasPreviousPage}
                     hasNextPage={this.state.hasNextPage}
                 />
-                <BatmanSpinner/>
+                <Spinner/>
                 <ReadingControls
                     readingModeHandler={this.readingModeHandler}
                     bookMarkPageHandler={this.bookMarkPageHandler}
@@ -72,28 +72,8 @@ export default class ReaderApp extends React.Component {
         );
     }
 
-    /**
-     * When the component is ready and mounted, initialize key bindings:
-     * - arrow right: next page handler
-     * - arrow left: previous page handler
-     */
     componentDidMount() {
-        const component = this;
-
         this.setPageSrc(this.state.currentPage);
-
-        // Listen for key events and go to next/previous page when
-        // pressing certain keys.
-        document.addEventListener('keydown', function(ev) {
-            const keyName = ev.key;
-            if (keyName === 'ArrowRight') {
-                component.nextPageHandler();
-                ev.preventDefault();
-            } else if (keyName === 'ArrowLeft') {
-                component.previousPageHandler();
-                ev.preventDefault();
-            }
-        });
     }
 
     /**
@@ -154,13 +134,17 @@ export default class ReaderApp extends React.Component {
      * @param pageNumber
      */
     setPageSrc(pageNumber) {
-        this.setState({
-            currentPage: pageNumber,
-            pageSrc: ComicService.getPageSrc(pageNumber, this.state.comicPath),
-            hasPreviousPage: pageNumber > 0,
-            hasNextPage: pageNumber < this.state.numPages - 1
+        const component = this;
+
+        ComicService.fetchPageImage(pageNumber, this.state.comicPath, function () {
+            component.setState({
+                currentPage: pageNumber,
+                pageSrc: ComicService.getPageSrc(pageNumber, component.state.comicPath),
+                hasPreviousPage: pageNumber > 0,
+                hasNextPage: pageNumber < component.state.numPages - 1
+            });
+            ComicService.updatePageUrl(pageNumber, component.state.comicPath);
         });
-        ComicService.updatePageUrl(pageNumber, this.state.comicPath);
     }
 
     /**

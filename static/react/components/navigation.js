@@ -19,4 +19,26 @@ export default class Navigation extends React.Component {
             </nav>
         );
     }
+
+    /**
+     * When the component is ready and mounted, initialize key bindings:
+     * - arrow right: next page handler
+     * - arrow left: previous page handler
+     */
+    componentDidMount() {
+        const component = this;
+
+        // Listen for key events and go to next/previous page when
+        // pressing certain keys.
+        document.addEventListener('keydown', function (ev) {
+            const keyName = ev.key;
+            if (keyName === 'ArrowRight') {
+                component.props.nextPageHandler();
+                ev.preventDefault();
+            } else if (keyName === 'ArrowLeft') {
+                component.props.previousPageHandler();
+                ev.preventDefault();
+            }
+        });
+    }
 }

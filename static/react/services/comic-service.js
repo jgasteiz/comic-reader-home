@@ -6,7 +6,6 @@ export default class ComicService {
         return `/api/page/${comicPath}/${pageNum}/`;
     }
 
-
     static bookmarkPage(pageNum, comicPath, callback) {
         const httpRequest = new XMLHttpRequest();
         const payload = JSON.stringify({'comic_path': comicPath, 'page_num': pageNum});
@@ -29,6 +28,22 @@ export default class ComicService {
         httpRequest.send(payload);
     }
 
+    static fetchPageImage(pageNum, comicPath, callback) {
+        const httpRequest = new XMLHttpRequest();
+        const url = ComicService.getPageSrc(pageNum, comicPath);
+
+        httpRequest.open('GET', url, true);
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState === XMLHttpRequest.DONE) {
+                if (httpRequest.status === 200) {
+                    callback();
+                } else {
+                    alert(this.response);
+                }
+            }
+        };
+        httpRequest.send();
+    }
 
     static updatePageUrl(pageNum, comicPath) {
         if (typeof (history.pushState) !== "undefined") {

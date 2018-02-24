@@ -39,7 +39,7 @@ h1 {
     height: 100vh;
     justify-content: center;
 }
-.reader--loading .batman-spinner {
+.reader--loading .spinner {
     display: block;
 }
 .reader--loading .comic-page,
@@ -84,8 +84,8 @@ h1 {
     visibility: hidden;
 }
 
-/* BatmanSpinner component */
-.batman-spinner {
+/* Spinner component */
+.spinner {
     display: none;
     -webkit-animation-name: rotate;
     -webkit-animation-duration:2s;
@@ -95,6 +95,11 @@ h1 {
     -moz-animation-duration:2s;
     -moz-animation-iteration-count:infinite;
     -moz-animation-timing-function:linear;
+}
+
+.spinner img {
+    height: 120px;
+    width: 120px;
 }
 
 @-webkit-keyframes rotate {
