@@ -28,7 +28,8 @@ def extract_comic_page(cb_file, page_number, comic_path):
     in place alreday.
     """
     page_file_name = get_comic_page_name(cb_file, page_number)
-    page_file_path = os.path.join(settings.COMIC_TMP_PATH, page_file_name)
+    extract_path = os.path.join(settings.COMIC_TMP_PATH, get_encoded_path(comic_path))
+    page_file_path = os.path.join(extract_path, page_file_name)
 
     # If it exists already, return it.
     if os.path.exists(page_file_path):
@@ -37,10 +38,10 @@ def extract_comic_page(cb_file, page_number, comic_path):
 
     # Otherwise extract it.
     if os.name != 'nt':
-        cb_file.extract(page_file_name, settings.COMIC_TMP_PATH)
+        cb_file.extract(page_file_name, extract_path)
     else:
         if comic_path.endswith('.cbz'):
-            cb_file.extract(page_file_name, settings.COMIC_TMP_PATH)
+            cb_file.extract(page_file_name, extract_path)
         else:
             command = 'unrar x /y "{cbr_path}" "{page_name}"'.format(
                 cbr_path=comic_path,
