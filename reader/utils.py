@@ -1,5 +1,6 @@
 import logging
 import os
+import platform
 
 from django.conf import settings
 from django.urls import reverse
@@ -16,10 +17,7 @@ def clear_tmp():
     """
     Clear the tmp directory.
     """
-    if os.name != 'nt':
-        os.system('rm -rf {}/*'.format(settings.COMIC_TMP_PATH))
-    else:
-        os.system('del /s /q "{}"'.format(settings.COMIC_TMP_PATH))
+    os.system('rm -rf {}/*'.format(settings.COMIC_TMP_PATH))
 
 
 def extract_comic_page(cb_file, page_number, comic_path):
@@ -37,18 +35,23 @@ def extract_comic_page(cb_file, page_number, comic_path):
         return page_file_path
 
     # Otherwise extract it.
-    if os.name != 'nt':
-        cb_file.extract(page_file_name, extract_path)
-    else:
+    if platform.system() == 'Linux':
+        # zipfile can extract things properly
         if comic_path.endswith('.cbz'):
             cb_file.extract(page_file_name, extract_path)
+        # unrar doesn't play well with rarfile on linux, apparently. Extract things manually.
         else:
-            command = 'unrar x /y "{cbr_path}" "{page_name}"'.format(
+            if not os.path.exists(extract_path):
+                os.mkdir(extract_path)
+            command = 'unrar -x "{cbr_path}" "{page_name}" "{extract_path}"'.format(
                 cbr_path=comic_path,
-                page_name=page_file_name.replace('/', '\\'),
+                page_name=page_file_name,
+                extract_path=extract_path,
             )
             logging.info(command)
             os.system(command)
+    else:
+        cb_file.extract(page_file_name, extract_path)
 
     # And if it exists, return it.
     if os.path.exists(page_file_path):
