@@ -39,16 +39,15 @@ def extract_comic_page(cb_file, page_number, comic_path):
         # zipfile can extract things properly
         if comic_path.endswith('.cbz'):
             cb_file.extract(page_file_name, extract_path)
-        # unrar doesn't play well with rarfile on linux, apparently. Extract things manually.
+        # use `unar` because unrar-free doens't work the way I want.
         else:
-            if not os.path.exists(extract_path):
-                os.mkdir(extract_path)
-            command = 'unrar -x "{cbr_path}" "{page_name}" "{extract_path}"'.format(
+            # Unfortunately this will extract the entire cbr file, which will
+            # make the first request slow :(.
+            command = 'unar "{cbr_path}" -o "{extract_path}"'.format(
                 cbr_path=comic_path,
-                page_name=page_file_name,
                 extract_path=extract_path,
             )
-            logging.info(command)
+            print(command)
             os.system(command)
     else:
         cb_file.extract(page_file_name, extract_path)
