@@ -34,23 +34,12 @@ def extract_comic_page(cb_file, page_number, comic_path):
         logging.info('Page exists, returning its path')
         return page_file_path
 
-    # Otherwise extract it.
-    if platform.system() == 'Linux':
-        # zipfile can extract things properly
-        if comic_path.endswith('.cbz'):
-            cb_file.extract(page_file_name, extract_path)
-        # use `unar` because unrar-free doens't work the way I want.
-        else:
-            # Unfortunately this will extract the entire cbr file, which will
-            # make the first request slow :(.
-            command = 'unar "{cbr_path}" -o "{extract_path}"'.format(
-                cbr_path=comic_path,
-                extract_path=extract_path,
-            )
-            print(command)
-            os.system(command)
-    else:
-        cb_file.extract(page_file_name, extract_path)
+    # Need to make sure we create the extract path because
+    # linux unrar-free won't create it if it doesn't exist.
+    if not os.path.exists(extract_path):
+        os.mkdir(extract_path)
+
+    cb_file.extract(page_file_name, extract_path)
 
     # And if it exists, return it.
     if os.path.exists(page_file_path):
