@@ -1,174 +1,200 @@
 import logging
 import os
-import platform
+from zipfile import ZipFile
 
 from django.conf import settings
+from django.http import Http404
 from django.urls import reverse
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from rarfile import RarFile
 
 from reader.models import Bookmark
 
 
-class PageNotFoundError(Exception):
-    pass
+class Utils(object):
+    @staticmethod
+    def get_encoded_path(decoded_path):
+        return urlsafe_base64_encode(bytes(decoded_path, 'utf-8')).decode('utf-8').replace('\n', '')
+
+    @staticmethod
+    def get_decoded_path(encoded_path):
+        return urlsafe_base64_decode(bytes(encoded_path, 'utf-8')).decode('utf-8')
+
+    @staticmethod
+    def clear_tmp():
+        """
+        Clear the tmp directory.
+        """
+        os.system('rm -rf {}/*'.format(settings.COMIC_TMP_PATH))
 
 
-def clear_tmp():
-    """
-    Clear the tmp directory.
-    """
-    os.system('rm -rf {}/*'.format(settings.COMIC_TMP_PATH))
+class PathBasedClass(object):
+    def __init__(self, path):
+        self.path = path
+        self.utils = Utils()
+        self.decoded_path = self.utils.get_decoded_path(path) if path is not None else settings.COMICS_ROOT
+
+    def get_parent_path_url(self):
+        """
+        Given a path (string), build and return a directory_detail url of its parent.
+        """
+        parent_path = self.decoded_path.split('/')[:-1]
+        parent_path = '/'.join(parent_path)
+        parent_path = self.utils.get_encoded_path(parent_path)
+        parent_path_url = reverse('reader:directory_detail', kwargs={'directory_path': parent_path})
+        return parent_path_url
 
 
-def extract_comic_page(cb_file, page_number, comic_path):
-    """
-    Extract the given page for the given comic file or do nothing if it's
-    in place alreday.
-    """
-    page_file_name = get_comic_page_name(cb_file, page_number)
-    extract_path = os.path.join(settings.COMIC_TMP_PATH, get_encoded_path(comic_path))
-    page_file_path = os.path.join(extract_path, page_file_name)
+class Directory(PathBasedClass):
+    def __init__(self, *args, **kwargs):
+        super(Directory, self).__init__(*args, **kwargs)
 
-    # If it exists already, return it.
-    if os.path.exists(page_file_path):
-        logging.info('Page exists, returning its path')
-        return page_file_path
+        # Check whether the directory is root or not.
+        self.is_root = self.decoded_path.lower().strip('/') == settings.COMICS_ROOT.lower().strip('/')
+        # Get the parent path if the directory is not root.
+        self.parent_path = self.get_parent_path_url() if not self.is_root else None
+        # Set the directory name
+        self.name = self.decoded_path.split('/')[-1]
 
-    # Need to make sure we create the extract path because
-    # linux unrar-free won't create it if it doesn't exist.
-    if not os.path.exists(extract_path):
-        os.mkdir(extract_path)
+    @property
+    def listdir(self):
+        return os.listdir(self.decoded_path)
 
-    cb_file.extract(page_file_name, extract_path)
+    def get_child_abs_path(self, child_path):
+        return os.path.join(self.decoded_path, child_path)
 
-    # And if it exists, return it.
-    if os.path.exists(page_file_path):
-        logging.info('PAGE EXTRACTED')
-        return page_file_path
+    def get_details(self, include_bookmarks):
+        """
+        For a given directory path:
+        - get the comic files in that path
+        - get the children directory paths in that path.
+        """
+        path_comics = []
+        for comic_file_name in os.listdir(self.decoded_path):
+            if not comic_file_name.endswith('.cbz') and not comic_file_name.endswith('.cbr'):
+                continue
+            if comic_file_name.startswith('.'):
+                continue
+            comic_file_path = os.path.join(self.decoded_path, comic_file_name)
+            encoded_comic_file_path = self.utils.get_encoded_path(comic_file_path)
+            encoded_comic_file_path = encoded_comic_file_path.replace('\n', '')
 
-    # Otherwise something went wrong, return None.
-    raise PageNotFoundError
+            comic = {
+                'name': comic_file_name,
+                'path': encoded_comic_file_path,
+            }
 
+            if include_bookmarks:
+                qs = Bookmark.objects.filter(comic_path=encoded_comic_file_path)
+                if qs.exists():
+                    comic['bookmark'] = qs[0]
 
-def get_all_comic_pages(cb_file):
-    return [p for p in cb_file.namelist()
-            if p.endswith('.jpg') or p.endswith('.jpeg') or p.endswith('.png')]
+            path_comics.append(comic)
 
+        # Build the path info object
+        path_contents = {
+            'name': self.name,
+            'comics': path_comics,
+            'directories': []
+        }
+        # Per directory in the current path, get their path info.
+        for path_name in self.listdir:
+            child_path = self.get_child_abs_path(path_name)
 
-def get_num_comic_pages(cb_file):
-    return len(get_all_comic_pages(cb_file))
+            # Ignore it if the child name is in IGNORED FILE NAMES or if it's
+            # not a directory.
+            if any([
+                path_name in settings.IGNORED_FILE_NAMES,
+                not os.path.isdir(child_path)
+            ]):
+                continue
 
+            path_contents['directories'].append({
+                'name': path_name,
+                'path': self.utils.get_encoded_path(child_path),
+            })
 
-def get_comic_page_name(cb_file, page_number):
-    """
-    Get the given cb_file page file name in the page_number position.
-    """
-    all_pages = sorted(get_all_comic_pages(cb_file))
-    try:
-        return all_pages[page_number]
-    except IndexError:
-        raise PageNotFoundError
+        # Sort the comic names and child path names by name.
+        path_contents['comics'] = sorted(path_contents['comics'], key=lambda x: x['name'])
+        path_contents['directories'] = sorted(path_contents['directories'], key=lambda x: x['name'])
 
-
-def get_extracted_comic_page(cb_file, page_number, comic_path):
-    """
-    Extract a page from the given cb file given its page number
-    """
-    try:
-        page_file_path = extract_comic_page(cb_file=cb_file, page_number=page_number, comic_path=comic_path)
-        return page_file_path.replace(settings.BASE_DIR, '')
-    except PageNotFoundError:
-        return settings.PAGE_NOT_FOUND
-
-
-def get_directory_details(directory_path, decoded_directory_path, include_bookmarks=True):
-    """
-    For a given directory path:
-    - get the comic files in that path
-    - get the children directory paths in that path.
-    """
-    directory_name = decoded_directory_path.split('/')[-1]
-
-    # Get the path comic files
-    path_comics = []
-    for comic_file_name in os.listdir(decoded_directory_path):
-        if not comic_file_name.endswith('.cbz') and not comic_file_name.endswith('.cbr'):
-            continue
-        if comic_file_name.startswith('.'):
-            continue
-        comic_file_path = os.path.join(decoded_directory_path, comic_file_name)
-        encoded_comic_file_path = get_encoded_path(comic_file_path)
-        encoded_comic_file_path = encoded_comic_file_path.replace('\n', '')
-
-        comic = {
-            'name': comic_file_name,
-            'path': encoded_comic_file_path,
+        return {
+            'path_contents': path_contents,
+            'is_root': self.is_root,
+            'directory_path': self.path,
+            'parent_path': self.parent_path
         }
 
-        if include_bookmarks:
-            qs = Bookmark.objects.filter(comic_path=encoded_comic_file_path)
-            if qs.exists():
-                comic['bookmark'] = qs[0]
 
-        path_comics.append(comic)
+class Comic(PathBasedClass):
+    def __init__(self, *args, **kwargs):
+        super(Comic, self).__init__(*args, **kwargs)
 
-    # Build the path info object
-    path_contents = {
-        'name': directory_name,
-        'comics': path_comics,
-        'directories': []
-    }
-    # Per directory in the current path, get their path info.
-    for path_name in os.listdir(decoded_directory_path):
-        child_path = os.path.join(decoded_directory_path, path_name)
+        self.name = self.decoded_path.split('/')[-1]
+        self.extract_path = os.path.join(settings.COMIC_TMP_PATH, self.utils.get_encoded_path(self.path))
 
-        # Ignore it if the child name is in IGNORED FILE NAMES or if it's
-        # not a directory.
-        if any([
-            path_name in settings.IGNORED_FILE_NAMES,
-            not os.path.isdir(child_path)
-        ]):
-            continue
+        # Initialise the cb_file. This will raise a FileNotFoundError if
+        # zipfile/rarfile can't find the file.
+        if self.decoded_path.endswith('.cbz'):
+            self.cb_file = ZipFile(self.decoded_path)
+        else:
+            self.cb_file = RarFile(self.decoded_path)
 
-        path_contents['directories'].append({
-            'name': path_name,
-            'path': get_encoded_path(child_path),
-        })
+        # Set all the page names in order
+        self.all_pages = sorted([
+            p for p in self.cb_file.namelist()
+            if p.endswith('.jpg') or p.endswith('.jpeg') or p.endswith('.png')
+        ])
 
-    # Sort the comic names and child path names by name.
-    path_contents['comics'] = sorted(path_contents['comics'], key=lambda x: x['name'])
-    path_contents['directories'] = sorted(path_contents['directories'], key=lambda x: x['name'])
+    def __len__(self):
+        return len(self.all_pages)
 
-    return {
-        'path_contents': path_contents,
-        'is_root': decoded_directory_path.lower().strip('/') == settings.COMICS_ROOT.lower().strip('/'),
-        'directory_path': directory_path,
-    }
+    def __getitem__(self, position):
+        return self.all_pages[position]
 
+    def get_extracted_comic_page(self, page_number):
+        """
+        Extract the given page number or do nothing if it has been extracted already.
+        """
+        try:
+            page_file_name = self[page_number]
+        except IndexError:
+            raise Http404
 
-def get_encoded_path(decoded_path):
-    return urlsafe_base64_encode(bytes(decoded_path, 'utf-8')).decode('utf-8').replace('\n', '')
+        page_file_path = os.path.join(self.extract_path, page_file_name)
 
+        # If it exists already, return it.
+        if os.path.exists(page_file_path):
+            logging.info('Page exists, no need to extract it.')
+            return page_file_path.replace(settings.BASE_DIR, '')
 
-def get_decoded_path(encoded_path):
-    return urlsafe_base64_decode(bytes(encoded_path, 'utf-8')).decode('utf-8')
+        # Need to make sure we create the extract path because
+        # linux unrar-free won't create it if it doesn't exist.
+        if not os.path.exists(self.extract_path):
+            os.mkdir(self.extract_path)
 
+        # Extract the actual page.
+        self.cb_file.extract(page_file_name, self.extract_path)
 
-def get_decoded_directory_path(directory_path):
-    """
-    Given a base 64 encoded directory_path, decode it and return it.
-    """
-    if directory_path is not None:
-        return get_decoded_path(directory_path)
-    return settings.COMICS_ROOT
+        # And if it exists, return it.
+        if os.path.exists(page_file_path):
+            logging.info('Page extracted')
+            return page_file_path.replace(settings.BASE_DIR, '')
 
+        # Otherwise something went wrong, raise 404.
+        raise Http404
 
-def get_parent_path_url(decoded_path):
-    """
-    Given a path (string), build and return a directory_detail url of its parent.
-    """
-    parent_path = decoded_path.split('/')[:-1]
-    parent_path = '/'.join(parent_path)
-    parent_path = get_encoded_path(parent_path)
-    parent_path_url = reverse('reader:directory_detail', kwargs={'directory_path': parent_path})
-    return parent_path_url
+    def extract_all_pages(self):
+        self.cb_file.extractall(self.extract_path)
+
+    def bookmark_page(self, page_number):
+        """
+        Create a bookmark on the given page or update an existing one
+        for this comic with the given page.
+        """
+        bookmark, created = Bookmark.objects.get_or_create(
+            comic_path=self.path,
+            title=self.name
+        )
+        bookmark.page_num = page_number
+        bookmark.save()

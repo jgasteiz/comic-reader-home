@@ -5,7 +5,7 @@ from django.conf import settings
 from django.test import Client
 from django.urls import reverse
 
-from reader.utils import get_encoded_path
+from reader.utils import Utils
 
 
 class ApiTests(TestCase):
@@ -31,9 +31,9 @@ class ApiTests(TestCase):
         self.assertEqual(directories[0].get('name'), 'Javi Comics')
         self.assertTrue('path' in directories[0].keys())
 
-    def test_image_comics_directory(self):
+    def test_javi_comics_directory(self):
         image_comics_path = os.path.join(settings.COMICS_ROOT, 'Javi Comics')
-        directory_path = get_encoded_path(image_comics_path)
+        directory_path = Utils().get_encoded_path(image_comics_path)
 
         url = reverse('reader:api_directory', kwargs={'directory_path': directory_path})
         response = self.client.get(url)
@@ -53,7 +53,7 @@ class ApiTests(TestCase):
 
     def test_comic_detail(self):
         image_comics_path = os.path.join(settings.COMICS_ROOT, 'Javi Comics')
-        directory_path = get_encoded_path(image_comics_path)
+        directory_path = Utils().get_encoded_path(image_comics_path)
 
         # Get the path of the comic.
         url = reverse('reader:api_directory', kwargs={'directory_path': directory_path})
