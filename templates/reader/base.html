@@ -35,5 +35,6 @@
     <script src="{% static 'lazylibs/react.development.js' %}"></script>
     <script src="{% static 'lazylibs/react-dom.development.js' %}"></script>
     <script src="{% static 'dist/app.bundle.js' %}"></script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
