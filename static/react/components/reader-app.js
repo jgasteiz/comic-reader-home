@@ -28,6 +28,7 @@ export default class ReaderApp extends React.Component {
             hasPreviousPage: false,
             hasNextPage: false,
             readingControlsVisible: false,
+            isFullscreen: false,
         };
 
         // Bind the event handlers to `this`
@@ -36,6 +37,7 @@ export default class ReaderApp extends React.Component {
         this.readingModeHandler = this.readingModeHandler.bind(this);
         this.bookMarkPageHandler = this.bookMarkPageHandler.bind(this);
         this.onPageClickHandler = this.onPageClickHandler.bind(this);
+        this.toggleFullScreenHandler = this.toggleFullScreenHandler.bind(this);
     }
 
     /**
@@ -65,6 +67,8 @@ export default class ReaderApp extends React.Component {
                 <ReadingControls
                     readingModeHandler={this.readingModeHandler}
                     bookMarkPageHandler={this.bookMarkPageHandler}
+                    toggleFullScreenHandler={this.toggleFullScreenHandler}
+                    isFullscreen={this.state.isFullscreen}
                     readingControlsVisible={this.state.readingControlsVisible}
                     comicParentPath={this.state.parentPath}
                 />
@@ -155,5 +159,25 @@ export default class ReaderApp extends React.Component {
         this.setState({
             readingControlsVisible: !this.state.readingControlsVisible
         });
+    }
+
+    /**
+     * Toggle the full screen mode.
+     */
+    toggleFullScreenHandler() {
+        const doc = window.document;
+        const docEl = doc.documentElement;
+
+        const requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+        const cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+
+        // Otherwise, toggle.
+        if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+            requestFullScreen.call(docEl);
+            this.setState({isFullscreen: true});
+        } else {
+            cancelFullScreen.call(doc);
+            this.setState({isFullscreen: false});
+        }
     }
 }

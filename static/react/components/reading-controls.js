@@ -28,33 +28,41 @@ export default class ReadingControls extends React.Component {
                         onClick={this.fitPageHeight}
                         disabled={this.state.mode === 'fit-height'}
                     >
-                        Fit height
+                        <i class="material-icons">panorama_vertical</i>
                     </button>
                     <button
                         className="btn btn-secondary btn-sm"
                         onClick={this.fitPageWidth}
                         disabled={this.state.mode === 'fit-width'}
                     >
-                        Fit width
+                        <i class="material-icons">panorama_horizontal</i>
                     </button>
                     <button
                         className="btn btn-secondary btn-sm"
                         onClick={this.standardView}
                         disabled={this.state.mode === 'standard-view'}
                     >
-                        Best fit
+                        <i class="material-icons">panorama_fish_eye</i>
                     </button>
                     <button
                         className="btn btn-secondary btn-sm"
                         onClick={this.props.bookMarkPageHandler}
                     >
-                        Bookmark
+                        <i class="material-icons">bookmark</i>
+                    </button>
+                    <button
+                        className="btn btn-secondary btn-sm"
+                        onClick={this.props.toggleFullScreenHandler}
+                    >
+                        <i class="material-icons">
+                            {this.props.isFullscreen ? 'fullscreen_exit' : 'fullscreen'}
+                        </i>
                     </button>
                     <a
                         className="btn btn-danger btn-sm"
                         href={this.props.comicParentPath}
                     >
-                        Exit
+                        <i class="material-icons">exit_to_app</i>
                     </a>
                 </div>
             </div>

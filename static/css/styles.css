@@ -127,3 +127,6 @@ h1 {
 .reading-controls--hidden {
     display: none;
 }
+.reading-controls .material-icons {
+    display: block;
+}
