@@ -27,6 +27,14 @@ class Utils(object):
         """
         os.system('rm -rf {}/*'.format(settings.COMIC_EXTRACT_PATH))
 
+    @staticmethod
+    def extract_everything():
+        """
+        Extract every comic in the comic directory.
+        """
+        root_directory = Directory(None)
+        root_directory.extract_recursively()
+
 
 class PathBasedClass(object):
     def __init__(self, path):
@@ -71,13 +79,9 @@ class Directory(PathBasedClass):
         """
         path_comics = []
         for comic_file_name in os.listdir(self.decoded_path):
-            if not comic_file_name.endswith('.cbz') and not comic_file_name.endswith('.cbr'):
+            if not self.is_file_name_comic_file(comic_file_name):
                 continue
-            if comic_file_name.startswith('.'):
-                continue
-            comic_file_path = os.path.join(self.decoded_path, comic_file_name)
-            encoded_comic_file_path = self.utils.get_encoded_path(comic_file_path)
-            encoded_comic_file_path = encoded_comic_file_path.replace('\n', '')
+            encoded_comic_file_path = self.get_comic_encoded_path(comic_file_name)
 
             comic = {
                 'name': comic_file_name,
@@ -97,7 +101,7 @@ class Directory(PathBasedClass):
             'comics': path_comics,
             'directories': []
         }
-        # Per directory in the current path, get their path info.
+        # Get all the children directories and their info.
         for path_name in self.listdir:
             child_path = self.get_child_abs_path(path_name)
 
@@ -124,6 +128,38 @@ class Directory(PathBasedClass):
             'directory_path': self.path,
             'parent_path': self.parent_path
         }
+
+    def extract_recursively(self):
+        for path_name in self.listdir:
+            child_path = self.get_child_abs_path(path_name)
+
+            # Ignore it if the child name is in IGNORED FILE NAMES or if it's
+            # not a directory.
+            if path_name in settings.IGNORED_FILE_NAMES:
+                continue
+
+            # If the path is a directory, RECURSION!
+            if os.path.isdir(child_path):
+                directory = Directory(self.utils.get_encoded_path(child_path))
+                directory.extract_recursively()
+            # Otherwise, try to extract the comic.
+            elif self.is_file_name_comic_file(path_name):
+                import ipdb; ipdb.set_trace()
+                comic = Comic(self.get_comic_encoded_path(path_name))
+                comic.extract_all_pages()
+
+    @staticmethod
+    def is_file_name_comic_file(file_name):
+        if not file_name.endswith('.cbz') and not file_name.endswith('.cbr'):
+            return False
+        if file_name.startswith('.'):
+            return False
+        return True
+
+    def get_comic_encoded_path(self, comic_file_name):
+        comic_file_path = os.path.join(self.decoded_path, comic_file_name)
+        encoded_comic_file_path = self.utils.get_encoded_path(comic_file_path)
+        return encoded_comic_file_path.replace('\n', '')
 
 
 class Comic(PathBasedClass):
