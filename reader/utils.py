@@ -144,7 +144,6 @@ class Directory(PathBasedClass):
                 directory.extract_recursively()
             # Otherwise, try to extract the comic.
             elif self.is_file_name_comic_file(path_name):
-                import ipdb; ipdb.set_trace()
                 comic = Comic(self.get_comic_encoded_path(path_name))
                 comic.extract_all_pages()
 
@@ -221,7 +220,8 @@ class Comic(PathBasedClass):
         raise Http404
 
     def extract_all_pages(self):
-        self.cb_file.extractall(self.extract_path)
+        if not os.path.exists(self.extract_path):
+            self.cb_file.extractall(self.extract_path)
 
     def bookmark_page(self, page_number):
         """
