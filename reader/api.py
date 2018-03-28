@@ -1,7 +1,7 @@
 import json
 import logging
 
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.views.static import serve
 
@@ -35,7 +35,10 @@ def comic_page_src(request, comic_path, page_number):
         comic = Comic(comic_path)
     except FileNotFoundError:
         return HttpResponse('Comic not found', status=404)
-    return serve(request, comic.get_extracted_comic_page(page_number), document_root='')
+    try:
+        return serve(request, comic.get_extracted_comic_page(page_number), document_root='/')
+    except Http404 as e:
+        return HttpResponse('Page not found. Reason: {}'.format(e), status=404)
 
 
 # TODO: remove the `csrf_exempt` as soon as csrf is dealt with properly in the FE.
