@@ -25,7 +25,7 @@ class Utils(object):
         """
         Clear the tmp directory.
         """
-        os.system('rm -rf {}/*'.format(settings.COMIC_TMP_PATH))
+        os.system('rm -rf {}/*'.format(settings.COMIC_EXTRACT_PATH))
 
 
 class PathBasedClass(object):
@@ -131,7 +131,7 @@ class Comic(PathBasedClass):
         super(Comic, self).__init__(*args, **kwargs)
 
         self.name = self.decoded_path.split('/')[-1]
-        self.extract_path = os.path.join(settings.COMIC_TMP_PATH, self.utils.get_encoded_path(self.path))
+        self.extract_path = os.path.join(settings.COMIC_EXTRACT_PATH, self.utils.get_encoded_path(self.path))
 
         # Initialise the cb_file. This will raise a FileNotFoundError if
         # zipfile/rarfile can't find the file.

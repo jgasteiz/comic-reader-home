@@ -3,6 +3,7 @@ from .settings import *
 # Set an actual secret key.
 SECRET_KEY = ''
 
+COMIC_EXTRACT_PATH = os.path.join(BASE_DIR, 'static/comics/tmp')
 COMICS_ROOT = ''
 STATIC_ROOT = ''
 USE_CELERY = False
