@@ -145,8 +145,11 @@ class Directory(PathBasedClass):
             # Otherwise, try to extract the comic.
             elif self.is_file_name_comic_file(path_name):
                 comic = Comic(self.get_comic_encoded_path(path_name))
-                print(u'Extracting {}'.format(comic.name))
-                comic.extract_all_pages()
+                try:
+                    print(u'Extracting {}'.format(comic.name))
+                    comic.extract_all_pages()
+                except Exception as e:
+                    print(u'There was a problem extracting `{}`: {}'.format(comic.name, e))
 
     @staticmethod
     def is_file_name_comic_file(file_name):
