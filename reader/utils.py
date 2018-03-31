@@ -222,6 +222,7 @@ class Comic(PathBasedClass):
 
     def extract_all_pages(self):
         if not os.path.exists(self.extract_path):
+            os.mkdir(self.extract_path)
             self.cb_file.extractall(self.extract_path)
 
     def bookmark_page(self, page_number):
