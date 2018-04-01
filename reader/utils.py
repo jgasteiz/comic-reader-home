@@ -205,7 +205,7 @@ class Comic(PathBasedClass):
         # If it exists already, return it.
         if os.path.exists(page_file_path):
             logging.info('Page exists, no need to extract it.')
-            return page_file_path.replace(settings.BASE_DIR, '')
+            return page_file_path
 
         # Need to make sure we create the extract path because
         # linux unrar-free won't create it if it doesn't exist.
@@ -218,7 +218,7 @@ class Comic(PathBasedClass):
         # And if it exists, return it.
         if os.path.exists(page_file_path):
             logging.info('Page extracted')
-            return page_file_path.replace(settings.BASE_DIR, '')
+            return page_file_path
 
         # Otherwise something went wrong, raise 404.
         raise Http404
