@@ -144,8 +144,8 @@ class Directory(PathBasedClass):
                 directory.extract_recursively()
             # Otherwise, try to extract the comic.
             elif self.is_file_name_comic_file(path_name):
-                comic = Comic(self.get_comic_encoded_path(path_name))
                 try:
+                    comic = Comic(self.get_comic_encoded_path(path_name))
                     print(u'Extracting {}'.format(comic.name))
                     comic.extract_all_pages()
                 except Exception as e:
