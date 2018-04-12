@@ -2,7 +2,6 @@ import React from "react";
 
 import Spinner from './spinner';
 import ComicPage from './comic-page';
-import Navigation from './navigation';
 import ComicService from '../services/comic-service';
 import ReadingControls from "./reading-controls";
 
@@ -55,13 +54,10 @@ export default class ReaderApp extends React.Component {
                 <ComicPage
                     pageSrc={this.state.pageSrc}
                     onPageClickHandler={this.onPageClickHandler}
-                />
-                <Navigation
-                    exitReadingHandler={this.exitReadingHandler}
-                    previousPageHandler={this.previousPageHandler}
-                    nextPageHandler={this.nextPageHandler}
                     hasPreviousPage={this.state.hasPreviousPage}
                     hasNextPage={this.state.hasNextPage}
+                    previousPageHandler={this.previousPageHandler}
+                    nextPageHandler={this.nextPageHandler}
                 />
                 <Spinner/>
                 <ReadingControls
