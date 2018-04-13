@@ -16,4 +16,5 @@ This is an app to serve my cbr and cbz comic files on my home network.
 5. Make sure yarn or npm are installed globally: `npm -g install yarn`
 6. Install FE dependencies: `yarn install`
 7. Build FE dependencies: `yarn run webpack`
-8. Run the project: `./manage.py runserver`
+8. Run the db migrations: `./manage.py migrate`
+9. Run the project: `./manage.py runserver`
