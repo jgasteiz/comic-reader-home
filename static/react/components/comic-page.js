@@ -42,7 +42,7 @@ export default class ComicPage extends React.Component {
 
         // If we can still scroll up, scroll up 1/3 of the page.
         if (window.scrollY > 0) {
-            const newScrollYPosition = window.scrollY - pageHeight / 3 + window.innerHeight / 3;
+            const newScrollYPosition = window.scrollY - pageHeight / 2 + window.innerHeight / 2;
             window.scrollTo({
                 top: newScrollYPosition,
                 behavior: "smooth"
@@ -64,7 +64,7 @@ export default class ComicPage extends React.Component {
 
         // If we can still scroll down, scroll down 1/3 of the page.
         if (currentScroll + 10 < pageHeight) {
-            const newScrollYPosition = window.scrollY + pageHeight / 3 - window.innerHeight / 3;
+            const newScrollYPosition = window.scrollY + pageHeight / 2 - window.innerHeight / 2;
             console.log(`Current ${window.scrollY}, New ${newScrollYPosition}, Page height ${pageHeight}`);
             window.scrollTo({
                 top: newScrollYPosition,
