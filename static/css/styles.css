@@ -32,6 +32,7 @@ h1 {
 .reader--fit-height .comic-page {
     height: 100vh;
     margin: 0 auto;
+    max-width: none;
 }
 .reader--loading {
     align-items: center;
