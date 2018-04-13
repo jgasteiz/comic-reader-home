@@ -16,18 +16,6 @@
 
 {% block extra_js %}
     <script>
-    // TODO: get this back working if it's possible to get https on a .local domain.
-    /*
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-            const swUrl = '{% static 'sw/sw.js' %}?comicPath={{ comic_path }}&numPages={{ num_pages }}';
-            navigator.serviceWorker.register(swUrl).then(function(registration) {
-                console.log('ServiceWorker registration successful with scope: ', registration.scope);
-            }, function(err) {
-                console.log('ServiceWorker registration failed: ', err);
-            });
-        });
-    }
-    */
+
     </script>
 {% endblock %}
