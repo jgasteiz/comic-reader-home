@@ -28,7 +28,20 @@ export default class ComicService {
         httpRequest.send(payload);
     }
 
-    static fetchPageImage(pageNum, comicPath, callback) {
+    /**
+     * Method to fetch a comic page with 5 retries.
+     * 
+     * @param pageNum
+     * @param comicPath
+     * @param callback
+     * @param attempts
+     */
+    static fetchPageImage(pageNum, comicPath, callback, attempts=5) {
+        if (attempts === 0) {
+            alert(`It hasn't been possible to load the page ${pageNum}`);
+            return;
+        }
+        const service = this;
         const httpRequest = new XMLHttpRequest();
         const url = ComicService.getPageSrc(pageNum, comicPath);
 
@@ -38,7 +51,8 @@ export default class ComicService {
                 if (httpRequest.status === 200) {
                     callback();
                 } else {
-                    alert(this.response);
+                    // Keep trying
+                    service.fetchPageImage(pageNum, comicPath, callback, attempts - 1);
                 }
             }
         };
