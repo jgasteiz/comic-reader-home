@@ -73,7 +73,6 @@ export default class ReaderApp extends React.Component {
     }
 
     componentDidMount() {
-        this.preloadComicPages();
         this.setPageSrc(this.state.currentPage);
     }
 
@@ -175,17 +174,6 @@ export default class ReaderApp extends React.Component {
         } else {
             cancelFullScreen.call(doc);
             this.setState({isFullscreen: false});
-        }
-    }
-
-    /**
-     * Preload all comic pages.
-     */
-    preloadComicPages() {
-        for (let i = 0; i < this.state.numPages; i++) {
-            const imagePath = `/api/page/${this.state.comicPath}/${i}/`;
-            new Image().src = imagePath;
-            console.log(`Preloaded ${imagePath}`);
         }
     }
 }

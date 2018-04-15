@@ -1,5 +1,3 @@
-
-
 export default class ComicService {
 
     static getPageSrc(pageNum, comicPath) {
@@ -41,7 +39,7 @@ export default class ComicService {
             alert(`It hasn't been possible to load the page ${pageNum}`);
             return;
         }
-        const service = this;
+        ComicService.preloadComicPages(pageNum, comicPath);
         const httpRequest = new XMLHttpRequest();
         const url = ComicService.getPageSrc(pageNum, comicPath);
 
@@ -52,11 +50,22 @@ export default class ComicService {
                     callback();
                 } else {
                     // Keep trying
-                    service.fetchPageImage(pageNum, comicPath, callback, attempts - 1);
+                    ComicService.fetchPageImage(pageNum, comicPath, callback, attempts - 1);
                 }
             }
         };
         httpRequest.send();
+    }
+
+    /**
+     * Preload the next 4 comic pages of the given page number.
+     */
+    static preloadComicPages(pageNum, comicPath) {
+        for (let i = pageNum; i < pageNum + 4; i++) {
+            const imagePath = `/api/page/${comicPath}/${i}/`;
+            new Image().src = imagePath;
+            console.log(`Preloaded ${imagePath}`);
+        }
     }
 
     static updatePageUrl(pageNum, comicPath) {
