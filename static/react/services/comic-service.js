@@ -1,9 +1,22 @@
 export default class ComicService {
 
+    /**
+     * Get the api url for the given comic path on the given page number.
+     *
+     * @param pageNum
+     * @param comicPath
+     * @returns {string}
+     */
     static getPageSrc(pageNum, comicPath) {
         return `/api/page/${comicPath}/${pageNum}/`;
     }
 
+    /**
+     * Create a bookmark for the given comicPath on the given pageNum.
+     *
+     * @param pageNum
+     * @param comicPath
+     */
     static bookmarkPage(pageNum, comicPath) {
         const payload = JSON.stringify({'comic_path': comicPath, 'page_num': pageNum});
 
@@ -56,6 +69,12 @@ export default class ComicService {
         }
     }
 
+    /**
+     * Update the browser url.
+     *
+     * @param pageNum
+     * @param comicPath
+     */
     static updatePageUrl(pageNum, comicPath) {
         if (typeof (history.pushState) !== "undefined") {
             const obj = {
