@@ -98,11 +98,7 @@ export default class ReaderApp extends React.Component {
      * There can only be one bookmark per comic.
      */
     bookMarkPageHandler() {
-        ComicService.bookmarkPage(
-            this.state.currentPage,
-            this.state.comicPath,
-            (newState) => this.setState(newState)
-        )
+        ComicService.bookmarkPage(this.state.currentPage, this.state.comicPath);
     }
 
     /**
