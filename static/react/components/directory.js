@@ -17,7 +17,6 @@ export default class Directory extends React.Component {
         };
     }
 
-
     render() {
         const comicRows = this.state.comics.map(function (comic, index) {
             return (<tr key={comic.path}>
@@ -28,9 +27,9 @@ export default class Directory extends React.Component {
                     {comic.name}
                 </td>
                 <td className="text-right">
-                    <a className="btn btn-primary btn-sm">
+                    <Link to={`/comic/${comic.path}/`} className="btn btn-primary btn-sm">
                         Read
-                    </a>
+                    </Link>
                 </td>
             </tr>);
         });
@@ -55,7 +54,7 @@ export default class Directory extends React.Component {
         const backLink = (function() {
             if (component.state.parentPath) {
                 return (
-                    <Link className="btn btn-secondary" to={component.state.parentPath}>Back</Link>
+                    <Link className="btn btn-secondary" to={`/dir/${component.state.parentPath}/`}>Back</Link>
                 );
             } else {
                 return '';
@@ -64,46 +63,58 @@ export default class Directory extends React.Component {
 
         return (
             <div>
-                <header>
-                    <div className="row">
-                        <h1 className="col">
-                            {this.state.directoryName}
-                        </h1>
-                        <div className="col-auto">
-                            {backLink}
-                        </div>
+                <header
+                    className="navbar navbar-dark bg-dark sticky-top navbar-expand-md">
+                    <div className="container d-flex justify-content-between">
+                        <a href="/"
+                           className="navbar-brand d-flex align-items-center">
+                            <strong>Comic Reader</strong>
+                        </a>
                     </div>
                 </header>
 
-                <h2>Comics</h2>
+                <section className="container">
+                    <header>
+                        <div className="row">
+                            <h1 className="col">
+                                {this.state.directoryName}
+                            </h1>
+                            <div className="col-auto">
+                                {backLink}
+                            </div>
+                        </div>
+                    </header>
 
-                <table className="table table-striped">
-                    <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Comic name</th>
-                        <th scope="col" className="text-right">Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                        {comicRows}
-                    </tbody>
-                </table>
+                    <h2>Comics</h2>
 
-                <h2>Directories</h2>
+                    <table className="table table-striped">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Comic name</th>
+                            <th scope="col" className="text-right">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {comicRows}
+                        </tbody>
+                    </table>
 
-                <table className="table table-striped">
-                    <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Directory name</th>
-                        <th scope="col" className="text-right">Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                        {directoryRows}
-                    </tbody>
-                </table>
+                    <h2>Directories</h2>
+
+                    <table className="table table-striped">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Directory name</th>
+                            <th scope="col" className="text-right">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {directoryRows}
+                        </tbody>
+                    </table>
+                </section>
             </div>
         );
     }

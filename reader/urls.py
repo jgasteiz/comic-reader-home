@@ -15,8 +15,8 @@ urlpatterns = [
     path('api/directory/<str:directory_path>/', api.directory_view, name='api_directory'),
     path('api/bookmark/', api.bookmark_comic_page, name='bookmark_comic_page'),
 
-    path('', views.directory_detail, name='global_index'),
-    path('dir/<str:directory_path>/', views.directory_detail, name='directory_detail'),
-    # path('comic/<str:comic_path>/<int:page_number>/', views.comic_read, name='comic_detail'),
-    # path('delete_bookmark/', views.delete_bookmark, name='delete_bookmark'),
+    path('', views.comic_reader, name='comic_reader'),
+    path('dir/<str:directory_path>/', views.comic_reader, name='comic_reader'),
+    path('comic/<str:comic_path>/', views.comic_reader, name='comic_reader'),
+    path('comic/<str:comic_path>/<int:page_number>/', views.comic_reader, name='comic_reader'),
 ]

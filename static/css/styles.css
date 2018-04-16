@@ -1,9 +1,6 @@
-body.reader-mode {
-    background: #000;
-}
-
 #reader {
     align-items: center;
+    background: #000;
     display: flex;
     justify-content: center;
     margin: 0 auto;
@@ -20,7 +17,6 @@ h1 {
 
 /* Reader component */
 .reader--standard-view {
-    /*margin: 0 auto;*/
     max-width: 1200px;
 }
 .reader--fit-width {

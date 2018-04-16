@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 
 /**
@@ -58,12 +59,12 @@ export default class ReadingControls extends React.Component {
                             {this.props.isFullscreen ? 'fullscreen_exit' : 'fullscreen'}
                         </i>
                     </button>
-                    <a
+                    <Link
                         className="btn btn-danger btn-sm"
-                        href={this.props.comicParentPath}
+                        to={`/dir/${this.props.comicParentPath}/`}
                     >
                         <i className="material-icons">exit_to_app</i>
-                    </a>
+                    </Link>
                 </div>
             </div>
         );

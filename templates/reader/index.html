@@ -26,8 +26,8 @@
     <link rel="apple-touch-icon" sizes="76x76" href="{% static 'img/favicon76.png' %}?rev={{ SOURCE_REVISION }}">
     <link rel="apple-touch-icon" sizes="152x152" href="{% static 'img/favicon152.png' %}?rev={{ SOURCE_REVISION }}">
 </head>
-<body class="{% block body_class %}{% endblock %}">
-    {% block content %}{% endblock %}
+<body>
+    <div id="reader-app"></div>
 
     <script src="{% static 'lazylibs/jquery-3.2.1.slim.min.js' %}?rev={{ SOURCE_REVISION }}"></script>
     <script src="{% static 'lazylibs/popper.min.js' %}?rev={{ SOURCE_REVISION }}"></script>

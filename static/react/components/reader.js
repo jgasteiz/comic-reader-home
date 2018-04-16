@@ -6,10 +6,6 @@ import ComicService from '../services/comic-service';
 import ReadingControls from './reading-controls';
 
 
-// TODO: look at doing this in a different way?
-const READER = document.getElementById('reader');
-
-
 /**
  * Reader component.
  */
@@ -17,13 +13,15 @@ export default class Reader extends React.Component {
     constructor(props) {
         super(props);
 
+        const pageNum = this.props.match.params.pageNum ? parseInt(this.props.match.params.pageNum, 10) : 0;
+
         this.state = {
             pageSrc: '',
             readingMode: 'standard-view',
-            comicPath: READER.dataset.comicPath,
-            parentPath: READER.dataset.parentPath,
-            currentPage: parseInt(READER.dataset.comicPage, 10),
-            numPages: parseInt(READER.dataset.numPages, 10),
+            comicPath: this.props.match.params.comicPath,
+            parentPath: '',
+            currentPage: pageNum,
+            numPages: 0,
             hasPreviousPage: false,
             hasNextPage: false,
             readingControlsVisible: false,
@@ -73,7 +71,13 @@ export default class Reader extends React.Component {
     }
 
     componentDidMount() {
-        this.setPageSrc(this.state.currentPage);
+        ComicService.getComicDetails(this.props.match.params.comicPath, (res) => {
+            this.setState({
+                numPages: res['num_pages'],
+                parentPath: res['parent_path'],
+            });
+            this.setPageSrc(this.state.currentPage);
+        });
     }
 
     /**

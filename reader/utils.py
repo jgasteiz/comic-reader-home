@@ -42,15 +42,13 @@ class PathBasedClass(object):
         self.utils = Utils()
         self.decoded_path = self.utils.get_decoded_path(path) if path is not None else settings.COMICS_ROOT
 
-    def get_parent_path_url(self):
+    def get_parent_path(self):
         """
-        Given a path (string), build and return a directory_detail url of its parent.
+        Given a path (string), build and return the encoded path of its parent.
         """
         parent_path = self.decoded_path.split('/')[:-1]
         parent_path = '/'.join(parent_path)
-        parent_path = self.utils.get_encoded_path(parent_path)
-        parent_path_url = reverse('reader:directory_detail', kwargs={'directory_path': parent_path})
-        return parent_path_url
+        return self.utils.get_encoded_path(parent_path)
 
 
 class Directory(PathBasedClass):
@@ -60,7 +58,7 @@ class Directory(PathBasedClass):
         # Check whether the directory is root or not.
         self.is_root = self.decoded_path.lower().strip('/') == settings.COMICS_ROOT.lower().strip('/')
         # Get the parent path if the directory is not root.
-        self.parent_path = self.get_parent_path_url() if not self.is_root else None
+        self.parent_path = self.get_parent_path() if not self.is_root else None
         # Set the directory name
         self.name = self.decoded_path.split('/')[-1]
 

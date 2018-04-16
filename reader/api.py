@@ -27,6 +27,7 @@ def comic_detail(_, comic_path):
     return HttpResponse(json.dumps({
         'comic_name': comic.name,
         'num_pages': len(comic),
+        'parent_path': comic.get_parent_path(),
     }), content_type='application/json')
 
 

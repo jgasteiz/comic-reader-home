@@ -1,6 +1,18 @@
 export default class ComicService {
 
     /**
+     * Fetch a comic details.
+     *
+     * @param comicPath
+     * @param callback
+     */
+    static getComicDetails(comicPath, callback) {
+        fetch(`/api/comic/${comicPath}/`)
+            .then(res => res.json())
+            .then(res => callback(res));
+    }
+
+    /**
      * Get the api url for the given comic path on the given page number.
      *
      * @param pageNum
