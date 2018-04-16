@@ -1,9 +1,9 @@
-import React from "react";
+import React from 'react';
 
 import Spinner from './spinner';
 import ComicPage from './comic-page';
 import ComicService from '../services/comic-service';
-import ReadingControls from "./reading-controls";
+import ReadingControls from './reading-controls';
 
 
 // TODO: look at doing this in a different way?
@@ -11,9 +11,9 @@ const READER = document.getElementById('reader');
 
 
 /**
- * Main app component.
+ * Reader component.
  */
-export default class ReaderApp extends React.Component {
+export default class Reader extends React.Component {
     constructor(props) {
         super(props);
 
@@ -49,7 +49,7 @@ export default class ReaderApp extends React.Component {
      */
     render() {
         return (
-            <div className={
+            <div id="reader" className={
                 `reader reader--${this.state.readingMode} reader--${this.state.pageSrc ? 'show' : 'loading'}`}>
                 <ComicPage
                     pageSrc={this.state.pageSrc}

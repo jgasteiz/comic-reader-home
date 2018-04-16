@@ -1,134 +1,15 @@
 {% extends 'reader/base.html' %}
 
 {% block content %}
-
     <header class="navbar navbar-dark bg-dark sticky-top navbar-expand-md">
         <div class="container d-flex justify-content-between">
             <a href="/" class="navbar-brand d-flex align-items-center">
                 <strong>Comic Reader</strong>
             </a>
-
-            {% if favorite_list %}
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <ul class="navbar-nav mr-auto">
-                    {% for favorite in favorite_list %}
-                        <li class="nav-item {% if directory_path == favorite.directory_path %}active{% endif %}">
-                            <a class="nav-link"
-                               href="{% url 'reader:directory_detail' favorite.directory_path %}"
-                            >
-                                {{ favorite.title }}
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            {% endif %}
         </div>
     </header>
 
     <section class="container">
-        {% if not is_root %}
-            <header>
-                <div class="row">
-                    <h1 class="col">
-                        {{ path_contents.name }}
-                    </h1>
-                    <div class="col-auto">
-                        <a class="btn btn-secondary" href="{{ parent_path }}">Back</a>
-                    </div>
-                </div>
-            </header>
-        {% endif %}
-
-        {% if path_contents.comics %}
-            <h2>Comics</h2>
-
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Directory name</th>
-                        <th scope="col" class="text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for comic in path_contents.comics %}
-                    <tr>
-                        <td>
-                            {{ forloop.counter }}
-                        </td>
-                        <td>
-                            {{ comic.name }}
-                        </td>
-                        <td class="text-right">
-                            {% if comic.bookmark %}
-                                <a class="btn btn-link"
-                                   href="{% url 'reader:comic_detail' comic.path comic.bookmark.page_num %}"
-                                >
-                                    Read from bookmark (page {{ comic.bookmark.page_num }})
-                                </a>
-                                <form method="post" action="{% url 'reader:delete_bookmark' %}">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="bookmark_id" value="{{ comic.bookmark.id }}">
-                                    <input type="hidden" name="next" value="{{ directory_path }}">
-                                    <button class="btn btn-link">
-                                        Remove bookmark
-                                    </button>
-                                </form>
-                                <a class="btn btn-link"
-                                   href="{% url 'reader:comic_detail' comic.path 0 %}"
-                                >
-                                    Read from beginning
-                                </a>
-                            {% else %}
-                                <a class="btn btn-primary btn-sm"
-                                   href="{% url 'reader:comic_detail' comic.path 0 %}"
-                                >
-                                    Read
-                                </a>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
-
-        {% if path_contents.directories %}
-            <h2>Directories</h2>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Directory name</th>
-                        <th scope="col" class="text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for directory in path_contents.directories %}
-                    <tr>
-                        <td>
-                            {{ forloop.counter }}
-                        </td>
-                        <td>
-                            {{ directory.name }}
-                        </td>
-                        <td class="text-right">
-                            <a class="btn btn-secondary btn-sm"
-                               href="{% url 'reader:directory_detail' directory.path %}"
-                            >
-                                Go
-                            </a>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
-
+        <div id="reader-app"></div>
     </section>
-
 {% endblock %}
