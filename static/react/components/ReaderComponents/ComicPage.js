@@ -1,7 +1,6 @@
 import React from "react";
-import ReactDOM from 'react-dom';
 
-import Navigation from './navigation';
+import Navigation from './Navigation';
 
 /**
  * This component is for displaying the page <img> element.

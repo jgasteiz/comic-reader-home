@@ -1,8 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 
-import Directory from './directory';
-import Reader from './reader';
+import Directory from './Directory';
+import Reader from './Reader';
 
 
 const App = () => (

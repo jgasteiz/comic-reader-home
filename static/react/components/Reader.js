@@ -1,9 +1,9 @@
 import React from 'react';
 
-import Spinner from './spinner';
-import ComicPage from './comic-page';
-import ComicService from '../services/comic-service';
-import ReadingControls from './reading-controls';
+import ComicPage from './ReaderComponents/ComicPage';
+import ReadingControls from './ReaderComponents/ReadingControls';
+import Spinner from './ReaderComponents/Spinner';
+import ComicService from '../services/Comic.Service';
 
 
 /**
