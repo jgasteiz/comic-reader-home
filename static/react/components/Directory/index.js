@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from "react-router-dom";
 
-import DirectoryService from '../services/Directory.Service';
+import DirectoryService from '../../services/Directory.Service';
 
 
 export default class Directory extends React.Component {
