@@ -12,7 +12,7 @@ def directory_view(_, directory_path=None):
     try:
         directory = Directory(directory_path)
     except FileNotFoundError:
-        return HttpResponse('Index not found', status=404)
+        return HttpResponse('Directory not found', status=404)
 
     directory_details = directory.get_details(include_bookmarks=False)
     return HttpResponse(json.dumps(directory_details), content_type='application/json')
