@@ -16,7 +16,7 @@ h1 {
 }
 
 /* Reader component */
-.reader--standard-view {
+.reader--standard-view > div {
     max-width: 1200px;
 }
 .reader--fit-width {
@@ -126,4 +126,7 @@ h1 {
 }
 .reading-controls .material-icons {
     display: block;
+}
+.reading-controls__page-selector {
+    margin-left: 12px;
 }

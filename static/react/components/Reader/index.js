@@ -35,6 +35,7 @@ export default class Reader extends React.Component {
         this.bookMarkPageHandler = this.bookMarkPageHandler.bind(this);
         this.onPageClickHandler = this.onPageClickHandler.bind(this);
         this.toggleFullScreenHandler = this.toggleFullScreenHandler.bind(this);
+        this.pageSelectorHandler = this.pageSelectorHandler.bind(this);
     }
 
     /**
@@ -62,6 +63,9 @@ export default class Reader extends React.Component {
                     readingModeHandler={this.readingModeHandler}
                     bookMarkPageHandler={this.bookMarkPageHandler}
                     toggleFullScreenHandler={this.toggleFullScreenHandler}
+                    pageSelectorHandler={this.pageSelectorHandler}
+                    currentPage={this.state.currentPage}
+                    numPages={this.state.numPages}
                     isFullscreen={this.state.isFullscreen}
                     readingControlsVisible={this.state.readingControlsVisible}
                     comicParentPath={this.state.parentPath}
@@ -130,6 +134,18 @@ export default class Reader extends React.Component {
     }
 
     /**
+     * Set the new given page num as the current page number.
+     *
+     * @param newPageNum
+     */
+    goToPage(newPageNum) {
+        this.setState({
+            pageSrc: '',
+        });
+        this.setPageSrc(newPageNum);
+    }
+
+    /**
      * Update the page src with the given page number.
      * @param pageNumber
      */
@@ -175,5 +191,14 @@ export default class Reader extends React.Component {
             cancelFullScreen.call(doc);
             this.setState({isFullscreen: false});
         }
+    }
+
+    /**
+     * Handler for the page number change on the reading controls.
+     *
+     * @param event
+     */
+    pageSelectorHandler(event) {
+        this.goToPage(parseInt(event.currentTarget.value, 10));
     }
 }

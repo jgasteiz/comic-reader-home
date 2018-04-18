@@ -21,6 +21,10 @@ export default class ReadingControls extends React.Component {
     }
 
     render() {
+        const pageSelectorOptions = Array(this.props.numPages).fill().map((_, pageNum) => {
+            return (<option key={pageNum} value={pageNum}>{pageNum + 1}</option>);
+        });
+
         return (
             <div className={`reading-controls reading-controls--${this.props.readingControlsVisible ? 'visible': 'hidden'}`}>
                 <div className="btn-group" role="group" aria-label="Basic example">
@@ -66,6 +70,13 @@ export default class ReadingControls extends React.Component {
                         <i className="material-icons">exit_to_app</i>
                     </Link>
                 </div>
+                <select
+                    className="reading-controls__page-selector"
+                    value={this.props.currentPage}
+                    onChange={this.props.pageSelectorHandler}
+                >
+                    {pageSelectorOptions}
+                </select>
             </div>
         );
     }
