@@ -1,22 +1,30 @@
-FROM ubuntu:16.04
+FROM python:3.6
 
-RUN apt-get update
-RUN apt-get install -y software-properties-common vim
-RUN add-apt-repository ppa:jonathonf/python-3.6
-RUN apt-get install unrar
-RUN apt-get update
+# Install required packages.
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+    wget \
+    unrar-free \
+    gettext \
+    libxmlsec1-dev \
+  && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get install -y build-essential python3.6 python3.6-dev python3-pip python3.6-venv
-RUN apt-get install -y git
+# Install node 8 and yarn globally.
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
+RUN apt-get update && apt-get install -y nodejs
+RUN npm install -g yarn
 
-# update pip
-RUN python3.6 -m pip install pip --upgrade
-RUN python3.6 -m pip install wheel
+# Set PYTHONUNBUFFERED so output is displayed in the Docker log
+ENV PYTHONUNBUFFERED=1
 
-ENV PYTHONUNBUFFERED 1
+EXPOSE 8000
 RUN mkdir /comics
 RUN mkdir /code
 WORKDIR /code
-ADD requirements.txt /code/
-RUN python3.6 -m pip install -r requirements.txt
-ADD . /code/
+
+# Install dependencies
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+RUN yarn install
+
+# Copy the rest of the application's code
+COPY . /code
