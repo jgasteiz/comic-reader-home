@@ -6,15 +6,19 @@ This is an app to serve my cbr and cbz comic files on my home network.
 
 ## How to get this running
 
-1. Copy `comicreader/local_settings.py.example` to `comicreader/local_settings.py`.
-2. Set a value for `SECRET_KEY`: any string realy, just type some random combination of numbers and letters.
-3. Set a value for `COMICS_ROOT`: this should be the absolute path in your server where your `.cbr` and `.cbz` files live.
-4. Create a virtualenv and install the python3 dependencies:
-  4.1. On the project root: `python3 -m venv env`
-  4.2. `source ./env/bin/activate`
-  4.1. `pip install -r requirements.txt`
-5. Make sure yarn or npm are installed globally: `npm -g install yarn`
-6. Install FE dependencies: `yarn install`
-7. Build FE dependencies: `yarn run webpack`
-8. Run the db migrations: `./manage.py migrate`
-9. Run the project: `./manage.py runserver`
+1. Copy `.env.example` to `.env`.
+2. Set values for both SECRET_KEY and COMICS_ROOT environment variables.
+3. Install dependencies and activate the virtualenv:
+  3.1. On the project root: `make install`
+  3.2. `source ./env/bin/activate`
+4. Make sure yarn or npm are installed globally: `npm -g install yarn`
+5. Install FE dependencies: `yarn install`
+6. Run the db migrations: `make migrate`
+7. Run the project with a watcher for static files: `make serve`
+
+## How to get this running - with docker
+
+1. Copy `.env.example` to `.env`.
+2. Set values for both SECRET_KEY and COMICS_ROOT environment variables.
+3. Run the tests: `make dockertest`
+4. Serve the project: `make dockerserve`
