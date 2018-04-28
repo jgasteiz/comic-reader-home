@@ -16,7 +16,7 @@ export default class ComicPage extends React.Component {
 
     render() {
         return (
-            <div ref="pageContainer">
+            <div className="comic-page-container">
                 <img className="comic-page"
                      ref="pageImage"
                      src={this.props.pageSrc}
