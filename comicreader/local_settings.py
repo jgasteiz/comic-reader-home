@@ -1,0 +1,9 @@
+from .settings import *
+
+# Set an actual secret key.
+SECRET_KEY = os.environ.get('SECRET_KEY')
+
+DEFAULT_COMIC_EXTRACT_PATH = os.path.join(BASE_DIR, 'static/comics/tmp')
+COMIC_EXTRACT_PATH = os.environ.get('COMIC_EXTRACT_PATH', DEFAULT_COMIC_EXTRACT_PATH)
+COMICS_ROOT = os.environ.get('COMICS_ROOT')
+STATIC_ROOT = ''

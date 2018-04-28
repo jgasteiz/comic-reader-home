@@ -3,3 +3,4 @@ ipdb==0.10.3
 rarfile==3.0
 gunicorn==19.7.1
 psutil==5.4.5
+django-dotenv==1.4.2
