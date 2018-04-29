@@ -6,6 +6,6 @@ services:
     command: ./manage.py yarnrunserver 0.0.0.0:8000
     volumes:
       - .:/code
-      - ${COMICS_PATH}:/comics
+      - ${COMICS_ROOT}:/comics
     ports:
       - "8000:8000"
