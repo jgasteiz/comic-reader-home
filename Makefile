@@ -8,10 +8,11 @@ migrate:
 	$(VENV)/bin/python3 manage.py migrate
 
 serve:
-	$(VENV)/bin/python3 manage.py yarnrunserver
-
-servenoyarn:
+	yarn run webpack && \
 	$(VENV)/bin/python3 manage.py runserver
+
+servewithyarn:
+	$(VENV)/bin/python3 manage.py yarnrunserver
 
 test:
 	$(VENV)/bin/python3 manage.py test --settings=comicreader.test_settings
