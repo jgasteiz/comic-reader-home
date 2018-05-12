@@ -10,3 +10,4 @@ env/
 /node_modules
 /yarn-error.log
 /static/dist
+/.pytest_cache
