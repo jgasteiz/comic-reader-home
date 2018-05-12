@@ -4,43 +4,50 @@ from zipfile import ZipFile
 
 from django.conf import settings
 from django.http import Http404
-from django.urls import reverse
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from rarfile import RarFile
 
 from reader.models import Bookmark
 
 
-class Utils(object):
-    @staticmethod
-    def get_encoded_path(decoded_path):
-        return urlsafe_base64_encode(bytes(decoded_path, 'utf-8')).decode('utf-8').replace('\n', '')
+def get_encoded_path(decoded_path):
+    return urlsafe_base64_encode(bytes(decoded_path, 'utf-8')).decode('utf-8').replace('\n', '')
 
-    @staticmethod
-    def get_decoded_path(encoded_path):
-        return urlsafe_base64_decode(bytes(encoded_path, 'utf-8')).decode('utf-8')
 
-    @staticmethod
-    def clear_tmp():
-        """
-        Clear the tmp directory.
-        """
-        os.system('rm -rf {}/*'.format(settings.COMIC_EXTRACT_PATH))
+def get_decoded_path(encoded_path):
+    return urlsafe_base64_decode(bytes(encoded_path, 'utf-8')).decode('utf-8')
 
-    @staticmethod
-    def extract_everything():
-        """
-        Extract every comic in the comic directory.
-        """
-        root_directory = Directory(None)
-        root_directory.extract_recursively()
+
+def clear_tmp():
+    """
+    Clear the tmp directory.
+    """
+    os.system('rm -rf {}/*'.format(settings.COMIC_EXTRACT_PATH))
+
+
+def extract_everything():
+    """
+    Extract every comic in the comic directory.
+    """
+    root_directory = Directory(None)
+    root_directory.extract_recursively()
+
+
+def is_file_name_comic_file(file_name):
+    """
+    Checks whether a given file name is a valid comic file name or not.
+    """
+    if not file_name.endswith('.cbz') and not file_name.endswith('.cbr'):
+        return False
+    if file_name.startswith('.'):
+        return False
+    return True
 
 
 class PathBasedClass(object):
     def __init__(self, path):
         self.path = path
-        self.utils = Utils()
-        self.decoded_path = self.utils.get_decoded_path(path) if path is not None else settings.COMICS_ROOT
+        self.decoded_path = get_decoded_path(path) if path is not None else settings.COMICS_ROOT
 
     def get_parent_path(self):
         """
@@ -48,7 +55,7 @@ class PathBasedClass(object):
         """
         parent_path = self.decoded_path.split('/')[:-1]
         parent_path = '/'.join(parent_path)
-        return self.utils.get_encoded_path(parent_path)
+        return get_encoded_path(parent_path)
 
 
 class Directory(PathBasedClass):
@@ -76,8 +83,8 @@ class Directory(PathBasedClass):
         - get the children directory paths in that path.
         """
         path_comics = []
-        for comic_file_name in os.listdir(self.decoded_path):
-            if not self.is_file_name_comic_file(comic_file_name):
+        for comic_file_name in self.listdir:
+            if not is_file_name_comic_file(comic_file_name):
                 continue
             encoded_comic_file_path = self.get_comic_encoded_path(comic_file_name)
 
@@ -113,7 +120,7 @@ class Directory(PathBasedClass):
 
             path_contents['directories'].append({
                 'name': path_name,
-                'path': self.utils.get_encoded_path(child_path),
+                'path': get_encoded_path(child_path),
             })
 
         # Sort the comic names and child path names by name.
@@ -138,10 +145,10 @@ class Directory(PathBasedClass):
 
             # If the path is a directory, RECURSION!
             if os.path.isdir(child_path):
-                directory = Directory(self.utils.get_encoded_path(child_path))
+                directory = Directory(get_encoded_path(child_path))
                 directory.extract_recursively()
             # Otherwise, try to extract the comic.
-            elif self.is_file_name_comic_file(path_name):
+            elif is_file_name_comic_file(path_name):
                 try:
                     comic = Comic(self.get_comic_encoded_path(path_name))
                     print(u'Extracting {}'.format(comic.name))
@@ -149,17 +156,9 @@ class Directory(PathBasedClass):
                 except Exception as e:
                     print(u'There was a problem extracting `{}`: {}'.format(comic.name, e))
 
-    @staticmethod
-    def is_file_name_comic_file(file_name):
-        if not file_name.endswith('.cbz') and not file_name.endswith('.cbr'):
-            return False
-        if file_name.startswith('.'):
-            return False
-        return True
-
     def get_comic_encoded_path(self, comic_file_name):
         comic_file_path = os.path.join(self.decoded_path, comic_file_name)
-        encoded_comic_file_path = self.utils.get_encoded_path(comic_file_path)
+        encoded_comic_file_path = get_encoded_path(comic_file_path)
         return encoded_comic_file_path.replace('\n', '')
 
 
@@ -168,7 +167,7 @@ class Comic(PathBasedClass):
         super(Comic, self).__init__(*args, **kwargs)
 
         self.name = self.decoded_path.split('/')[-1]
-        self.extract_path = os.path.join(settings.COMIC_EXTRACT_PATH, self.utils.get_encoded_path(self.path))
+        self.extract_path = os.path.join(settings.COMIC_EXTRACT_PATH, get_encoded_path(self.path))
 
         # Initialise the cb_file. This will raise a FileNotFoundError if
         # zipfile/rarfile can't find the file.

@@ -8,7 +8,7 @@ from django.test import Client
 from django.urls import reverse
 
 from reader.models import Bookmark
-from reader.utils import Utils, Directory, Comic
+from reader.utils import Directory, Comic, get_encoded_path
 
 
 def test_api_directory_root():
@@ -40,7 +40,7 @@ def test_api_directory():
     client = Client()
 
     image_comics_path = os.path.join(settings.COMICS_ROOT, 'Javi Comics')
-    directory = Directory(path=Utils().get_encoded_path(image_comics_path))
+    directory = Directory(path=get_encoded_path(image_comics_path))
 
     # Get the path of the directory, check the directory properties.
     url = reverse('reader:api_directory', kwargs={'directory_path': directory.path})
@@ -67,7 +67,7 @@ def test_api_comic_detail():
     client = Client()
 
     image_comics_path = os.path.join(settings.COMICS_ROOT, 'Javi Comics')
-    directory = Directory(path=Utils().get_encoded_path(image_comics_path))
+    directory = Directory(path=get_encoded_path(image_comics_path))
 
     # Get the path of the comic and create a comic instance.
     url = reverse('reader:api_directory', kwargs={'directory_path': directory.path})
@@ -90,7 +90,7 @@ def test_api_comic_page_src():
     client = Client()
 
     image_comics_path = os.path.join(settings.COMICS_ROOT, 'Javi Comics')
-    directory = Directory(path=Utils().get_encoded_path(image_comics_path))
+    directory = Directory(path=get_encoded_path(image_comics_path))
 
     # Get the path of the comic and create a comic instance.
     url = reverse('reader:api_directory', kwargs={'directory_path': directory.path})
@@ -111,7 +111,7 @@ def test_bookmark_comic_page():
     client = Client()
 
     image_comics_path = os.path.join(settings.COMICS_ROOT, 'Javi Comics')
-    directory = Directory(path=Utils().get_encoded_path(image_comics_path))
+    directory = Directory(path=get_encoded_path(image_comics_path))
 
     # Get the path of the comic and create a comic instance.
     url = reverse('reader:api_directory', kwargs={'directory_path': directory.path})
