@@ -182,6 +182,8 @@ class Comic(PathBasedClass):
             p for p in self.cb_file.namelist()
             if p.endswith('.jpg') or p.endswith('.jpeg') or p.endswith('.png')
         ])
+        # Remove hidden files (files that start with `.`) from the pages list.
+        self.all_pages = list(filter(lambda x: not x.split('/')[-1].startswith('.'), self.all_pages))
 
     def __len__(self):
         return len(self.all_pages)
