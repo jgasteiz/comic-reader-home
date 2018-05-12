@@ -28,10 +28,10 @@ jobs:
           - v1-dependencies-
 
       - run:
-        name: install dependencies
-        command: |
-          python3 -m venv env
-          ./env/bin/pip install -r requirements.txt
+          name: install dependencies
+          command: |
+            python3 -m venv env
+            ./env/bin/pip install -r requirements.txt
 
       - save_cache:
           paths:
