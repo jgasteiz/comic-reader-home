@@ -8,17 +8,16 @@ migrate:
 	$(VENV)/bin/python3 manage.py migrate
 
 serve:
-	yarn run webpack && \
-	$(VENV)/bin/python3 manage.py runserver
+	$(VENV)/bin/python manage.py runserver
 
 servewithyarn:
-	$(VENV)/bin/python3 manage.py yarnrunserver
+	$(VENV)/bin/python manage.py yarnrunserver
 
 test:
 	$(VENV)/bin/pytest
 
-dockertest:
-	docker-compose run --rm web python manage.py test --settings=comicreader.test_settings
+dockerbuild:
+	docker-compose up --build
 
 dockerstop:
 	docker-compose down
