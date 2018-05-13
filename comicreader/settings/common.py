@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'reader',
 ]
 
@@ -129,6 +130,15 @@ IGNORED_FILE_NAMES = [
 ]
 
 PAGE_NOT_FOUND = '/static/img/404.jpg'
+
+# DRF
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
 
 # Reader settings
 DEFAULT_COMIC_EXTRACT_PATH = os.path.join(BASE_DIR, 'static/comics/tmp')

@@ -1,7 +1,10 @@
 import os
+from zipfile import ZipFile
 
 from django.conf import settings
 from django.db import models
+from django.utils.functional import cached_property
+from rarfile import RarFile
 
 
 class FileItem(models.Model):
@@ -39,6 +42,26 @@ class FileItem(models.Model):
     def encoded_path(self):
         from reader.utils import get_encoded_path
         return get_encoded_path(self.path)
+
+    @cached_property
+    def num_pages(self):
+        if self.file_type == self.COMIC:
+            # Initialise the cb_file. This will raise a FileNotFoundError if
+            # zipfile/rarfile can't find the file.
+            if self.name.endswith('.cbz'):
+                self.cb_file = ZipFile(self.path)
+            else:
+                self.cb_file = RarFile(self.path)
+
+            # Set all the page names in order
+            all_pages = [
+                p for p in self.cb_file.namelist()
+                if p.endswith('.jpg') or p.endswith('.jpeg') or p.endswith('.png')
+            ]
+            # Remove hidden files (files that start with `.`) from the pages list.
+            all_pages = list(filter(lambda x: not x.split('/')[-1].startswith('.'), all_pages))
+            return len(all_pages)
+        return 0
 
 
 class Bookmark(models.Model):
