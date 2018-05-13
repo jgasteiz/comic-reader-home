@@ -7,7 +7,7 @@ export default class FileItemService {
      * @param callback
      */
     static getFileItemDetails(fileItemId=null, callback) {
-        fetch(fileItemId ? `/apiv2/fileitems/${fileItemId}/` : '/apiv2/fileitems/')
+        fetch(fileItemId ? `/api/fileitems/${fileItemId}/` : '/api/fileitems/')
             .then(res => res.json())
             .then(res => {
                 // If there was a fileItemId, the API will return an object,

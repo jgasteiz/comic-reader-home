@@ -7,7 +7,7 @@ from django.http import Http404
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from rarfile import RarFile
 
-from reader.models import Bookmark
+from .models import Bookmark
 
 
 def get_encoded_path(decoded_path):
