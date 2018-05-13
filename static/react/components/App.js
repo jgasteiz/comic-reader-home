@@ -12,8 +12,8 @@ const App = () => (
     >
         <div>
             <Route exact path="/" component={Directory} />
-            <Route sensitive strict path="/dir/:dirPath" component={Directory}/>
-            <Route sensitive strict path="/comic/:comicPath/:pageNum?" component={Reader}/>
+            <Route sensitive strict path="/dir/:id" component={Directory}/>
+            <Route sensitive strict path="/comic/:id/:pageNum?" component={Reader}/>
         </div>
     </BrowserRouter>
 );

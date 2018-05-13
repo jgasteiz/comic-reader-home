@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from "react-router-dom";
 
-import DirectoryService from '../../services/Directory.Service';
+import FileItemService from '../../services/FileItem.Service';
 
 
 export default class Directory extends React.Component {
@@ -11,9 +11,8 @@ export default class Directory extends React.Component {
         this.state = {
             directories: [],
             comics: [],
-            directoryPath: null,
-            parentPath: null,
-            directoryName: null,
+            parentId: null,
+            name: null,
         };
     }
 
@@ -26,7 +25,7 @@ export default class Directory extends React.Component {
                     <header>
                         <div className="row">
                             <h1 className="col">
-                                {this.state.directoryName}
+                                {this.state.name}
                             </h1>
                             <div className="col-auto">
                                 {this._renderBackLink()}
@@ -42,13 +41,14 @@ export default class Directory extends React.Component {
     }
 
     componentDidMount() {
-        DirectoryService.getDirectoryDetails(this.props.match.params.dirPath, (res) => {
+        FileItemService.getFileItemDetails(this.props.match.params.id, (res) => {
+            const directories = res['children'].filter(child => child['file_type'] === 'directory');
+            const comics = res['children'].filter(child => child['file_type'] === 'comic');
             this.setState({
-                directories: res['path_contents']['directories'],
-                comics: res['path_contents']['comics'],
-                directoryPath: res['directory_path'],
-                parentPath: res['parent_path'],
-                directoryName: res['path_contents']['name'],
+                name: res['name'],
+                directories: directories,
+                comics: comics,
+                parentId: res['parent'],
             });
         });
     }
@@ -71,9 +71,9 @@ export default class Directory extends React.Component {
     _renderBackLink() {
         const component = this;
         return  (function() {
-            if (component.state.parentPath) {
+            if (component.state.parentId) {
                 return (
-                    <Link className="btn btn-secondary" to={`/dir/${component.state.parentPath}/`}>Back</Link>
+                    <Link className="btn btn-secondary" to={`/dir/${component.state.parentId}/`}>Back</Link>
                 );
             } else {
                 return '';
@@ -86,7 +86,7 @@ export default class Directory extends React.Component {
             return '';
         }
         const comicRows = this.state.comics.map(function (comic, index) {
-            return (<tr key={comic.path}>
+            return (<tr key={comic.pk}>
                 <td>
                     {index + 1}
                 </td>
@@ -94,7 +94,7 @@ export default class Directory extends React.Component {
                     {comic.name}
                 </td>
                 <td className="text-right">
-                    <Link to={`/comic/${comic.path}/`} className="btn btn-primary btn-sm">
+                    <Link to={`/comic/${comic.pk}/0/`} className="btn btn-primary btn-sm">
                         Read
                     </Link>
                 </td>
@@ -126,7 +126,7 @@ export default class Directory extends React.Component {
             return '';
         }
         const directoryRows = this.state.directories.map(function (directory, index) {
-            return (<tr key={directory.path}>
+            return (<tr key={directory.pk}>
                 <td>
                     {index + 1}
                 </td>
@@ -134,7 +134,7 @@ export default class Directory extends React.Component {
                     {directory.name}
                 </td>
                 <td className="text-right">
-                    <Link to={`/dir/${directory.path}/`} className="btn btn-secondary btn-sm">
+                    <Link to={`/dir/${directory.pk}/`} className="btn btn-secondary btn-sm">
                         Go
                     </Link>
                 </td>

@@ -23,7 +23,7 @@ urlpatterns = [
 
     # Public views
     path('', public.home, name='home'),
-    path('dir/<str:directory_path>/', public.home, name='home'),
-    path('comic/<str:comic_path>/', public.home, name='home'),
-    path('comic/<str:comic_path>/<int:page_number>/', public.home, name='home'),
+    path('dir/<int:fileitem_id>/', public.home, name='home'),
+    path('comic/<int:fileitem_id>/', public.home, name='home'),
+    path('comic/<int:fileitem_id>/<int:page_number>/', public.home, name='home'),
 ]
