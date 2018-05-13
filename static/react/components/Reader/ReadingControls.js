@@ -65,7 +65,7 @@ export default class ReadingControls extends React.Component {
                     </button>
                     <Link
                         className="btn btn-danger btn-sm"
-                        to={`/dir/${this.props.comicParentPath}/`}
+                        to={`/dir/${this.props.parentId}/`}
                     >
                         <i className="material-icons">exit_to_app</i>
                     </Link>

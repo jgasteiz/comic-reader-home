@@ -4,6 +4,7 @@ import ComicPage from './ComicPage';
 import ReadingControls from './ReadingControls';
 import Spinner from './Spinner';
 import ComicService from '../../services/Comic.Service';
+import FileItemService from '../../services/FileItem.Service';
 
 
 /**
@@ -18,8 +19,8 @@ export default class Reader extends React.Component {
         this.state = {
             pageSrc: '',
             readingMode: 'standard-view',
-            comicPath: this.props.match.params.comicPath,
-            parentPath: '',
+            comicId: 0,
+            parentId: 0,
             currentPage: pageNum,
             numPages: 0,
             hasPreviousPage: false,
@@ -68,17 +69,20 @@ export default class Reader extends React.Component {
                     numPages={this.state.numPages}
                     isFullscreen={this.state.isFullscreen}
                     readingControlsVisible={this.state.readingControlsVisible}
-                    comicParentPath={this.state.parentPath}
+                    parentId={this.state.parentId}
                 />
             </div>
         );
     }
 
     componentDidMount() {
-        ComicService.getComicDetails(this.props.match.params.comicPath, (res) => {
+        FileItemService.getFileItemDetails(this.props.match.params.id, (res) => {
             this.setState({
+                name: res['name'],
+                comicId: res['pk'],
+                comicPath: res['encoded_path'],
                 numPages: res['num_pages'],
-                parentPath: res['parent_path'],
+                parentId: res['parent'],
             });
             this.setPageSrc(this.state.currentPage);
         });
@@ -159,7 +163,7 @@ export default class Reader extends React.Component {
                 hasPreviousPage: pageNumber > 0,
                 hasNextPage: pageNumber < component.state.numPages - 1
             });
-            ComicService.updatePageUrl(pageNumber, component.state.comicPath);
+            ComicService.updatePageUrl(pageNumber, component.state.comicId);
         });
     }
 

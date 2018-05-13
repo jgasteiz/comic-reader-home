@@ -1,18 +1,6 @@
 export default class ComicService {
 
     /**
-     * Fetch a comic details.
-     *
-     * @param comicPath
-     * @param callback
-     */
-    static getComicDetails(comicPath, callback) {
-        fetch(`/api/comic/${comicPath}/`)
-            .then(res => res.json())
-            .then(res => callback(res));
-    }
-
-    /**
      * Get the api url for the given comic path on the given page number.
      *
      * @param pageNum
@@ -85,13 +73,13 @@ export default class ComicService {
      * Update the browser url.
      *
      * @param pageNum
-     * @param comicPath
+     * @param comicId
      */
-    static updatePageUrl(pageNum, comicPath) {
+    static updatePageUrl(pageNum, comicId) {
         if (typeof (history.pushState) !== "undefined") {
             const obj = {
                 title: `Page ${pageNum}`,
-                url: `/comic/${comicPath}/${pageNum}/`
+                url: `/comic/${comicId}/${pageNum}/`
             };
             history.pushState(obj, obj.title, obj.url);
         }
