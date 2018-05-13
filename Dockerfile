@@ -22,7 +22,7 @@ RUN mkdir /code
 WORKDIR /code
 
 # Install dependencies
-COPY requirements.txt requirements.txt
+COPY requirements/local.txt requirements.txt
 RUN pip install -r requirements.txt
 RUN yarn install
 

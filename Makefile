@@ -2,7 +2,7 @@ VENV ?= ./env
 
 install:
 	python3 -m venv $(VENV) && \
-	$(VENV)/bin/pip install -r requirements.txt
+	$(VENV)/bin/pip install -r requirements/local.txt
 
 migrate:
 	$(VENV)/bin/python3 manage.py migrate
