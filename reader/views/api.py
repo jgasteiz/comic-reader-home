@@ -28,9 +28,9 @@ class FileItemViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-def comic_page_src(request, comic_path, page_number):
+def comic_page_src(request, comic_id, page_number):
     try:
-        comic = Comic(comic_path)
+        comic = Comic(comic_id)
     except FileNotFoundError:
         return HttpResponse('Comic not found', status=404)
     try:

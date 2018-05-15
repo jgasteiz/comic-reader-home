@@ -12,7 +12,7 @@ app_name = 'reader'
 urlpatterns = [
     # API
     path('api/', include(router.urls)),
-    path('api/page/<str:comic_path>/<int:page_number>/', api.comic_page_src, name='api_comic_page_src'),
+    path('api/page/<int:comic_id>/<int:page_number>/', api.comic_page_src, name='api_comic_page_src'),
     path('api/bookmark/', api.bookmark_comic_page, name='bookmark_comic_page'),
 
     # Public views

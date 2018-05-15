@@ -156,10 +156,10 @@ export default class Reader extends React.Component {
     setPageSrc(pageNumber) {
         const component = this;
 
-        ComicService.fetchPageImage(pageNumber, this.state.comicPath, function () {
+        ComicService.fetchPageImage(pageNumber, this.state.comicId, function () {
             component.setState({
                 currentPage: pageNumber,
-                pageSrc: ComicService.getPageSrc(pageNumber, component.state.comicPath),
+                pageSrc: ComicService.getPageSrc(pageNumber, component.state.comicId),
                 hasPreviousPage: pageNumber > 0,
                 hasNextPage: pageNumber < component.state.numPages - 1
             });

@@ -4,11 +4,11 @@ export default class ComicService {
      * Get the api url for the given comic path on the given page number.
      *
      * @param pageNum
-     * @param comicPath
+     * @param comicId
      * @returns {string}
      */
-    static getPageSrc(pageNum, comicPath) {
-        return `/api/page/${comicPath}/${pageNum}/`;
+    static getPageSrc(pageNum, comicId) {
+        return `/api/page/${comicId}/${pageNum}/`;
     }
 
     /**
@@ -41,29 +41,29 @@ export default class ComicService {
      * Method to fetch a comic page with 5 retries.
      * 
      * @param pageNum
-     * @param comicPath
+     * @param comicId
      * @param callback
      * @param attempts
      */
-    static fetchPageImage(pageNum, comicPath, callback, attempts=5) {
+    static fetchPageImage(pageNum, comicId, callback, attempts=5) {
         if (attempts === 0) {
             alert(`It hasn't been possible to load the page ${pageNum}`);
             return;
         }
         // Preload the next pages.
-        ComicService.preloadComicPages(pageNum, comicPath);
+        ComicService.preloadComicPages(pageNum, comicId);
 
-        fetch(ComicService.getPageSrc(pageNum, comicPath))
+        fetch(ComicService.getPageSrc(pageNum, comicId))
             .then(_ => callback())
-            .catch(error => ComicService.fetchPageImage(pageNum, comicPath, callback, attempts - 1));
+            .catch(error => ComicService.fetchPageImage(pageNum, comicId, callback, attempts - 1));
     }
 
     /**
      * Preload the next 4 comic pages of the given page number.
      */
-    static preloadComicPages(pageNum, comicPath) {
+    static preloadComicPages(pageNum, comicId) {
         for (let i = pageNum; i < pageNum + 4; i++) {
-            const imagePath = `/api/page/${comicPath}/${i}/`;
+            const imagePath = `/api/page/${comicId}/${i}/`;
             new Image().src = imagePath;
             console.log(`Preloaded ${imagePath}`);
         }
