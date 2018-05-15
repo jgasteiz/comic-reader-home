@@ -7,6 +7,9 @@ install:
 migrate:
 	$(VENV)/bin/python3 manage.py migrate
 
+loaddata:
+	$(VENV)/bin/python3 manage.py populatedb
+
 serve:
 	$(VENV)/bin/python manage.py runserver
 
