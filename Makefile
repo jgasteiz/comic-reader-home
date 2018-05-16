@@ -17,7 +17,7 @@ servewithyarn:
 	$(VENV)/bin/python manage.py yarnrunserver
 
 test:
-	$(VENV)/bin/pytest
+	$(VENV)/bin/pytest ${ARGS}
 
 dockerbuild:
 	docker-compose up --build

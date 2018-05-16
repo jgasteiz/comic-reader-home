@@ -7,84 +7,83 @@ from django.http import FileResponse
 from django.test import Client
 from django.urls import reverse
 
-from reader.models import Bookmark
+from reader.models import Bookmark, FileItem
+from reader.serializers import FileItemSerializer, SimpleFileItemSerializer
+from reader.tasks import populate_db_from_path
 from reader.utils import Directory, Comic, get_encoded_path
 
 
-@pytest.mark.skip
+# TODO: look how to do setup with pytest
+def _setup():
+    populate_db_from_path()
+
+
+@pytest.mark.django_db
 def test_api_directory_root():
+    _setup()
     client = Client()
-    directory = Directory(path=None)
+
+    root_dir = FileItem.objects.get(parent=None)
+    root_dir_serialized = FileItemSerializer(root_dir).data
+    javi_comics = FileItem.objects.get(parent=root_dir)
+    javi_comics_serialized = SimpleFileItemSerializer(javi_comics).data
 
     # Get the path of the root directory, check the directory properties.
-    url = reverse('reader:api_directory_root')
+    url = reverse('reader:fileitem-list')
     response = client.get(url)
     response_json = response.json()
     assert response.status_code == 200
-    assert sorted(response_json.keys()) == ['directory_path', 'is_root', 'parent_path', 'path_contents']
-    assert response_json.get('directory_path') is None
-    assert response_json.get('is_root') is True
-    assert response_json.get('parent_path') == directory.parent_path
+    # There should be only 1 item in the response list, the root directory.
+    assert len(response_json) == 1
+    root_dir_json = response_json[0]
+    assert root_dir_json == root_dir_serialized
 
-    # Check the path contents.
-    path_contents = response_json.get('path_contents')
-    assert sorted(path_contents.keys()) == ['comics', 'directories', 'name']
-    assert path_contents.get('comics') == []
-    directories = path_contents.get('directories')
-    assert len(directories) == 1
-    assert directories[0].get('name') == 'Javi Comics'
-    assert 'path' in directories[0].keys()
-    assert path_contents.get('name') == 'comics'
+    # The root directory should have 1 child, `javi_comics`.
+    assert len(root_dir_json.get('children')) == 1
+    root_dir_child_json = root_dir_json.get('children')[0]
+    assert root_dir_child_json == javi_comics_serialized
 
 
-@pytest.mark.skip
+@pytest.mark.django_db
 def test_api_directory():
+    _setup()
     client = Client()
 
-    image_comics_path = os.path.join(settings.COMICS_ROOT, 'Javi Comics')
-    directory = Directory(path=get_encoded_path(image_comics_path))
+    root_dir = FileItem.objects.get(parent=None)
+    javi_comics = FileItem.objects.get(parent=root_dir)
+    javi_comics_serialized = FileItemSerializer(instance=javi_comics).data
+    comic = FileItem.objects.get(parent=javi_comics)
+    comic_serialized = SimpleFileItemSerializer(comic).data
 
-    # Get the path of the directory, check the directory properties.
-    url = reverse('reader:api_directory', kwargs={'directory_path': directory.path})
+    # Get the path of the root directory, check the directory properties.
+    url = reverse('reader:fileitem-detail', kwargs={'pk': javi_comics.pk})
     response = client.get(url)
     response_json = response.json()
     assert response.status_code == 200
-    assert sorted(response_json.keys()) == ['directory_path', 'is_root', 'parent_path', 'path_contents']
-    assert response_json.get('directory_path') == directory.path
-    assert response_json.get('is_root') is False
-    assert response_json.get('parent_path') == directory.parent_path
+    # The response should be the javi_comics directory serialized.
+    assert response_json == javi_comics_serialized
 
-    # Check the path contents.
-    path_contents = response_json.get('path_contents')
-    assert sorted(path_contents.keys()) == ['comics', 'directories', 'name']
-    comics = path_contents.get('comics')
-    assert len(comics) == 1
-    assert comics[0].get('name') == '01 - A Comic.cbz'
-    assert 'path' in comics[0].keys()
-    assert path_contents.get('directories') == []
-    assert path_contents.get('name') == 'Javi Comics'
+    # The root directory should have 1 child, "the comic cbz file".
+    assert len(response_json.get('children')) == 1
+    root_dir_child_json = response_json.get('children')[0]
+    assert root_dir_child_json == comic_serialized
 
 
-@pytest.mark.skip
+@pytest.mark.django_db
 def test_api_comic_detail():
+    _setup()
     client = Client()
 
-    image_comics_path = os.path.join(settings.COMICS_ROOT, 'Javi Comics')
-    directory = Directory(path=get_encoded_path(image_comics_path))
+    comic = FileItem.objects.get(file_type=FileItem.COMIC)
+    comic_serialized = FileItemSerializer(comic).data
 
-    # Get the path of the comic and create a comic instance.
-    url = reverse('reader:api_directory', kwargs={'directory_path': directory.path})
-    response = client.get(url)
-    comic_json = response.json().get('path_contents').get('comics')[0]
-    comic = Comic(path=comic_json.get('path'))
-
-    # Check the comic details.
-    url = reverse('reader:api_comic_detail', kwargs={'comic_path': comic.path})
+    # Get the path of the root directory, check the directory properties.
+    url = reverse('reader:fileitem-detail', kwargs={'pk': comic.pk})
     response = client.get(url)
     response_json = response.json()
-    assert response_json.get('comic_name') == comic.name
-    assert response_json.get('num_pages') == 3
-    assert response_json.get('parent_path') == comic.get_parent_path()
+    assert response.status_code == 200
+    # The response should be the test comic serialized, which should have 3 pages.
+    assert response_json == comic_serialized
 
 
 # TODO: CircleCI won't run `os.mkdir`, look into it and fix it.
