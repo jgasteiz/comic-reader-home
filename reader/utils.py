@@ -226,15 +226,3 @@ class Comic(PathBasedClass):
         if not os.path.exists(self.extract_path):
             os.mkdir(self.extract_path)
             self.cb_file.extractall(self.extract_path)
-
-    def bookmark_page(self, page_number):
-        """
-        Create a bookmark on the given page or update an existing one
-        for this comic with the given page.
-        """
-        bookmark, created = Bookmark.objects.get_or_create(
-            comic_path=self.path,
-            title=self.name
-        )
-        bookmark.page_num = page_number
-        bookmark.save()

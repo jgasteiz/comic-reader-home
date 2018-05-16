@@ -34,6 +34,21 @@ class FileItem(models.Model):
         self.file_type = self.DIRECTORY if os.path.isdir(self.path) else self.COMIC
         super(FileItem, self).save(*args, **kwargs)
 
+    def bookmark_page(self, page_number):
+        """
+        Create or update and existing bookmark for this comic
+        on the given page number.
+        """
+        if self.file_type == self.COMIC:
+            bookmark, created = Bookmark.objects.get_or_create(
+                comic_id=self.pk,
+                title=self.name,
+            )
+            bookmark.page_num = page_number
+            bookmark.save(update_fields=['page_num'])
+        else:
+            raise Exception('Can\'t bookmark a page on a non-comic FileItem object ({})'.format(self.file_type))
+
     @property
     def is_root(self):
         return self.path == settings.COMICS_ROOT
@@ -68,12 +83,11 @@ class Bookmark(models.Model):
     """
     Model to keep track of the active page in a comic.
     """
-    title = models.CharField(max_length=128)
-    comic_path = models.CharField(max_length=512)
-    page_num = models.IntegerField(null=True)
+    page_num = models.IntegerField()
+    comic = models.ForeignKey('FileItem', on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.title
+        return 'Page %d on %s'.format(self.page_num, self.comic.name)
 
 
 class Favorite(models.Model):

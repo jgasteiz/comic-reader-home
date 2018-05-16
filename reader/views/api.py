@@ -45,12 +45,12 @@ def bookmark_comic_page(request):
     try:
         body_unicode = request.body.decode('utf-8')
         payload = json.loads(body_unicode)
-        comic_path = payload.get('comic_path')
+        comic_id = payload.get('comic_id')
         page_number = payload.get('page_num')
-        comic = Comic(comic_path)
+        comic = get_object_or_404(FileItem, pk=int(comic_id))
         comic.bookmark_page(page_number)
         return HttpResponse(
-            json.dumps({'comic_path': comic.path, 'page_num': page_number}),
+            json.dumps({'comic_id': comic.pk, 'page_num': page_number}),
             content_type='application/json',
         )
     except Exception as e:
