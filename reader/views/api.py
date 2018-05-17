@@ -10,7 +10,7 @@ from rest_framework.response import Response
 
 from ..models import FileItem
 from ..serializers import FileItemSerializer
-from ..utils import Comic
+from ..utils import get_extracted_comic_page
 
 
 class FileItemViewSet(viewsets.ModelViewSet):
@@ -30,11 +30,11 @@ class FileItemViewSet(viewsets.ModelViewSet):
 
 def comic_page_src(request, comic_id, page_number):
     try:
-        comic = Comic(comic_id)
+        comic = get_object_or_404(FileItem, pk=comic_id)
     except FileNotFoundError:
         return HttpResponse('Comic not found', status=404)
     try:
-        return serve(request, comic.get_extracted_comic_page(page_number), document_root='/')
+        return serve(request, get_extracted_comic_page(comic, page_number), document_root='/')
     except Http404 as e:
         return HttpResponse('Page not found. Reason: {}'.format(e), status=404)
 

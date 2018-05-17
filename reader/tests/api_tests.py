@@ -10,7 +10,7 @@ from django.urls import reverse
 from reader.models import Bookmark, FileItem
 from reader.serializers import FileItemSerializer, SimpleFileItemSerializer
 from reader.tasks import populate_db_from_path
-from reader.utils import Directory, Comic, get_encoded_path
+from reader.utils import get_encoded_path
 
 
 # TODO: look how to do setup with pytest
@@ -87,51 +87,51 @@ def test_api_comic_detail():
 
 
 # TODO: CircleCI won't run `os.mkdir`, look into it and fix it.
-@pytest.mark.skip
-def test_api_comic_page_src():
-    client = Client()
-
-    image_comics_path = os.path.join(settings.COMICS_ROOT, 'Javi Comics')
-    directory = Directory(path=get_encoded_path(image_comics_path))
-
-    # Get the path of the comic and create a comic instance.
-    url = reverse('reader:api_directory', kwargs={'directory_path': directory.path})
-    response = client.get(url)
-    comic_json = response.json().get('path_contents').get('comics')[0]
-    comic = Comic(path=comic_json.get('path'))
-
-    # Get a comic page.
-    url = reverse('reader:api_comic_page_src', kwargs={'comic_path': comic.path, 'page_number': 2})
-    response = client.get(url)
-    assert response.status_code == 200
-    assert type(response) == FileResponse
-    # TODO: look into making sure we're returning the right page.
-
-
-@pytest.mark.skip
-@pytest.mark.django_db
-def test_bookmark_comic_page():
-    client = Client()
-
-    image_comics_path = os.path.join(settings.COMICS_ROOT, 'Javi Comics')
-    directory = Directory(path=get_encoded_path(image_comics_path))
-
-    # Get the path of the comic and create a comic instance.
-    url = reverse('reader:api_directory', kwargs={'directory_path': directory.path})
-    response = client.get(url)
-    comic_json = response.json().get('path_contents').get('comics')[0]
-    comic = Comic(path=comic_json.get('path'))
-
-    # Bookmark the page number 2.
-    url = reverse('reader:bookmark_comic_page')
-    payload = json.dumps({'comic_path': comic.path, 'page_num': 2})
-    response = client.post(url, payload, content_type='application/json')
-    response_json = response.json()
-    assert response_json.get('comic_path') == comic.path
-    assert response_json.get('page_num') == 2
-
-    # A Bookmark should have been created.
-    bookmark = Bookmark.objects.get()
-    assert bookmark.title == comic.name
-    assert bookmark.comic_path == comic.path
-    assert bookmark.page_num == 2
+# @pytest.mark.skip
+# def test_api_comic_page_src():
+#     client = Client()
+#
+#     image_comics_path = os.path.join(settings.COMICS_ROOT, 'Javi Comics')
+#     directory = Directory(path=get_encoded_path(image_comics_path))
+#
+#     # Get the path of the comic and create a comic instance.
+#     url = reverse('reader:api_directory', kwargs={'directory_path': directory.path})
+#     response = client.get(url)
+#     comic_json = response.json().get('path_contents').get('comics')[0]
+#     comic = Comic(path=comic_json.get('path'))
+#
+#     # Get a comic page.
+#     url = reverse('reader:api_comic_page_src', kwargs={'comic_path': comic.path, 'page_number': 2})
+#     response = client.get(url)
+#     assert response.status_code == 200
+#     assert type(response) == FileResponse
+#     # TODO: look into making sure we're returning the right page.
+#
+#
+# @pytest.mark.skip
+# @pytest.mark.django_db
+# def test_bookmark_comic_page():
+#     client = Client()
+#
+#     image_comics_path = os.path.join(settings.COMICS_ROOT, 'Javi Comics')
+#     directory = Directory(path=get_encoded_path(image_comics_path))
+#
+#     # Get the path of the comic and create a comic instance.
+#     url = reverse('reader:api_directory', kwargs={'directory_path': directory.path})
+#     response = client.get(url)
+#     comic_json = response.json().get('path_contents').get('comics')[0]
+#     comic = Comic(path=comic_json.get('path'))
+#
+#     # Bookmark the page number 2.
+#     url = reverse('reader:bookmark_comic_page')
+#     payload = json.dumps({'comic_path': comic.path, 'page_num': 2})
+#     response = client.post(url, payload, content_type='application/json')
+#     response_json = response.json()
+#     assert response_json.get('comic_path') == comic.path
+#     assert response_json.get('page_num') == 2
+#
+#     # A Bookmark should have been created.
+#     bookmark = Bookmark.objects.get()
+#     assert bookmark.title == comic.name
+#     assert bookmark.comic_path == comic.path
+#     assert bookmark.page_num == 2
