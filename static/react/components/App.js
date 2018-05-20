@@ -8,12 +8,11 @@ import Reader from './Reader';
 const App = () => (
     <BrowserRouter
         basename="/"
-        forceRefresh={true}
     >
         <div>
             <Route exact path="/" component={Directory} />
-            <Route sensitive strict path="/dir/:id" component={Directory}/>
-            <Route sensitive strict path="/comic/:id/:pageNum?" component={Reader}/>
+            <Route path="/dir/:id" component={Directory}/>
+            <Route path="/comic/:id/:pageNum?" component={Reader}/>
         </div>
     </BrowserRouter>
 );

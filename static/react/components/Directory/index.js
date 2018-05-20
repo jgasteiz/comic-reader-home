@@ -13,44 +13,64 @@ export default class Directory extends React.Component {
             comics: [],
             parentId: null,
             name: null,
+            fileItemId: null,
         };
     }
 
     render() {
-        return (
-            <div>
-                {this._renderHeader()}
+        if (this._getFileItemDetails()) {
+            console.log('rendering this');
+            return (
+                <div>
+                    {this._renderHeader()}
 
-                <section className="container">
-                    <header>
-                        <div className="row">
-                            <h1 className="col">
-                                {this.state.name}
-                            </h1>
-                            <div className="col-auto">
-                                {this._renderBackLink()}
+                    <section className="container">
+                        <header>
+                            <div className="row">
+                                <h1 className="col">
+                                    {this.state.name}
+                                </h1>
+                                <div className="col-auto">
+                                    {this._renderBackLink()}
+                                </div>
                             </div>
-                        </div>
-                    </header>
+                        </header>
 
-                    {this._renderComics()}
-                    {this._renderDirectories()}
-                </section>
-            </div>
+                        {this._renderComics()}
+                        {this._renderDirectories()}
+                    </section>
+                </div>
+            );
+        }
+        return (
+            <div>Loading...</div>
         );
     }
 
     componentDidMount() {
-        FileItemService.getFileItemDetails(this.props.match.params.id, (res) => {
-            const directories = res['children'].filter(child => child['file_type'] === 'directory');
-            const comics = res['children'].filter(child => child['file_type'] === 'comic');
-            this.setState({
-                name: res['name'],
-                directories: directories,
-                comics: comics,
-                parentId: res['parent'],
+        this._getFileItemDetails();
+    }
+
+    // Private functions
+
+    _getFileItemDetails() {
+        if (this.state.fileItemId !== this.props.match.params.id) {
+            const newFileItemId = this.props.match.params.id;
+            FileItemService.getFileItemDetails(newFileItemId, (res) => {
+                const directories = res['children'].filter(child => child['file_type'] === 'directory');
+                const comics = res['children'].filter(child => child['file_type'] === 'comic');
+                this.setState({
+                    name: res['name'],
+                    directories: directories,
+                    comics: comics,
+                    parentId: res['parent'],
+                    fileItemId: newFileItemId
+                });
+                this.render();
             });
-        });
+            return false;
+        }
+        return true;
     }
 
     // Custom render functions
