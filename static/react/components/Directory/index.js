@@ -54,21 +54,40 @@ export default class Directory extends React.Component {
     // Private functions
 
     _getFileItemDetails() {
-        if (this.state.fileItemId !== this.props.match.params.id) {
-            const newFileItemId = this.props.match.params.id;
-            FileItemService.getFileItemDetails(newFileItemId, (res) => {
-                const directories = res['children'].filter(child => child['file_type'] === 'directory');
-                const comics = res['children'].filter(child => child['file_type'] === 'comic');
-                this.setState({
-                    name: res['name'],
-                    directories: directories,
-                    comics: comics,
-                    parentId: res['parent'],
-                    fileItemId: newFileItemId
+        const urlsearch = new URLSearchParams(this.props.location.search);
+        if (urlsearch.get('q')) {
+            if (this.state.fileItemId !== -1) {
+                FileItemService.getFileItemSearchResults(urlsearch.get('q'), (res) => {
+                    const directories = res.filter(child => child['file_type'] === 'directory');
+                    const comics = res.filter(child => child['file_type'] === 'comic');
+                    this.setState({
+                        name: `Search results of \`${urlsearch.get('q')}\``,
+                        directories: directories,
+                        comics: comics,
+                        parentId: undefined,
+                        fileItemId: -1,
+                    });
+                    this.render();
                 });
-                this.render();
-            });
-            return false;
+                return false;
+            }
+        } else {
+            if (this.state.fileItemId !== this.props.match.params.id) {
+                const newFileItemId = this.props.match.params.id;
+                FileItemService.getFileItemDetails(newFileItemId, (res) => {
+                    const directories = res['children'].filter(child => child['file_type'] === 'directory');
+                    const comics = res['children'].filter(child => child['file_type'] === 'comic');
+                    this.setState({
+                        name: res['name'],
+                        directories: directories,
+                        comics: comics,
+                        parentId: res['parent'],
+                        fileItemId: newFileItemId
+                    });
+                    this.render();
+                });
+                return false;
+            }
         }
         return true;
     }
@@ -83,6 +102,17 @@ export default class Directory extends React.Component {
                        className="navbar-brand d-flex align-items-center">
                         <strong>Comic Reader</strong>
                     </a>
+                    <form className="form-inline my-2 my-lg-0" method="get">
+                        <input className="form-control mr-sm-2"
+                               type="search"
+                               name="q"
+                               placeholder="Search for a comic or a directory"
+                        />
+                        <button
+                            className="btn btn-outline-success my-2 my-sm-0"
+                            type="submit"
+                        >Search</button>
+                    </form>
                 </div>
             </header>
         );

@@ -20,4 +20,16 @@ export default class FileItemService {
             })
             .then(res => callback(res));
     }
+
+    /**
+     * Search FileItems given a query.
+     *
+     * @param query
+     * @param callback
+     */
+    static getFileItemSearchResults(query, callback) {
+        fetch(`/api/fileitems/?q=${query}`)
+            .then(res => res.json())
+            .then(res => callback(res));
+    }
 }

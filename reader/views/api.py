@@ -9,17 +9,23 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 
 from ..models import FileItem
-from ..serializers import FileItemSerializer
+from ..serializers import FileItemSerializer, SimpleFileItemSerializer
 from ..utils import get_extracted_comic_page
 
 
 class FileItemViewSet(viewsets.ModelViewSet):
     serializer_class = FileItemSerializer
+    search_serializer_class = SimpleFileItemSerializer
     queryset = FileItem.objects.all()
 
     def list(self, request, **kwargs):
-        queryset = self.queryset.filter(parent=None)
-        serializer = self.serializer_class(queryset, context={'request': request}, many=True)
+        if request.GET.get('q'):
+            queryset = self.queryset.filter(name__icontains=request.GET.get('q'))
+            serializer_class = self.search_serializer_class
+        else:
+            queryset = self.queryset.filter(parent=None)
+            serializer_class = self.serializer_class
+        serializer = serializer_class(queryset, context={'request': request}, many=True)
         return Response(serializer.data)
 
     def retrieve(self, request, pk=None, **kwargs):
@@ -49,14 +55,7 @@ def bookmark_comic_page(request):
         page_number = payload.get('page_num')
         comic = get_object_or_404(FileItem, pk=int(comic_id))
         comic.bookmark_page(page_number)
-        return HttpResponse(
-            json.dumps({'comic_id': comic.pk, 'page_num': page_number}),
-            content_type='application/json',
-        )
+        return Response({'comic_id': comic.pk, 'page_num': page_number})
     except Exception as e:
         logging.critical(e)
-        return HttpResponse(
-            json.dumps({'error': e}),
-            content_type='application/json',
-            status=400,
-        )
+        return Response({'error': e}, status=400)
