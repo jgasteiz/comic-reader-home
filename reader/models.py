@@ -25,7 +25,7 @@ class FileItem(models.Model):
         ordering = ['-file_type', 'name']
 
     def __str__(self):
-        return '%s - %s' % (self.file_type, self.name)
+        return self.name
 
     def save(self, *args, **kwargs):
         # Set the directory name
