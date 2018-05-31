@@ -1,16 +1,10 @@
-import json
-import os
-
 import pytest
-from django.conf import settings
-from django.http import FileResponse
 from django.test import Client
 from django.urls import reverse
 
-from reader.models import Bookmark, FileItem
+from reader.models import FileItem
 from reader.serializers import FileItemSerializer, SimpleFileItemSerializer
 from reader.tasks import populate_db_from_path
-from reader.utils import get_encoded_path
 
 
 # TODO: look how to do setup with pytest
