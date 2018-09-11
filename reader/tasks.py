@@ -14,6 +14,7 @@ def populate_db_from_path(path=settings.COMICS_ROOT, parent=None):
     all_file_items = FileItem.objects.all()
     for file_item in all_file_items:
         if not os.path.exists(file_item.path):
+            print('Deleting %s' % file_item.name)
             file_item.delete()
 
     # Start creating FileItem recursively, starting from the COMICS_ROOT.
