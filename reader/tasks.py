@@ -9,6 +9,13 @@ from reader.utils import is_file_name_comic_file
 def populate_db_from_path(path=settings.COMICS_ROOT, parent=None):
     file_item, _ = FileItem.objects.get_or_create(path=path, parent=parent)
 
+    # First check all existing directories and comics actually exist
+    # and delete the ones that don't.
+    all_file_items = FileItem.objects.all()
+    for file_item in all_file_items:
+        if not os.path.exists(file_item.path):
+            file_item.delete()
+
     # Start creating FileItem recursively, starting from the COMICS_ROOT.
     for path_name in os.listdir(path):
         # Skip hidden files/directories.
