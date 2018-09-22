@@ -2,19 +2,20 @@ VENV ?= ./env
 
 install:
 	python3 -m venv $(VENV) && \
-	$(VENV)/bin/pip install -r requirements/local.txt
+	$(VENV)/bin/pip install -r requirements/local.txt && \
+	yarn install
 
 migrate:
 	$(VENV)/bin/python3 manage.py migrate
 
-loaddata:
+populatedb:
 	$(VENV)/bin/python3 manage.py populatedb
+
+build:
+	yarn webpack
 
 serve:
 	$(VENV)/bin/python manage.py runserver
-
-servewithyarn:
-	$(VENV)/bin/python manage.py yarnrunserver
 
 test:
 	$(VENV)/bin/pytest ${ARGS}
