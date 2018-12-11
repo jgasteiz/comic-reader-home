@@ -19,7 +19,7 @@ class FileItem(models.Model):
     path = models.TextField(blank=True)
     file_type = models.CharField(max_length=12, choices=FILE_TYPE_CHOICES, blank=True)
 
-    parent = models.ForeignKey('FileItem', related_name='children', on_delete=models.CASCADE, null=True)
+    parent = models.ForeignKey('FileItem', related_name='children', on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         ordering = ['-file_type', 'name']
@@ -27,12 +27,16 @@ class FileItem(models.Model):
     def __str__(self):
         return self.name
 
-    def save(self, *args, **kwargs):
-        # Set the directory name
+    def set_name(self):
         self.name = self.path.split('/')[-1]
-        # Set the file type
-        self.file_type = self.DIRECTORY if os.path.isdir(self.path) else self.COMIC
-        super(FileItem, self).save(*args, **kwargs)
+        self.save()
+
+    def set_file_type(self):
+        if os.path.isdir(self.path):
+            self.file_type = self.DIRECTORY
+        else:
+            self.file_type = self.COMIC
+        self.save()
 
     def bookmark_page(self, page_number):
         """

@@ -17,8 +17,15 @@ def delete_old_items():
             file_item.delete()
 
 
-def populate_db_from_path(path=settings.COMICS_ROOT, parent=None):
+def get_or_create_file_item(path, parent):
     file_item, _ = FileItem.objects.get_or_create(path=path, parent=parent)
+    file_item.set_name()
+    file_item.set_file_type()
+    return file_item
+
+
+def populate_db_from_path(path=settings.COMICS_ROOT, parent=None):
+    file_item = get_or_create_file_item(path=path, parent=parent)
 
     # Start creating FileItem recursively.
     for path_name in os.listdir(path):
@@ -33,4 +40,4 @@ def populate_db_from_path(path=settings.COMICS_ROOT, parent=None):
             populate_db_from_path(path=child_path, parent=file_item)
         # If it's a comic, simply create the file item.
         elif is_file_name_comic_file(path_name):
-            FileItem.objects.get_or_create(path=child_path, parent=file_item)
+            get_or_create_file_item(path=child_path, parent=file_item)

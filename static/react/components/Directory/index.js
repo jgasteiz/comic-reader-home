@@ -19,7 +19,6 @@ export default class Directory extends React.Component {
 
     render() {
         if (this._getFileItemDetails()) {
-            console.log('rendering this');
             return (
                 <div>
                     {this._renderHeader()}
