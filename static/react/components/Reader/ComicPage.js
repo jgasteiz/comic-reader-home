@@ -37,20 +37,23 @@ export default class ComicPage extends React.Component {
      * previous page.
      */
     previousPageHandler() {
-        const pageHeight = this.refs.pageImage.height;
+        // TODO: improve this, not good yet.
+        // const pageHeight = this.refs.pageImage.height;
+        //
+        // // If we can still scroll up, scroll up 1/3 of the page.
+        // if (window.scrollY > 0) {
+        //     const newScrollYPosition = window.scrollY - pageHeight / 2 + window.innerHeight / 2;
+        //     window.scrollTo({
+        //         top: newScrollYPosition,
+        //         behavior: "smooth"
+        //     });
+        // }
+        // // Otherwise, previous page.
+        // else {
+        //     this.props.previousPageHandler();
+        // }
 
-        // If we can still scroll up, scroll up 1/3 of the page.
-        if (window.scrollY > 0) {
-            const newScrollYPosition = window.scrollY - pageHeight / 2 + window.innerHeight / 2;
-            window.scrollTo({
-                top: newScrollYPosition,
-                behavior: "smooth"
-            });
-        }
-        // Otherwise, previous page.
-        else {
-            this.props.previousPageHandler();
-        }
+        this.props.previousPageHandler();
     }
 
     /**
@@ -58,21 +61,24 @@ export default class ComicPage extends React.Component {
      * next page.
      */
     nextPageHandler() {
-        const currentScroll = window.scrollY + window.innerHeight;
-        const pageHeight = this.refs.pageImage.height;
+        // TODO: improve this, not good yet.
+        // const currentScroll = window.scrollY + window.innerHeight;
+        // const pageHeight = this.refs.pageImage.height;
+        //
+        // // If we can still scroll down, scroll down 1/3 of the page.
+        // if (currentScroll + 10 < pageHeight) {
+        //     const newScrollYPosition = window.scrollY + pageHeight / 2 - window.innerHeight / 2;
+        //     console.log(`Current ${window.scrollY}, New ${newScrollYPosition}, Page height ${pageHeight}`);
+        //     window.scrollTo({
+        //         top: newScrollYPosition,
+        //         behavior: "smooth"
+        //     });
+        // }
+        // // Otherwise, next page.
+        // else {
+        //     this.props.nextPageHandler();
+        // }
 
-        // If we can still scroll down, scroll down 1/3 of the page.
-        if (currentScroll + 10 < pageHeight) {
-            const newScrollYPosition = window.scrollY + pageHeight / 2 - window.innerHeight / 2;
-            console.log(`Current ${window.scrollY}, New ${newScrollYPosition}, Page height ${pageHeight}`);
-            window.scrollTo({
-                top: newScrollYPosition,
-                behavior: "smooth"
-            });
-        }
-        // Otherwise, next page.
-        else {
-            this.props.nextPageHandler();
-        }
+        this.props.nextPageHandler();
     }
 }
