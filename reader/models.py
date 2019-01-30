@@ -4,6 +4,7 @@ from zipfile import ZipFile
 from django.conf import settings
 from django.db import models
 from django.utils.functional import cached_property
+from django.utils import http
 from rarfile import RarFile
 
 
@@ -59,8 +60,9 @@ class FileItem(models.Model):
 
     @property
     def encoded_path(self):
-        from reader.utils import get_encoded_path
-        return get_encoded_path(self.path)
+        encoded_path = http.urlsafe_base64_encode(bytes(self.path, 'utf-8'))
+        encoded_path = encoded_path.decode('utf-8').replace('\n', '')
+        return encoded_path
 
     @cached_property
     def num_pages(self):

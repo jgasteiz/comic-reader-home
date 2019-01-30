@@ -1,11 +1,11 @@
 from rest_framework import serializers
 
-from reader.models import FileItem
+from reader import models
 
 
 class SimpleFileItemSerializer(serializers.ModelSerializer):
     class Meta:
-        model = FileItem
+        model = models.FileItem
         fields = (
             'pk',
             'name',
@@ -19,7 +19,7 @@ class FileItemSerializer(serializers.ModelSerializer):
     children = SimpleFileItemSerializer(many=True)
 
     class Meta:
-        model = FileItem
+        model = models.FileItem
         fields = (
             'pk',
             'name',

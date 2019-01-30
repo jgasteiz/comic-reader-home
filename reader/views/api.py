@@ -8,15 +8,14 @@ from django.views.static import serve
 from rest_framework import viewsets
 from rest_framework.response import Response
 
-from ..models import FileItem
-from ..serializers import FileItemSerializer, SimpleFileItemSerializer
-from ..utils import get_extracted_comic_page
+from reader import models, serializers
+from reader.domain import file_handler
 
 
 class FileItemViewSet(viewsets.ModelViewSet):
-    serializer_class = FileItemSerializer
-    search_serializer_class = SimpleFileItemSerializer
-    queryset = FileItem.objects.all()
+    serializer_class = serializers.FileItemSerializer
+    search_serializer_class = serializers.SimpleFileItemSerializer
+    queryset = models.FileItem.objects.all()
 
     def list(self, request, **kwargs):
         if request.GET.get('q'):
@@ -36,11 +35,12 @@ class FileItemViewSet(viewsets.ModelViewSet):
 
 def comic_page_src(request, comic_id, page_number):
     try:
-        comic = get_object_or_404(FileItem, pk=comic_id)
+        comic = get_object_or_404(models.FileItem, pk=comic_id)
     except FileNotFoundError:
         return HttpResponse('Comic not found', status=404)
     try:
-        return serve(request, get_extracted_comic_page(comic, page_number), document_root='/')
+        page = file_handler.get_extracted_comic_page(comic, page_number)
+        return serve(request, page, document_root='/')
     except Http404 as e:
         return HttpResponse('Page not found. Reason: {}'.format(e), status=404)
 
@@ -53,7 +53,7 @@ def bookmark_comic_page(request):
         payload = json.loads(body_unicode)
         comic_id = payload.get('comic_id')
         page_number = payload.get('page_num')
-        comic = get_object_or_404(FileItem, pk=int(comic_id))
+        comic = get_object_or_404(models.FileItem, pk=int(comic_id))
         comic.bookmark_page(page_number)
         return Response({'comic_id': comic.pk, 'page_num': page_number})
     except Exception as e:

@@ -2,30 +2,23 @@ import os
 
 from django.conf import settings
 
-from reader.models import FileItem
-from reader.utils import is_file_name_comic_file
+from reader import models
+from reader.domain import file_handler
 
 
 def delete_old_items():
     """
     Delete all FileItems which paths don't exist anymore.
     """
-    all_file_items = FileItem.objects.all()
+    all_file_items = models.FileItem.objects.all()
     for file_item in all_file_items:
         if not os.path.exists(file_item.path):
             print('Deleting %s' % file_item.name)
             file_item.delete()
 
 
-def get_or_create_file_item(path, parent):
-    file_item, _ = FileItem.objects.get_or_create(path=path, parent=parent)
-    file_item.set_name()
-    file_item.set_file_type()
-    return file_item
-
-
 def populate_db_from_path(path=settings.COMICS_ROOT, parent=None):
-    file_item = get_or_create_file_item(path=path, parent=parent)
+    file_item = file_handler.get_or_create_file_item(path=path, parent=parent)
 
     # Start creating FileItem recursively.
     for path_name in os.listdir(path):
@@ -39,5 +32,5 @@ def populate_db_from_path(path=settings.COMICS_ROOT, parent=None):
         if os.path.isdir(child_path):
             populate_db_from_path(path=child_path, parent=file_item)
         # If it's a comic, simply create the file item.
-        elif is_file_name_comic_file(path_name):
-            get_or_create_file_item(path=child_path, parent=file_item)
+        elif file_handler.is_file_name_comic_file(path_name):
+            file_handler.get_or_create_file_item(path=child_path, parent=file_item)

@@ -4,18 +4,9 @@ from zipfile import ZipFile
 
 from django.conf import settings
 from django.http import Http404
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from rarfile import RarFile
 
-from .models import FileItem
-
-
-def get_encoded_path(decoded_path):
-    return urlsafe_base64_encode(bytes(decoded_path, 'utf-8')).decode('utf-8').replace('\n', '')
-
-
-def get_decoded_path(encoded_path):
-    return urlsafe_base64_decode(bytes(encoded_path, 'utf-8')).decode('utf-8')
+from reader import models
 
 
 def clear_tmp():
@@ -108,9 +99,19 @@ def extract_everything():
     """
     Extract every comic in the comic directory.
     """
-    for comic in FileItem.objects.filter(file_type=FileItem.COMIC):
+    for comic in models.FileItem.objects.filter(file_type=models.FileItem.COMIC):
         extract_path = get_extract_path_for_comic(comic)
         cb_file = get_cb_file_for_comic(comic)
         if not os.path.exists(extract_path):
             os.mkdir(extract_path)
             cb_file.extractall(extract_path)
+
+
+def get_or_create_file_item(path, parent):
+    """
+    Create or retrieve an existing file for a given path and parent.
+    """
+    file_item, _ = models.FileItem.objects.get_or_create(path=path, parent=parent)
+    file_item.set_name()
+    file_item.set_file_type()
+    return file_item

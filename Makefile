@@ -14,6 +14,9 @@ populatedb:
 build:
 	yarn webpack
 
+watch:
+	yarn webpack-watch
+
 serve:
 	$(VENV)/bin/python manage.py runserver
 
