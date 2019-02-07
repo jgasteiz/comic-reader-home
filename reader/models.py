@@ -9,15 +9,17 @@ from rarfile import RarFile
 
 
 class FileItem(models.Model):
+    name = models.CharField(max_length=512, blank=True)
+    path = models.TextField(blank=True)
+
     COMIC = 'comic'
+    VIDEO = 'video'
     DIRECTORY = 'directory'
     FILE_TYPE_CHOICES = (
         (COMIC, COMIC),
+        (VIDEO, VIDEO),
         (DIRECTORY, DIRECTORY),
     )
-
-    name = models.CharField(max_length=512, blank=True)
-    path = models.TextField(blank=True)
     file_type = models.CharField(max_length=12, choices=FILE_TYPE_CHOICES, blank=True)
 
     parent = models.ForeignKey('FileItem', related_name='children', on_delete=models.CASCADE, null=True, blank=True)
@@ -36,7 +38,10 @@ class FileItem(models.Model):
         if os.path.isdir(self.path):
             self.file_type = self.DIRECTORY
         else:
-            self.file_type = self.COMIC
+            if self.name.endswith('mp4'):
+                self.file_type = self.VIDEO
+            else:
+                self.file_type = self.COMIC
         self.save()
 
     def bookmark_page(self, page_number):

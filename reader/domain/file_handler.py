@@ -27,6 +27,17 @@ def is_file_name_comic_file(file_name):
     return True
 
 
+def is_file_name_video_file(file_name):
+    """
+    Checks whether a given file name is a valid video file name or not.
+    """
+    if not file_name.endswith('.mp4'):
+        return False
+    if file_name.startswith('.'):
+        return False
+    return True
+
+
 def get_cb_file_for_comic(comic):
     """
     Initialise the cb_file. This will raise a FileNotFoundError if

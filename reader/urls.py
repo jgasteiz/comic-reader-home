@@ -13,11 +13,13 @@ urlpatterns = [
     # API
     path('api/', include(router.urls)),
     path('api/page/<int:comic_id>/<int:page_number>/', api.comic_page_src, name='api_comic_page_src'),
+    path('api/video/<int:video_id>/', api.video, name='video'),
     path('api/bookmark/', api.bookmark_comic_page, name='bookmark_comic_page'),
 
     # Public views
     path('', public.home, name='root'),
     path('dir/<int:fileitem_id>/', public.home, name='dir'),
+    path('video/<int:fileitem_id>/', public.home, name='video'),
     path('comic/<int:fileitem_id>/', public.home, name='comic'),
     path('comic/<int:fileitem_id>/<int:page_number>/', public.home, name='comic'),
 ]

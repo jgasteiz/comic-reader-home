@@ -40,9 +40,19 @@ def comic_page_src(request, comic_id, page_number):
         return HttpResponse('Comic not found', status=404)
     try:
         page = file_handler.get_extracted_comic_page(comic, page_number)
-        return serve(request, page, document_root='/')
     except Http404 as e:
         return HttpResponse('Page not found. Reason: {}'.format(e), status=404)
+    else:
+        return serve(request, page, document_root='/')
+
+
+def video(request, video_id):
+    try:
+        video = get_object_or_404(models.FileItem, pk=video_id)
+    except FileNotFoundError:
+        return HttpResponse('Video not found', status=404)
+    else:
+        return serve(request, video.path, document_root='/')
 
 
 # TODO: remove the `csrf_exempt` as soon as csrf is dealt with properly in the FE.

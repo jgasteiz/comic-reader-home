@@ -151,5 +151,7 @@ DEFAULT_COMIC_EXTRACT_PATH = os.path.join(BASE_DIR, 'static/comics/tmp')
 COMIC_EXTRACT_PATH = os.environ.get('COMIC_EXTRACT_PATH', DEFAULT_COMIC_EXTRACT_PATH)
 if os.environ.get('USE_DOCKER') == 'true':
     COMICS_ROOT = '/comics'
+    VIDEOS_ROOT = '/movies'
 else:
     COMICS_ROOT = os.environ.get('COMICS_ROOT')
+    VIDEOS_ROOT = os.environ.get('VIDEOS_ROOT')

@@ -11,6 +11,7 @@ export default class Directory extends React.Component {
         this.state = {
             directories: [],
             comics: [],
+            videos: [],
             parentId: null,
             name: null,
             fileItemId: null,
@@ -36,6 +37,7 @@ export default class Directory extends React.Component {
                         </header>
 
                         {this._renderComics()}
+                        {this._renderVideos()}
                         {this._renderDirectories()}
                     </section>
                 </div>
@@ -59,10 +61,12 @@ export default class Directory extends React.Component {
                 FileItemService.getFileItemSearchResults(urlsearch.get('q'), (res) => {
                     const directories = res.filter(child => child['file_type'] === 'directory');
                     const comics = res.filter(child => child['file_type'] === 'comic');
+                    const videos = res.filter(child => child['file_type'] === 'video');
                     this.setState({
                         name: `Search results of \`${urlsearch.get('q')}\``,
                         directories: directories,
                         comics: comics,
+                        videos: videos,
                         parentId: undefined,
                         fileItemId: -1,
                     });
@@ -76,10 +80,12 @@ export default class Directory extends React.Component {
                 FileItemService.getFileItemDetails(newFileItemId, (res) => {
                     const directories = res['children'].filter(child => child['file_type'] === 'directory');
                     const comics = res['children'].filter(child => child['file_type'] === 'comic');
+                    const videos = res['children'].filter(child => child['file_type'] === 'video');
                     this.setState({
                         name: res['name'],
                         directories: directories,
                         comics: comics,
+                        videos: videos,
                         parentId: res['parent'],
                         fileItemId: newFileItemId
                     });
@@ -164,6 +170,46 @@ export default class Directory extends React.Component {
                     </thead>
                     <tbody>
                         {comicRows}
+                    </tbody>
+                </table>
+            </div>
+        );
+    }
+
+    _renderVideos() {
+        if (this.state.videos.length === 0) {
+            return '';
+        }
+        const videoRows = this.state.videos.map(function (video, index) {
+            return (<tr key={video.pk}>
+                <td>
+                    {index + 1}
+                </td>
+                <td>
+                    {video.name}
+                </td>
+                <td className="text-right">
+                    <Link to={`/video/${video.pk}/`} className="btn btn-primary btn-sm">
+                        Watch
+                    </Link>
+                </td>
+            </tr>);
+        });
+
+        return (
+            <div>
+                <h2>Comics</h2>
+
+                <table className="table table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Video name</th>
+                        <th scope="col" className="text-right">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {videoRows}
                     </tbody>
                 </table>
             </div>

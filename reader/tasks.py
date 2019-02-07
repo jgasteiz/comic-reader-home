@@ -17,7 +17,7 @@ def delete_old_items():
             file_item.delete()
 
 
-def populate_db_from_path(path=settings.COMICS_ROOT, parent=None):
+def populate_db_from_path(path=settings.VIDEOS_ROOT, parent=None):
     file_item = file_handler.get_or_create_file_item(path=path, parent=parent)
 
     # Start creating FileItem recursively.
@@ -33,4 +33,6 @@ def populate_db_from_path(path=settings.COMICS_ROOT, parent=None):
             populate_db_from_path(path=child_path, parent=file_item)
         # If it's a comic, simply create the file item.
         elif file_handler.is_file_name_comic_file(path_name):
+            file_handler.get_or_create_file_item(path=child_path, parent=file_item)
+        elif file_handler.is_file_name_video_file(path_name):
             file_handler.get_or_create_file_item(path=child_path, parent=file_item)
