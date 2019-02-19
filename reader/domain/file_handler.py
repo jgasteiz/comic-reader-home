@@ -20,11 +20,24 @@ def is_file_name_comic_file(file_name):
     """
     Checks whether a given file name is a valid comic file name or not.
     """
-    if not file_name.endswith('.cbz') and not file_name.endswith('.cbr'):
-        return False
     if file_name.startswith('.'):
         return False
-    return True
+    if file_name.endswith('.cbz') or file_name.endswith('.cbr'):
+        return True
+    else:
+        return False
+
+
+def is_file_name_pdf(file_name):
+    """
+    Checks whether a given file name is a pdf file.
+    """
+    if file_name.startswith('.'):
+        return False
+    if file_name.endswith('.pdf'):
+        return True
+    else:
+        return False
 
 
 def get_cb_file_for_comic(comic):

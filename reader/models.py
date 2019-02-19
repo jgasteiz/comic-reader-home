@@ -10,8 +10,10 @@ from rarfile import RarFile
 
 class FileItem(models.Model):
     COMIC = 'comic'
+    PDF = 'pdf'
     DIRECTORY = 'directory'
     FILE_TYPE_CHOICES = (
+        (PDF, PDF),
         (COMIC, COMIC),
         (DIRECTORY, DIRECTORY),
     )
@@ -35,6 +37,8 @@ class FileItem(models.Model):
     def set_file_type(self):
         if os.path.isdir(self.path):
             self.file_type = self.DIRECTORY
+        elif self.path.endswith('.pdf'):
+            self.file_type = self.PDF
         else:
             self.file_type = self.COMIC
         self.save()

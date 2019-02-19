@@ -34,3 +34,5 @@ def populate_db_from_path(path=settings.COMICS_ROOT, parent=None):
         # If it's a comic, simply create the file item.
         elif file_handler.is_file_name_comic_file(path_name):
             file_handler.get_or_create_file_item(path=child_path, parent=file_item)
+        elif file_handler.is_file_name_pdf(path_name):
+            file_handler.get_or_create_file_item(path=child_path, parent=file_item)
