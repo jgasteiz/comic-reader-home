@@ -18,7 +18,7 @@ watch:
 	yarn webpack-watch
 
 serve:
-	$(VENV)/bin/python manage.py runserver
+	$(VENV)/bin/python manage.py runserver 0.0.0.0:8000
 
 test:
 	$(VENV)/bin/pytest ${ARGS}
