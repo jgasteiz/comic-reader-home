@@ -39,7 +39,7 @@ export default class ComicService {
 
     /**
      * Method to fetch a comic page with 5 retries.
-     * 
+     *
      * @param pageNum
      * @param comicId
      * @param callback
@@ -62,11 +62,21 @@ export default class ComicService {
      * Preload the next 4 comic pages of the given page number.
      */
     static preloadComicPages(pageNum, comicId) {
-        for (let i = pageNum; i < pageNum + 4; i++) {
-            const imagePath = `/api/page/${comicId}/${i}/`;
-            new Image().src = imagePath;
-            console.log(`Preloaded ${imagePath}`);
-        }
+
+        const _loadPage = (pageNum, pageUrl, pagesLeftToLoad) => {
+            if (pagesLeftToLoad < 0) {
+                return;
+            }
+            const image = new Image();
+            image.onload = () => {
+                _loadPage(pageNum + 1, pageUrl, pagesLeftToLoad - 1);
+            };
+            image.src = `${pageUrl}/${pageNum}/`;
+            console.log(`Preloaded ${pageUrl}, ${pageNum}`);
+        };
+
+        const pageUrl = `/api/page/${comicId}`;
+        _loadPage(pageNum, pageUrl, 5);
     }
 
     /**
