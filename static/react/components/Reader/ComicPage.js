@@ -37,6 +37,9 @@ export default class ComicPage extends React.Component {
      * previous page.
      */
     previousPageHandler() {
+        if (!this.refs.pageImage) {
+            this.props.previousPageHandler();
+        }
         const pageHeight = this.refs.pageImage.height;
 
         // If we can still scroll up, scroll up 1/3 of the page.
@@ -59,6 +62,9 @@ export default class ComicPage extends React.Component {
      */
     nextPageHandler() {
         const currentScroll = window.scrollY + window.innerHeight;
+        if (!this.refs.pageImage) {
+            this.props.nextPageHandler();
+        }
         const pageHeight = this.refs.pageImage.height;
 
         // If we can still scroll down, scroll down 1/3 of the page.
