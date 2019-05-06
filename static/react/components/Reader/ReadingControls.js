@@ -11,7 +11,7 @@ export default class ReadingControls extends React.Component {
         super(props);
 
         this.state = {
-            mode: 'standard-view'
+            mode: 'fit-height'
         };
 
         // Bind the event handlers to `this`

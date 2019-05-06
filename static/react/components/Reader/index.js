@@ -18,7 +18,7 @@ export default class Reader extends React.Component {
 
         this.state = {
             pageSrc: '',
-            readingMode: 'standard-view',
+            readingMode: 'fit-height',
             comicId: 0,
             parentId: 0,
             currentPage: pageNum,
