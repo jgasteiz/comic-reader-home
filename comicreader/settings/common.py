@@ -74,18 +74,22 @@ WSGI_APPLICATION = 'comicreader.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
-if os.environ.get('USE_SQLITE'):
+if os.environ.get("USE_SQLITE"):
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
         }
     }
 else:
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'comics',
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "HOST": os.environ.get("DATABASE_HOST"),
+            "NAME": os.environ.get("DATABASE_NAME"),
+            "USER": os.environ.get("DATABASE_USER"),
+            "PASSWORD": os.environ.get("DATABASE_PASSWORD"),
+            "PORT": os.environ.get("DATABASE_PORT"),
         }
     }
 

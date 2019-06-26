@@ -1,33 +1,34 @@
+createdb:
+	docker-compose run db createdb -U postgres "comics"
+
+migrate:
+	docker-compose up &
+	docker-compose run web python manage.py migrate
+	docker-compose run web python manage.py populatedb
+	docker-compose down
+
+
 VENV ?= ./env
 
-install:
+local_install:
 	python3 -m venv $(VENV) && \
 	$(VENV)/bin/pip install -r requirements/local.txt && \
 	yarn install
 
-migrate:
+local_migrate:
 	$(VENV)/bin/python3 manage.py migrate
 
-populatedb:
+local_populatedb:
 	$(VENV)/bin/python3 manage.py populatedb
 
-build:
+local_build:
 	yarn webpack
 
-watch:
+local_watch:
 	yarn webpack-watch
 
-serve:
+local_serve:
 	$(VENV)/bin/python manage.py runserver 0.0.0.0:8000
 
-test:
+local_test:
 	$(VENV)/bin/pytest ${ARGS}
-
-dockerbuild:
-	docker-compose up --build
-
-dockerstop:
-	docker-compose down
-
-dockerserve:
-	docker-compose up web

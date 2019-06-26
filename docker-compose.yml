@@ -1,11 +1,28 @@
 version: '3'
 
 services:
+
+  db:
+    image: postgres:9.5.10
+    volumes:
+      - ${SQL_DIR_PATH}:/sql:cached
+      - ${POSTGRES_DATA_PATH}:/var/lib/postgresql/data:cached
+      - /tmp:/tmp:cached
+    ports:
+      - "5432:5432"
+
   web:
     build: .
-    command: ./manage.py runserver 0.0.0.0:8000
+    environment:
+      - DEBUG=1
+    working_dir: /code
+    command: bash -c 'until timeout 2 bash -c "</dev/tcp/db/5432" 2> /dev/null; do echo "Waiting for DB to accept connections"; sleep 5; done; exec ./manage.py runserver 0.0.0.0:8000'
     volumes:
       - .:/code
-      - ${COMICS_ROOT}:/comics
+      - ${COMICS_LOCAL}:/comics:cached
+      - ${SQL_DIR_PATH}:/sql:cached
+      - /tmp:/tmp:cached
     ports:
       - "8000:8000"
+    depends_on:
+      - db

@@ -14,11 +14,11 @@ RUN apt-get update && apt-get install -y nodejs
 RUN npm install -g yarn
 
 # Set PYTHONUNBUFFERED so output is displayed in the Docker log
+ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED=1
 
 EXPOSE 8000
 RUN mkdir /comics
-RUN mkdir /code
 WORKDIR /code
 
 # Install dependencies
