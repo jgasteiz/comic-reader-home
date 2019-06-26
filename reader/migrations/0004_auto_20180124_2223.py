@@ -5,23 +5,14 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('reader', '0003_favorite'),
-    ]
+    dependencies = [("reader", "0003_favorite")]
 
     operations = [
-        migrations.AlterModelOptions(
-            name='favorite',
-            options={'ordering': ['title']},
+        migrations.AlterModelOptions(name="favorite", options={"ordering": ["title"]}),
+        migrations.AlterField(
+            model_name="bookmark", name="title", field=models.CharField(max_length=128)
         ),
         migrations.AlterField(
-            model_name='bookmark',
-            name='title',
-            field=models.CharField(max_length=128),
-        ),
-        migrations.AlterField(
-            model_name='favorite',
-            name='title',
-            field=models.CharField(max_length=128),
+            model_name="favorite", name="title", field=models.CharField(max_length=128)
         ),
     ]

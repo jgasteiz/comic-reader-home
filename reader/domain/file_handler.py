@@ -4,8 +4,8 @@ from zipfile import ZipFile
 
 from django.conf import settings
 from django.http import Http404
-from rarfile import RarFile
 
+from rarfile import RarFile
 from reader import models
 
 
@@ -13,16 +13,16 @@ def clear_tmp():
     """
     Clear the tmp directory.
     """
-    os.system('rm -rf {}/*'.format(settings.COMIC_EXTRACT_PATH))
+    os.system("rm -rf {}/*".format(settings.COMIC_EXTRACT_PATH))
 
 
 def is_file_name_comic_file(file_name):
     """
     Checks whether a given file name is a valid comic file name or not.
     """
-    if not file_name.endswith('.cbz') and not file_name.endswith('.cbr'):
+    if not file_name.endswith(".cbz") and not file_name.endswith(".cbr"):
         return False
-    if file_name.startswith('.'):
+    if file_name.startswith("."):
         return False
     return True
 
@@ -32,7 +32,7 @@ def get_cb_file_for_comic(comic):
     Initialise the cb_file. This will raise a FileNotFoundError if
     zipfile/rarfile can't find the file.
     """
-    if comic.path.endswith('.cbz'):
+    if comic.path.endswith(".cbz"):
         return ZipFile(comic.path)
     return RarFile(comic.path)
 
@@ -49,10 +49,13 @@ def get_extracted_comic_pages(comic, page_numbers):
     cb_file = get_cb_file_for_comic(comic)
 
     # Set all the page names in order
-    comic_pages = sorted([
-        p for p in cb_file.namelist()
-        if p.endswith('.jpg') or p.endswith('.jpeg') or p.endswith('.png')
-    ])
+    comic_pages = sorted(
+        [
+            p
+            for p in cb_file.namelist()
+            if p.endswith(".jpg") or p.endswith(".jpeg") or p.endswith(".png")
+        ]
+    )
 
     page_file_paths = []
     for page_number in page_numbers:
@@ -65,7 +68,7 @@ def get_extracted_comic_pages(comic, page_numbers):
 
         # If it exists already, return it.
         if os.path.exists(page_file_path):
-            logging.info('Page exists, no need to extract it.')
+            logging.info("Page exists, no need to extract it.")
             page_file_paths.append(page_file_path)
             continue
 
@@ -79,7 +82,7 @@ def get_extracted_comic_pages(comic, page_numbers):
 
         # And if it exists, return it.
         if os.path.exists(page_file_path):
-            logging.info('Page extracted')
+            logging.info("Page extracted")
             page_file_paths.append(page_file_path)
 
     if len(page_file_paths) == 0:

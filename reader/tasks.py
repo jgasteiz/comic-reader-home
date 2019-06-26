@@ -13,7 +13,7 @@ def delete_old_items():
     all_file_items = models.FileItem.objects.all()
     for file_item in all_file_items:
         if not os.path.exists(file_item.path):
-            print('Deleting %s' % file_item.name)
+            print("Deleting %s" % file_item.name)
             file_item.delete()
 
 
@@ -23,7 +23,7 @@ def populate_db_from_path(path=settings.COMICS_ROOT, parent=None):
     # Start creating FileItem recursively.
     for path_name in os.listdir(path):
         # Skip hidden files/directories.
-        if path_name.startswith('.'):
+        if path_name.startswith("."):
             continue
 
         child_path = os.path.join(path, path_name)

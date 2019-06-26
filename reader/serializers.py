@@ -6,13 +6,7 @@ from reader import models
 class SimpleFileItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.FileItem
-        fields = (
-            'pk',
-            'name',
-            'path',
-            'encoded_path',
-            'file_type',
-        )
+        fields = ("pk", "name", "path", "encoded_path", "file_type")
 
 
 class FileItemSerializer(serializers.ModelSerializer):
@@ -21,12 +15,12 @@ class FileItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.FileItem
         fields = (
-            'pk',
-            'name',
-            'path',
-            'encoded_path',
-            'file_type',
-            'parent',
-            'children',
-            'num_pages',
+            "pk",
+            "name",
+            "path",
+            "encoded_path",
+            "file_type",
+            "parent",
+            "children",
+            "num_pages",
         )

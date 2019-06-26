@@ -23,7 +23,7 @@ def test_api_directory_root():
     javi_comics_serialized = SimpleFileItemSerializer(javi_comics).data
 
     # Get the path of the root directory, check the directory properties.
-    url = reverse('reader:fileitem-list')
+    url = reverse("reader:fileitem-list")
     response = client.get(url)
     response_json = response.json()
     assert response.status_code == 200
@@ -33,8 +33,8 @@ def test_api_directory_root():
     assert root_dir_json == root_dir_serialized
 
     # The root directory should have 1 child, `javi_comics`.
-    assert len(root_dir_json.get('children')) == 1
-    root_dir_child_json = root_dir_json.get('children')[0]
+    assert len(root_dir_json.get("children")) == 1
+    root_dir_child_json = root_dir_json.get("children")[0]
     assert root_dir_child_json == javi_comics_serialized
 
 
@@ -50,7 +50,7 @@ def test_api_directory():
     comic_serialized = SimpleFileItemSerializer(comic).data
 
     # Get the path of the root directory, check the directory properties.
-    url = reverse('reader:fileitem-detail', kwargs={'pk': javi_comics.pk})
+    url = reverse("reader:fileitem-detail", kwargs={"pk": javi_comics.pk})
     response = client.get(url)
     response_json = response.json()
     assert response.status_code == 200
@@ -58,8 +58,8 @@ def test_api_directory():
     assert response_json == javi_comics_serialized
 
     # The root directory should have 1 child, "the comic cbz file".
-    assert len(response_json.get('children')) == 1
-    root_dir_child_json = response_json.get('children')[0]
+    assert len(response_json.get("children")) == 1
+    root_dir_child_json = response_json.get("children")[0]
     assert root_dir_child_json == comic_serialized
 
 
@@ -72,7 +72,7 @@ def test_api_comic_detail():
     comic_serialized = FileItemSerializer(comic).data
 
     # Get the path of the root directory, check the directory properties.
-    url = reverse('reader:fileitem-detail', kwargs={'pk': comic.pk})
+    url = reverse("reader:fileitem-detail", kwargs={"pk": comic.pk})
     response = client.get(url)
     response_json = response.json()
     assert response.status_code == 200
