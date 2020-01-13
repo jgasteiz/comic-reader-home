@@ -1,4 +1,4 @@
-Django==2.1.7
+Django==2.1.15
 rarfile==3.0
 gunicorn==19.7.1
 psutil==5.4.5
