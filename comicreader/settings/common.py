@@ -11,9 +11,13 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+from envparse import env
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+env_filepath = os.path.abspath(os.path.join(BASE_DIR, "./.env"))
+env.read_envfile(path=env_filepath)
 
 
 # Quick-start development settings - unsuitable for production

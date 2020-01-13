@@ -2,7 +2,6 @@ Django==2.1.7
 rarfile==3.0
 gunicorn==19.7.1
 psutil==5.4.5
-django-dotenv==1.4.2
 djangorestframework==3.8.2
 Markdown==2.6.11
 django-filter==1.1.0
@@ -10,3 +9,4 @@ ipdb==0.10.3
 pytest-django==3.4.7
 psycopg2==2.7.4
 psycopg2-binary==2.7.4
+envparse==0.2.0
