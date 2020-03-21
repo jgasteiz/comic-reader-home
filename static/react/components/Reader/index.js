@@ -163,6 +163,8 @@ export default class Reader extends React.Component {
                 hasNextPage: pageNumber < component.state.numPages - 1
             });
             ComicService.updatePageUrl(pageNumber, component.state.comicId);
+            // Reset scroll.
+            window.scrollTo(0, 0);
         });
     }
 
