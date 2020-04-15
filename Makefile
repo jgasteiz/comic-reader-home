@@ -12,7 +12,7 @@ VENV ?= ./env
 
 local_install:
 	python3 -m venv $(VENV) && \
-	$(VENV)/bin/pip install -r requirements/local.txt && \
+	$(VENV)/bin/pip install -r requirements.txt && \
 	yarn install
 
 local_migrate:

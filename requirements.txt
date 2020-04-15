@@ -1,8 +1,8 @@
-Django==2.1.7
+Django==2.2.10
 rarfile==3.0
 gunicorn==19.7.1
-psutil==5.4.5
-djangorestframework==3.8.2
+psutil==5.6.6
+djangorestframework==3.9.1
 Markdown==2.6.11
 django-filter==1.1.0
 ipdb==0.10.3
