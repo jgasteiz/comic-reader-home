@@ -75,7 +75,7 @@ def get_extracted_comic_pages(comic, page_numbers):
         # Need to make sure we create the extract path because
         # linux unrar-free won't create it if it doesn't exist.
         if not os.path.exists(extract_path):
-            os.mkdir(extract_path)
+            os.makedirs(extract_path)
 
         # Extract the actual page.
         cb_file.extract(page_file_name, extract_path)
@@ -106,7 +106,7 @@ def extract_everything():
         extract_path = get_extract_path_for_comic(comic)
         cb_file = get_cb_file_for_comic(comic)
         if not os.path.exists(extract_path):
-            os.mkdir(extract_path)
+            os.makedirs(extract_path)
             cb_file.extractall(extract_path)
 
 
