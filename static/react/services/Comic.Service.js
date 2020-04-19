@@ -72,7 +72,7 @@ export default class ComicService {
                 _loadPage(pageNum + 1, pageUrl, pagesLeftToLoad - 1);
             };
             image.src = `${pageUrl}/${pageNum}/`;
-            console.log(`Preloaded ${pageUrl}, ${pageNum}`);
+            console.debug(`Preloaded ${pageUrl}, ${pageNum}`);
         };
 
         const pageUrl = `/api/page/${comicId}`;

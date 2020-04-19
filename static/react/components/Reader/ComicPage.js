@@ -1,7 +1,5 @@
 import React from "react";
 
-import Navigation from './Navigation';
-
 /**
  * This component is for displaying the page <img> element.
  */
@@ -21,15 +19,52 @@ export default class ComicPage extends React.Component {
                      ref="pageImage"
                      src={this.props.pageSrc}
                      onClick={this.props.onPageClickHandler}
+                     alt="Current comic page"
                 />
-                <Navigation
-                    previousPageHandler={this.previousPageHandler}
-                    nextPageHandler={this.nextPageHandler}
-                    hasPreviousPage={this.props.hasPreviousPage}
-                    hasNextPage={this.props.hasNextPage}
-                />
+                <nav className="page-navigation">
+                    <a className=
+                       {
+                            "page-navigation-item " +
+                            "page-navigation-item--previous " +
+                            "page-navigation-item--" +
+                            (this.props.hasPreviousPage ? 'show' : 'hidden')
+                        }
+                       onClick={this.previousPageHandler}
+                    />
+                    <a className=
+                       {
+                            "page-navigation-item " +
+                            "page-navigation-item--next " +
+                            "page-navigation-item--" +
+                            (this.props.hasNextPage ? 'show' : 'hidden')
+                        }
+                       onClick={this.nextPageHandler}
+                    />
+                </nav>
             </div>
         );
+    }
+
+    /**
+     * When the component is ready and mounted, initialize key bindings:
+     * - arrow right: next page handler
+     * - arrow left: previous page handler
+     */
+    componentDidMount() {
+        const component = this;
+
+        // Listen for key events and go to next/previous page when
+        // pressing certain keys.
+        document.addEventListener('keydown', function (ev) {
+            const keyName = ev.key;
+            if (keyName === 'ArrowRight') {
+                component.nextPageHandler();
+                ev.preventDefault();
+            } else if (keyName === 'ArrowLeft') {
+                component.previousPageHandler();
+                ev.preventDefault();
+            }
+        });
     }
 
     /**
@@ -41,11 +76,13 @@ export default class ComicPage extends React.Component {
             this.props.previousPageHandler();
         }
         const pageHeight = this.refs.pageImage.height;
-        const pageScreenRatioDividend = this.getPageScreenRatioDividend(pageHeight);
+        const pageScreenRatioDiv = this.getPageScreenRatioDividend(pageHeight);
 
         // If we can still scroll up, scroll up 1/3 of the page.
         if (window.scrollY > 0) {
-            const newScrollYPosition = window.scrollY - pageHeight / pageScreenRatioDividend + window.innerHeight / pageScreenRatioDividend;
+            const newScrollYPosition = window.scrollY
+                - pageHeight / pageScreenRatioDiv
+                + window.innerHeight / pageScreenRatioDiv;
             window.scrollTo({
                 top: newScrollYPosition,
                 behavior: "smooth"
@@ -67,12 +104,17 @@ export default class ComicPage extends React.Component {
             this.props.nextPageHandler();
         }
         const pageHeight = this.refs.pageImage.height;
-        const pageScreenRatioDividend = this.getPageScreenRatioDividend(pageHeight);
+        const pageScreenRatioDiv = this.getPageScreenRatioDividend(pageHeight);
 
         // If we can still scroll down, scroll down 1/3 of the page.
         if (currentScroll + 10 < pageHeight) {
-            const newScrollYPosition = window.scrollY + pageHeight / pageScreenRatioDividend - window.innerHeight / pageScreenRatioDividend;
-            console.log(`Current ${window.scrollY}, New ${newScrollYPosition}, Page height ${pageHeight}`);
+            const newScrollYPosition = window.scrollY
+                + pageHeight / pageScreenRatioDiv
+                - window.innerHeight / pageScreenRatioDiv;
+            console.debug(
+                `Current ${window.scrollY}, New ${newScrollYPosition},
+                 Page height ${pageHeight}`
+            );
             window.scrollTo({
                 top: newScrollYPosition,
                 behavior: "smooth"
@@ -85,21 +127,25 @@ export default class ComicPage extends React.Component {
     }
 
     /**
-     * Get the page/screen height ratio dividend to decide whether the page should be scrolled in 3, 2 or 1 jump.
+     * Get the page/screen height ratio dividend to decide whether the page
+     * should be scrolled in 3, 2 or 1 jump.
      */
     getPageScreenRatioDividend(pageHeight) {
         const pageHeightScreenHeightRatio = pageHeight / window.innerHeight;
-        console.log(`pageHeightScreenHeightRatio: ${pageHeightScreenHeightRatio}`);
+        console.debug(`pageHeightScreenHeightRatio: ${pageHeightScreenHeightRatio}`);
 
         let dividend;
-        // If the page height is more than 2.75 times taller than the screen, scroll in 3 jumps.
+        // If the page height is more than 2.75 times taller than the screen,
+        // scroll in 3 jumps.
         if (pageHeightScreenHeightRatio >= 2.75) {
             dividend = 3;
         }
-        // If the page height is more than 2.25 times taller than the screen, scroll in 2 jumps.
+        // If the page height is more than 2.25 times taller than the screen,
+        // scroll in 2 jumps.
         else if (pageHeightScreenHeightRatio >= 2.25) {
             dividend = 2;
-        // If the page height is less than 2.25 times taller than the screen, scroll in 1 jump.
+        // If the page height is less than 2.25 times taller than the screen,
+            // scroll in 1 jump.
         } else {
             dividend = 1;
         }

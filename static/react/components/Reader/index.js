@@ -39,7 +39,7 @@ export default class Reader extends React.Component {
     }
 
     /**
-     * Render the ComicPage, Navigation, Spinner and ReadingControls components.
+     * Render the ComicPage, Spinner and ReadingControls components.
      *
      * Also render the reading mode class modifiers depending on the
      * readingMode state value
