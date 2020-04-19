@@ -18,6 +18,7 @@ urlpatterns = [
         name="api_comic_page_src",
     ),
     path("api/bookmark/", api.bookmark_comic_page, name="bookmark_comic_page"),
+    path("api/delete-bookmark/", api.delete_bookmark, name="delete_bookmark"),
     # Public views
     path("", public.home, name="root"),
     path("dir/<int:fileitem_id>/", public.home, name="dir"),

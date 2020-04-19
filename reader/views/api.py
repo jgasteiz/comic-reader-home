@@ -9,7 +9,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 
 from reader import models, serializers
-from reader.domain import file_handler
+from reader.domain import bookmarks, file_handler
 
 
 class FileItemViewSet(viewsets.ModelViewSet):
@@ -48,14 +48,30 @@ def comic_page_src(request, comic_id, page_number):
 # TODO: remove the `csrf_exempt` as soon as csrf is dealt with properly in the FE.
 @csrf_exempt
 def bookmark_comic_page(request):
+    body_unicode = request.body.decode("utf-8")
+    payload = json.loads(body_unicode)
+    serializer = serializers.BookmarkSerializer(data=payload)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=400)
+
     try:
-        body_unicode = request.body.decode("utf-8")
-        payload = json.loads(body_unicode)
-        comic_id = payload.get("comic_id")
-        page_number = payload.get("page_num")
-        comic = get_object_or_404(models.FileItem, pk=int(comic_id))
-        comic.bookmark_page(page_number)
-        return Response({"comic_id": comic.pk, "page_num": page_number})
+        comic_id = serializer.validated_data["comic_id"]
+        page_number = serializer.validated_data["page_number"]
+        comic = get_object_or_404(models.FileItem, pk=comic_id)
+        bookmarks.bookmark_page(comic, page_number)
+        return HttpResponse(
+            json.dumps({"comic_id": comic_id, "page_number": page_number}),
+            content_type="application/json",
+        )
     except Exception as e:
         logging.critical(e)
-        return Response({"error": e}, status=400)
+        return HttpResponse({"error": e}, status=400)
+
+
+@csrf_exempt
+def delete_bookmark(request):
+    body_unicode = request.body.decode("utf-8")
+    payload = json.loads(body_unicode)
+    comic = get_object_or_404(models.FileItem, pk=payload["comic_id"])
+    bookmarks.delete_bookmark(comic)
+    return HttpResponse("Bookmark deleted")

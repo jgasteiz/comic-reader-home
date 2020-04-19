@@ -79,7 +79,6 @@ export default class Reader extends React.Component {
             this.setState({
                 name: res['name'],
                 comicId: res['pk'],
-                comicPath: res['encoded_path'],
                 numPages: res['num_pages'],
                 parentId: res['parent'],
             });
@@ -109,7 +108,7 @@ export default class Reader extends React.Component {
      * There can only be one bookmark per comic.
      */
     bookMarkPageHandler() {
-        ComicService.bookmarkPage(this.state.currentPage, this.state.comicPath);
+        ComicService.bookmarkPage(this.state.comicId, this.state.currentPage);
     }
 
     /**

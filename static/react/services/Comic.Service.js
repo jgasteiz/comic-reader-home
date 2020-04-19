@@ -14,11 +14,11 @@ export default class ComicService {
     /**
      * Create a bookmark for the given comicPath on the given pageNum.
      *
+     * @param comicId
      * @param pageNum
-     * @param comicPath
      */
-    static bookmarkPage(pageNum, comicPath) {
-        const payload = JSON.stringify({'comic_path': comicPath, 'page_num': pageNum});
+    static bookmarkPage(comicId, pageNum) {
+        const payload = JSON.stringify({'comic_id': comicId, 'page_number': pageNum});
 
         fetch(
             '/api/bookmark/',
@@ -34,7 +34,7 @@ export default class ComicService {
             .then(res => res.json())
             // TODO: better error handling
             .catch(error => alert(error))
-            .then(res => alert(`Page ${res['page_num']} bookmarked.`));
+            .then(res => alert(`Page ${res['page_number']} bookmarked.`));
     }
 
     /**

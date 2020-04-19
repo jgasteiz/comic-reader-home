@@ -32,4 +32,30 @@ export default class FileItemService {
             .then(res => res.json())
             .then(res => callback(res));
     }
+
+    /**
+     * Delete a bookmark from a comic.
+     *
+     * @param comicId
+     */
+    static deleteBookmark(comicId) {
+        const payload = JSON.stringify({'comic_id': comicId});
+
+        fetch(
+            '/api/delete-bookmark/',
+            {
+                body: payload,
+                cache: 'no-cache',
+                credentials: 'same-origin',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                method: 'POST'
+            })
+            // TODO: better error handling
+            .catch(error => alert(error))
+            .then(_ => {
+                window.location.reload();
+            });
+    }
 }

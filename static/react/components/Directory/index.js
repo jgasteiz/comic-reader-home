@@ -50,17 +50,21 @@ export default class Directory extends React.Component {
         this._getFileItemDetails();
     }
 
+    deleteBookmarkHandler(comicId) {
+        FileItemService.deleteBookmark(comicId);
+    }
+
     // Private functions
 
     _getFileItemDetails() {
-        const urlsearch = new URLSearchParams(this.props.location.search);
-        if (urlsearch.get('q')) {
+        const urlSearch = new URLSearchParams(this.props.location.search);
+        if (urlSearch.get('q')) {
             if (this.state.fileItemId !== -1) {
-                FileItemService.getFileItemSearchResults(urlsearch.get('q'), (res) => {
+                FileItemService.getFileItemSearchResults(urlSearch.get('q'), (res) => {
                     const directories = res.filter(child => child['file_type'] === 'directory');
                     const comics = res.filter(child => child['file_type'] === 'comic');
                     this.setState({
-                        name: `Search results of \`${urlsearch.get('q')}\``,
+                        name: `Search results of \`${urlSearch.get('q')}\``,
                         directories: directories,
                         comics: comics,
                         parentId: undefined,
@@ -134,8 +138,10 @@ export default class Directory extends React.Component {
         if (this.state.comics.length === 0) {
             return '';
         }
+        const component = this;
+
         const comicRows = this.state.comics.map(function (comic, index) {
-            return (<tr key={comic.pk}>
+            return (<tr key={comic["pk"]}>
                 <td>
                     {index + 1}
                 </td>
@@ -143,9 +149,22 @@ export default class Directory extends React.Component {
                     {comic.name}
                 </td>
                 <td className="text-right">
-                    <Link to={`/comic/${comic.pk}/0/`} className="btn btn-primary btn-sm">
-                        Read
-                    </Link>
+                    {comic["bookmarked_page"] !== null &&
+                        <div className="mb-2 btn-group" role="group">
+                            <Link to={`/comic/${comic["pk"]}/${comic["bookmarked_page"]}/`} className="btn btn-primary btn-sm">
+                                Continue
+                            </Link>
+                            <button
+                                className="btn btn-danger btn-sm"
+                                onClick={() => component.deleteBookmarkHandler(comic["pk"])}
+                            >Delete bookmark</button>
+                        </div>
+                    }
+                    <div>
+                        <Link to={`/comic/${comic["pk"]}/0/`} className="btn btn-primary btn-sm">
+                            Read
+                        </Link>
+                    </div>
                 </td>
             </tr>);
         });
