@@ -6,11 +6,14 @@ This is an app to serve my cbr and cbz comic files on my home network.
 
 ## How to get this running
 
-1. Copy `.env.example` to `.env`.
-2. Set values for both SECRET_KEY and COMICS_ROOT environment variables.
-3. Make sure yarn or npm are installed globally: `npm -g install yarn`
-4. Install dependencies: `make install`
-5. Run the tests: `make test`
-6. Run the db migrations: `make migrate`
-8. Build and watch the static files: `make watch`
-7. Run the project: `make serve`
+1. Create an `.env` file in the project root with the following contents:
+```..env
+SECRET_KEY=123456  # replace with something else
+COMICS_ROOT=~/Data/comics  # absolute path to a directory with cbr/cbz files.
+POSTGRES_DATA_PATH=~/Data/pg-data  # absolute path where the postgres db can store its data files.
+```
+2. Run `docker-compose up` to setup the docker containers and run them.
+3. On a separate window, run `docker-compose run comics python manage.py migrate`
+   to initialise the database and `docker-compose run comics python manage.py populatedb`
+   to load the comic files into the database.
+4. The server should be now up and running in http://localhost:8080/.
