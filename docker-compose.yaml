@@ -11,8 +11,9 @@ services:
       - POSTGRES_DB=comics
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+      - PGDATA=/tmp
     volumes:
-      - ${POSTGRES_DATA_PATH}:/var/lib/postgresql/data:cached
+      - ${POSTGRES_DATA_PATH}:/data/docker/postgresql/data:/var/lib/postgresql/data
       - tmp_data:/tmp
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
