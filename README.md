@@ -7,7 +7,7 @@ This is an app to serve my cbr and cbz comic files on my home network.
 ## How to get this running
 
 1. Create an `.env` file in the project root with the following contents:
-```..env
+```dotenv
 SECRET_KEY=123456  # replace with something else
 COMICS_ROOT=~/Data/comics  # absolute path to a directory with cbr/cbz files.
 POSTGRES_DATA_PATH=~/Data/pg-data  # absolute path where the postgres db can store its data files.
