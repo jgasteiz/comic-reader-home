@@ -9,7 +9,7 @@ def directory(request, *args, **kwargs):
     if "fileitem_id" in kwargs:
         parent = models.FileItem.objects.get(id=kwargs["fileitem_id"])
     else:
-        parent = models.FileItem.objects.get(name="comics")
+        parent = models.FileItem.objects.get(parent__isnull=True)
 
     directory_list = models.FileItem.objects.filter(
         parent=parent, file_type=models.FileItem.DIRECTORY

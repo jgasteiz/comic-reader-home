@@ -2,13 +2,13 @@
 
 {% block content %}
 
-    {% if not parent.is_root %}
-    <div class="row">
-        <h1 class="col">{{ parent.name }}</h1>
-        <div class="col-auto">
-            <a class="btn btn-secondary" href="{% url "reader:directory" parent.parent.id %}">Back</a>
+    {% if parent.parent %}
+        <div class="row">
+            <h1 class="col">{{ parent.name }}</h1>
+            <div class="col-auto">
+                <a class="btn btn-secondary" href="{% url "reader:directory" parent.parent.id %}">Back</a>
+            </div>
         </div>
-    </div>
     {% endif %}
 
     {% if comic_list %}
