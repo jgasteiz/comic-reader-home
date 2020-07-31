@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Read</title>
+
+        <link rel="stylesheet" href="{% static 'lazylibs/bootstrap.min.css' %}?rev={{ SOURCE_REVISION }}">
+        <link rel="stylesheet" href="{% static 'css/styles.css' %}?rev={{ SOURCE_REVISION }}">
+        <link rel="stylesheet" href="{% static 'css/fonts.css' %}?rev={{ SOURCE_REVISION }}">
+        <link rel="manifest" href="{% static 'manifest.json' %}?rev={{ SOURCE_REVISION }}">
+    </head>
+    <body style="background-color: #000000;">
+
+        <div id="reader" class="reader reader--undefined reader--show">
+            <div class="comic-page-container">
+                <img class="comic-page" src="{% url "reader:comic_page_src" comic_id page_number %}" alt="Comic page">
+
+                <nav class="page-navigation">
+                    {% if previous_page_number %}
+                        <a href="{% url "reader:read" comic_id previous_page_number %}" class="page-navigation-item page-navigation-item--previous page-navigation-item--show"></a>
+                    {% endif %}
+                    {% if next_page_number %}
+                        <a href="{% url "reader:read" comic_id next_page_number %}" class="page-navigation-item page-navigation-item--next page-navigation-item--show"></a>
+                    {% endif %}
+                </nav>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <a class="btn btn-danger btn-sm" href="{% url "reader:directory" parent_id %}">
+                <i class="material-icons">exit_to_app</i>
+            </a>
+        </div>
+
+    </body>
+</html>

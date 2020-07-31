@@ -29,7 +29,21 @@
     <link rel="apple-touch-icon" sizes="152x152" href="{% static 'img/favicon152.png' %}?rev={{ SOURCE_REVISION }}">
 </head>
 <body>
-    <div id="reader-app"></div>
+    <header class="navbar navbar-dark bg-dark sticky-top navbar-expand-md">
+        <div class="container d-flex justify-content-between">
+            <a href="/" class="navbar-brand d-flex align-items-center">
+                <strong>Comic Reader</strong>
+            </a>
+            <form class="form-inline my-2 my-lg-0" method="get">
+                <input type="search" class="form-control mr-sm-2" name="q" placeholder="Search for a comic or a directory">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>
+    </header>
+
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
 
     <script src="{% static 'lazylibs/jquery-3.2.1.slim.min.js' %}?rev={{ SOURCE_REVISION }}"></script>
     <script src="{% static 'lazylibs/popper.min.js' %}?rev={{ SOURCE_REVISION }}"></script>
