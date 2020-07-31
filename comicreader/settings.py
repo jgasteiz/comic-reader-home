@@ -53,16 +53,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "comicreader.wsgi.application"
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "HOST": os.environ.get("DATABASE_HOST", "localhost"),
-        "NAME": os.environ.get("DATABASE_NAME", "comics"),
-        "USER": os.environ.get("DATABASE_USER", "postgres"),
-        "PASSWORD": os.environ.get("DATABASE_PASSWORD", "postgres"),
-        "PORT": os.environ.get("DATABASE_PORT", 5432),
+if os.environ.get("USE_POSTGRES", "0") == "1":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "HOST": os.environ.get("DATABASE_HOST", "localhost"),
+            "NAME": os.environ.get("DATABASE_NAME", "comics"),
+            "USER": os.environ.get("DATABASE_USER", "postgres"),
+            "PASSWORD": os.environ.get("DATABASE_PASSWORD", "postgres"),
+            "PORT": os.environ.get("DATABASE_PORT", 5432),
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {

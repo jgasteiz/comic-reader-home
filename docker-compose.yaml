@@ -32,6 +32,7 @@ services:
       - .:/code
     environment:
       - SECRET_KEY=${SECRET_KEY}
+      - USE_POSTGRES=1
       - COMICS_ROOT=/comics
       - PYTHONBREAKPOINT=ipdb.set_trace
       - DATABASE_HOST=db
