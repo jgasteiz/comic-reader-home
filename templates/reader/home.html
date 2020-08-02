@@ -29,7 +29,7 @@
                             <td>{{ forloop.counter }}</td>
                             <td>{{ comic.name }}</td>
                             <td class="text-right">
-                                <a class="btn btn-primary btn-sm" href="{% url "reader:read" comic.id 0 %}">Read</a>
+                                <a class="btn btn-primary btn-sm" href="{% url "reader:read_comic_page" comic.id %}?page_number=0">Read</a>
                             </td>
                         </tr>
                     {% endfor %}

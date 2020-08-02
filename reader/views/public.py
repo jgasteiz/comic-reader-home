@@ -28,7 +28,8 @@ def directory(request, *args, **kwargs):
     )
 
 
-def read(request, comic_id, page_number, *args, **kwargs):
+def read_comic_page(request, comic_id, *args, **kwargs):
+    page_number = int(request.GET.get("page_number", "0"))
     comic = shortcuts.get_object_or_404(models.FileItem, pk=comic_id)
     return shortcuts.render(
         request,
@@ -39,6 +40,8 @@ def read(request, comic_id, page_number, *args, **kwargs):
             "previous_page_number": page_number - 1 if page_number > 0 else None,
             "next_page_number": page_number + 1,
             "parent_id": comic.parent.id,
+            "num_pages_range": range(comic.num_pages),
+            "current_page_number": page_number,
         },
     )
 

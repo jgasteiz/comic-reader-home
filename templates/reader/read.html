@@ -12,22 +12,34 @@
     </head>
     <body style="background-color: #000000;">
 
-        <div id="reader" class="reader reader--undefined reader--show">
+        <div id="reader" class="reader reader--show">
             <div class="comic-page-container">
                 <img class="comic-page" src="{% url "reader:comic_page_src" comic_id page_number %}" alt="Comic page">
 
                 <nav class="page-navigation">
                     {% if previous_page_number %}
-                        <a href="{% url "reader:read" comic_id previous_page_number %}" class="page-navigation-item page-navigation-item--previous page-navigation-item--show"></a>
+                        <a href="{% url "reader:read_comic_page" comic_id %}?page_number={{ previous_page_number }}" class="page-navigation-item page-navigation-item--previous page-navigation-item--show"></a>
                     {% endif %}
                     {% if next_page_number %}
-                        <a href="{% url "reader:read" comic_id next_page_number %}" class="page-navigation-item page-navigation-item--next page-navigation-item--show"></a>
+                        <a href="{% url "reader:read_comic_page" comic_id %}?page_number={{ next_page_number }}" class="page-navigation-item page-navigation-item--next page-navigation-item--show"></a>
                     {% endif %}
                 </nav>
             </div>
         </div>
 
-        <div class="text-center">
+        <div class="container text-center mt-2 mb-2">
+            <form class="form-horizontal d-inline-block" action="{% url 'reader:read_comic_page' comic_id %}" method="get">
+                <label for="id_page_number" class="text-white">Go to page</label>
+                <select name="page_number" id="id_page_number">
+                    {% for page_number in num_pages_range %}
+                        <option
+                            value="{{ page_number }}"
+                            {% if current_page_number == page_number %}selected="selected"{% endif %}
+                        >{{ page_number }}</option>
+                    {% endfor %}
+                </select>
+                <button class="btn btn-primary btn-sm" type="submit">Go</button>
+            </form>
             <a class="btn btn-danger btn-sm" href="{% url "reader:directory" parent_id %}">
                 <i class="material-icons">exit_to_app</i>
             </a>
