@@ -34,7 +34,7 @@ services:
       - SECRET_KEY=${SECRET_KEY}
       - USE_POSTGRES=1
       - COMICS_ROOT=/comics
-      - PYTHONBREAKPOINT=ipdb.set_trace
+      - PYTHONBREAKPOINT=${PYTHONBREAKPOINT}
       - DATABASE_HOST=db
       - DATABASE_NAME=comics
       - DATABASE_USER=postgres

@@ -2,6 +2,11 @@
 import os
 import sys
 
+if os.environ.get("NO_DOCKER", "0") == "1":
+    from dotenv import load_dotenv
+
+    load_dotenv()
+
 
 def main():
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "comicreader.settings")
