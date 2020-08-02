@@ -26,6 +26,8 @@ class FileItem(models.Model):
         blank=True,
     )
 
+    furthest_read_page = models.IntegerField(null=True)
+
     class Meta:
         ordering = ["-file_type", "name"]
 
@@ -41,6 +43,10 @@ class FileItem(models.Model):
             self.file_type = self.DIRECTORY
         else:
             self.file_type = self.COMIC
+        self.save()
+
+    def set_furthest_read_page(self, page_number):
+        self.furthest_read_page = page_number
         self.save()
 
     @property

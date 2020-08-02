@@ -30,6 +30,9 @@
                             <td>{{ comic.name }}</td>
                             <td class="text-right">
                                 <a class="btn btn-primary btn-sm" href="{% url "reader:read_comic_page" comic.id %}?page_number=0">Read</a>
+                                {% if comic.furthest_read_page %}
+                                    <a class="btn btn-primary btn-sm mt-1" href="{% url "reader:read_comic_page" comic.id %}?page_number={{ comic.furthest_read_page }}">Continue reading</a>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}

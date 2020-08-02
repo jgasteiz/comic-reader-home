@@ -31,6 +31,9 @@ def directory(request, *args, **kwargs):
 def read_comic_page(request, comic_id, *args, **kwargs):
     page_number = int(request.GET.get("page_number", "0"))
     comic = shortcuts.get_object_or_404(models.FileItem, pk=comic_id)
+    # Set the furthest read page
+    comic.set_furthest_read_page(page_number)
+
     return shortcuts.render(
         request,
         template_name="reader/read.html",
