@@ -34,7 +34,7 @@
             <a href="/" class="navbar-brand d-flex align-items-center">
                 <strong>Comic Reader</strong>
             </a>
-            <form class="form-inline my-2 my-lg-0" method="get">
+            <form action="{% url "reader:directory" %}" class="form-inline my-2 my-lg-0" method="get">
                 <input type="search" class="form-control mr-sm-2" name="q" placeholder="Search for a comic or a directory">
                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
             </form>
@@ -48,8 +48,5 @@
     <script src="{% static 'lazylibs/jquery-3.2.1.slim.min.js' %}?rev={{ SOURCE_REVISION }}"></script>
     <script src="{% static 'lazylibs/popper.min.js' %}?rev={{ SOURCE_REVISION }}"></script>
     <script src="{% static 'lazylibs/bootstrap.min.js' %}?rev={{ SOURCE_REVISION }}"></script>
-    <script src="{% static 'lazylibs/react.development.js' %}?rev={{ SOURCE_REVISION }}"></script>
-    <script src="{% static 'lazylibs/react-dom.development.js' %}?rev={{ SOURCE_REVISION }}"></script>
-    <script src="{% static 'dist/app.bundle.js' %}?rev={{ SOURCE_REVISION }}"></script>
 </body>
 </html>

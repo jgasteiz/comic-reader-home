@@ -6,17 +6,25 @@ from reader.domain import file_handler
 
 
 def directory(request, *args, **kwargs):
+    queryset = models.FileItem.objects.all()
     if "fileitem_id" in kwargs:
-        parent = models.FileItem.objects.get(id=kwargs["fileitem_id"])
+        parent = queryset.get(id=kwargs["fileitem_id"])
     else:
-        parent = models.FileItem.objects.get(parent__isnull=True)
+        parent = queryset.get(parent__isnull=True)
 
-    directory_list = models.FileItem.objects.filter(
-        parent=parent, file_type=models.FileItem.DIRECTORY
-    )
-    comic_list = models.FileItem.objects.filter(
-        parent=parent, file_type=models.FileItem.COMIC
-    )
+    if request.GET.get("q"):
+        directory_list = queryset.filter(
+            file_type=models.FileItem.DIRECTORY, name__icontains=request.GET.get("q")
+        )
+        comic_list = queryset.filter(
+            file_type=models.FileItem.COMIC, name__icontains=request.GET.get("q")
+        )
+    else:
+        directory_list = queryset.filter(
+            parent=parent, file_type=models.FileItem.DIRECTORY
+        )
+        comic_list = queryset.filter(parent=parent, file_type=models.FileItem.COMIC)
+
     return shortcuts.render(
         request,
         template_name="reader/home.html",
