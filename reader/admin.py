@@ -15,6 +15,4 @@ class FileItemAdmin(admin.ModelAdmin):
             return reverse("reader:dir", kwargs={"fileitem_id": obj.pk})
 
 
-admin.site.register(models.Bookmark)
-admin.site.register(models.Favorite)
 admin.site.register(models.FileItem, FileItemAdmin)

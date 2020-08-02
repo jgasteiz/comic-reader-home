@@ -75,30 +75,3 @@ class FileItem(models.Model):
             )
             return len(all_pages)
         return 0
-
-
-class Bookmark(models.Model):
-    """
-    Model to keep track of the active page in a comic.
-    """
-
-    page_number = models.IntegerField()
-    comic = models.OneToOneField("FileItem", on_delete=models.CASCADE)
-
-    def __str__(self):
-        return "Page %d on %s".format(self.page_number, self.comic.name)
-
-
-class Favorite(models.Model):
-    """
-    Model to keep track of favorite comic directories.
-    """
-
-    title = models.CharField(max_length=128)
-    directory_path = models.CharField(max_length=512)
-
-    class Meta:
-        ordering = ["title"]
-
-    def __str__(self):
-        return self.title
