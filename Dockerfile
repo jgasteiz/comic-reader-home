@@ -11,5 +11,3 @@ WORKDIR /code
 COPY . /code/
 # Install requirements
 RUN pip install -r requirements.txt
-RUN yarn install
-RUN yarn webpack
