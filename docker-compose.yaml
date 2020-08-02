@@ -14,7 +14,6 @@ services:
       - PGDATA=/tmp
     volumes:
       - ${POSTGRES_DATA_PATH}:/var/lib/postgresql/data:cached
-      - tmp_data:/tmp
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -25,7 +24,7 @@ services:
     build: .
     depends_on:
       - db
-    command: python manage.py runserver 0.0.0.0:8080
+    command: bash -c "python manage.py migrate && python manage.py populatedb && python manage.py runserver 0.0.0.0:8080"
     restart: on-failure
     volumes:
       - ${COMICS_ROOT}:/comics
