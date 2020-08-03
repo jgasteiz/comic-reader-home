@@ -17,10 +17,10 @@
                 <img class="comic-page" src="{% url "reader:comic_page_src" comic_id page_number %}" alt="Comic page">
 
                 <nav class="page-navigation">
-                    {% if previous_page_number %}
+                    {% if previous_page_number >= 0 %}
                         <a href="{% url "reader:read_comic_page" comic_id %}?page_number={{ previous_page_number }}" class="page-navigation-item page-navigation-item--previous page-navigation-item--show"></a>
                     {% endif %}
-                    {% if next_page_number %}
+                    {% if next_page_number < num_pages %}
                         <a href="{% url "reader:read_comic_page" comic_id %}?page_number={{ next_page_number }}" class="page-navigation-item page-navigation-item--next page-navigation-item--show"></a>
                     {% endif %}
                 </nav>

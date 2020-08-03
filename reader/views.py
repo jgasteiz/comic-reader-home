@@ -41,6 +41,7 @@ def read_comic_page(request, comic_id, *args, **kwargs):
     comic = shortcuts.get_object_or_404(models.FileItem, pk=comic_id)
     # Set the furthest read page
     comic.set_furthest_read_page(page_number)
+    num_pages = comic.num_pages
 
     return shortcuts.render(
         request,
@@ -48,10 +49,11 @@ def read_comic_page(request, comic_id, *args, **kwargs):
         context={
             "comic_id": comic_id,
             "page_number": page_number,
-            "previous_page_number": page_number - 1 if page_number > 0 else None,
+            "previous_page_number": page_number - 1,
             "next_page_number": page_number + 1,
             "parent_id": comic.parent.id,
-            "num_pages_range": range(comic.num_pages),
+            "num_pages": num_pages,
+            "num_pages_range": range(num_pages),
             "current_page_number": page_number,
         },
     )
