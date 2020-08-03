@@ -1,0 +1,70 @@
+{% extends "reader/base.html" %}
+
+{% block content %}
+
+    {% if parent.parent %}
+        <div class="row">
+            <h1 class="col">{{ parent.name }}</h1>
+            <div class="col-auto">
+                <a class="btn btn-secondary" href="{% url "reader:directory" parent.parent.id %}">Back</a>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if comic_list %}
+        <section>
+            <h2>Comics</h2>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Comic name</th>
+                        <th scope="col" class="text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for comic in comic_list %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ comic.name }}</td>
+                            <td class="text-right">
+                                <a class="btn btn-primary btn-sm" href="{% url "reader:read_comic_page" comic.id %}?page_number=0">Read</a>
+                                {% if comic.furthest_read_page %}
+                                    <a class="btn btn-primary btn-sm mt-1" href="{% url "reader:read_comic_page" comic.id %}?page_number={{ comic.furthest_read_page }}">Continue reading</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    {% endif %}
+
+    {% if directory_list %}
+        <section>
+            <h2>Directories</h2>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Directory name</th>
+                        <th scope="col" class="text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for directory in directory_list %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ directory.name }}</td>
+                            <td class="text-right">
+                                <a class="btn btn-secondary btn-sm" href="{% url "reader:directory" directory.id %}">Go</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    {% endif %}
+{% endblock %}

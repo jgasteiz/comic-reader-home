@@ -4,6 +4,7 @@ from django.urls import reverse
 from . import models
 
 
+@admin.register(models.FileItem)
 class FileItemAdmin(admin.ModelAdmin):
     list_filter = ("file_type",)
     search_fields = ("name",)
@@ -13,8 +14,3 @@ class FileItemAdmin(admin.ModelAdmin):
             return reverse("reader:comic", kwargs={"fileitem_id": obj.pk})
         else:
             return reverse("reader:dir", kwargs={"fileitem_id": obj.pk})
-
-
-admin.site.register(models.Bookmark)
-admin.site.register(models.Favorite)
-admin.site.register(models.FileItem, FileItemAdmin)

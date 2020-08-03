@@ -26,6 +26,8 @@ class FileItem(models.Model):
         blank=True,
     )
 
+    furthest_read_page = models.IntegerField(null=True)
+
     class Meta:
         ordering = ["-file_type", "name"]
 
@@ -41,6 +43,10 @@ class FileItem(models.Model):
             self.file_type = self.DIRECTORY
         else:
             self.file_type = self.COMIC
+        self.save()
+
+    def set_furthest_read_page(self, page_number):
+        self.furthest_read_page = page_number
         self.save()
 
     @property
@@ -69,30 +75,3 @@ class FileItem(models.Model):
             )
             return len(all_pages)
         return 0
-
-
-class Bookmark(models.Model):
-    """
-    Model to keep track of the active page in a comic.
-    """
-
-    page_number = models.IntegerField()
-    comic = models.OneToOneField("FileItem", on_delete=models.CASCADE)
-
-    def __str__(self):
-        return "Page %d on %s".format(self.page_number, self.comic.name)
-
-
-class Favorite(models.Model):
-    """
-    Model to keep track of favorite comic directories.
-    """
-
-    title = models.CharField(max_length=128)
-    directory_path = models.CharField(max_length=512)
-
-    class Meta:
-        ordering = ["title"]
-
-    def __str__(self):
-        return self.title

@@ -1,27 +1,17 @@
-from django.urls import include, path
-from rest_framework import routers
+from django.urls import path
 
-from .views import api, public
-
-router = routers.DefaultRouter()
-router.register(r"fileitems", api.FileItemViewSet)
+from . import views
 
 app_name = "reader"
 
 
 urlpatterns = [
-    # API
-    path("api/", include(router.urls)),
+    path("", views.directory, name="directory"),
+    path("dir/<int:fileitem_id>/", views.directory, name="directory"),
+    path("comic/<int:comic_id>/", views.read_comic_page, name="read_comic_page",),
     path(
-        "api/page/<int:comic_id>/<int:page_number>/",
-        api.comic_page_src,
-        name="api_comic_page_src",
+        "comic_page/<int:comic_id>/<int:page_number>/",
+        views.comic_page_src,
+        name="comic_page_src",
     ),
-    path("api/bookmark/", api.bookmark_comic_page, name="bookmark_comic_page"),
-    path("api/delete-bookmark/", api.delete_bookmark, name="delete_bookmark"),
-    # Public views
-    path("", public.home, name="root"),
-    path("dir/<int:fileitem_id>/", public.home, name="dir"),
-    path("comic/<int:fileitem_id>/", public.home, name="comic"),
-    path("comic/<int:fileitem_id>/<int:page_number>/", public.home, name="comic"),
 ]

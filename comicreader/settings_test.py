@@ -1,4 +1,4 @@
-from .common import *
+from .settings import *
 
 SECRET_KEY = "123456"
 DEBUG = False
