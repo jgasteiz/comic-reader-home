@@ -1,7 +1,6 @@
 Django==3.0.8
 rarfile==4.0
 psutil==5.7.2
-djangorestframework==3.11.0
 Markdown==3.2.2
 django-filter==2.3.0
 ipdb==0.13.3
