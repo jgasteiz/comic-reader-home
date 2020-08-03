@@ -47,7 +47,23 @@ h1 {
 /* ComicPage component */
 .comic-page {
     display: block;
+    margin: 0 auto;
     max-width: 100%;
+}
+.comic-page--100 {
+    width: 100%;
+}
+.comic-page--90 {
+    width: 90%;
+}
+.comic-page--80 {
+    width: 80%;
+}
+.comic-page--70 {
+    width: 70%;
+}
+.comic-page--60 {
+    width: 60%;
 }
 
 /* Navigation component */
