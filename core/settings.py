@@ -31,7 +31,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "comicreader.urls"
+ROOT_URLCONF = "core.urls"
 
 TEMPLATES = [
     {
@@ -44,13 +44,13 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "comicreader.context_processors.source_revision",
+                "core.context_processors.source_revision",
             ]
         },
     }
 ]
 
-WSGI_APPLICATION = "comicreader.wsgi.application"
+WSGI_APPLICATION = "core.wsgi.application"
 
 if os.environ.get("USE_POSTGRES", "0") == "1":
     DATABASES = {
