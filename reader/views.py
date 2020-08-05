@@ -79,6 +79,14 @@ def mark_as_read(request, comic_id):
     return shortcuts.redirect(request.GET.get("next"))
 
 
+def mark_all_as_read(request, directory_id):
+    if request.POST:
+        comic_directory = shortcuts.get_object_or_404(models.FileItem, pk=directory_id)
+        print(f"Marking all comics under directory {comic_directory} as read")
+        operations.mark_directory_comics_as_read(comic_directory)
+    return shortcuts.redirect(request.GET.get("next"))
+
+
 def comic_page_src(request, comic_id, page_number):
     comic = shortcuts.get_object_or_404(models.FileItem, pk=comic_id)
     try:

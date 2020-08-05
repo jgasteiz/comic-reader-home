@@ -24,4 +24,9 @@ urlpatterns = [
         name="mark_as_unread",
     ),
     path("comic/<int:comic_id>/mark_as_read/", views.mark_as_read, name="mark_as_read"),
+    path(
+        "comic/<int:directory_id>/mark_all_as_read/",
+        views.mark_all_as_read,
+        name="mark_all_as_read",
+    ),
 ]
