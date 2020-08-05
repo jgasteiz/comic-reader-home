@@ -1,15 +1,12 @@
 import pytest
 from django import shortcuts
-from django.test import Client
 
-from reader import models, tasks
+from reader import models
 
 pytestmark = pytest.mark.django_db
 
 
-def test_directory_root():
-    tasks.populate_db_from_path()
-    client = Client()
+def test_directory_root(client):
     root_directory = models.FileItem.objects.get(
         file_type=models.FileItem.DIRECTORY, parent__isnull=True
     )
@@ -27,9 +24,7 @@ def test_directory_root():
     assert response.context["comic_list"].count() == 0
 
 
-def test_directory_detail():
-    tasks.populate_db_from_path()
-    client = Client()
+def test_directory_detail(client):
     comic_directory = models.FileItem.objects.get(
         file_type=models.FileItem.DIRECTORY, parent__isnull=False
     )
@@ -49,9 +44,7 @@ def test_directory_detail():
     assert response.context["comic_list"].first() == comic
 
 
-def test_comic_detail():
-    tasks.populate_db_from_path()
-    client = Client()
+def test_comic_detail(client):
     comic_directory = models.FileItem.objects.get(
         file_type=models.FileItem.DIRECTORY, parent__isnull=False
     )

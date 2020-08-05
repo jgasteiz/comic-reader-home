@@ -3,7 +3,6 @@ from core.settings import *
 SECRET_KEY = "123456"
 DEBUG = False
 
-COMIC_EXTRACT_PATH = os.path.join(BASE_DIR, "static/comics/tmp")
 COMICS_ROOT = os.path.join(BASE_DIR, "tests/fixtures/comics")
 
 DATABASES["default"] = {
