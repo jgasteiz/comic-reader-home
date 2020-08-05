@@ -3,6 +3,7 @@ from django.views.static import serve
 
 from reader import models
 from reader.domain import file_handler
+from reader.domain.comics import operations, queries
 
 
 def directory(request, *args, **kwargs):
@@ -40,9 +41,10 @@ def read_comic_page(request, comic_id, *args, **kwargs):
     page_number = int(request.GET.get("page_number", "0"))
     page_width = int(request.GET.get("page_width", "100"))
     comic = shortcuts.get_object_or_404(models.FileItem, pk=comic_id)
-    # Set the furthest read page
-    comic.set_furthest_read_page(page_number)
-    num_pages = comic.num_pages
+
+    num_pages = queries.get_num_pages(comic)
+    # Update the comic status: set furthest read page and whether is finished or not.
+    operations.update_comic_status(comic, page_number)
 
     return shortcuts.render(
         request,
@@ -61,11 +63,24 @@ def read_comic_page(request, comic_id, *args, **kwargs):
     )
 
 
-def comic_page_src(request, comic_id, page_number):
-    try:
+def mark_as_unread(request, comic_id):
+    if request.POST:
         comic = shortcuts.get_object_or_404(models.FileItem, pk=comic_id)
-    except FileNotFoundError:
-        return http.HttpResponse("Comic not found", status=404)
+        print(f"Marking {comic} as unread")
+        comic.mark_as_unread()
+    return shortcuts.redirect(request.GET.get("next"))
+
+
+def mark_as_read(request, comic_id):
+    if request.POST:
+        comic = shortcuts.get_object_or_404(models.FileItem, pk=comic_id)
+        print(f"Marking {comic} as read")
+        comic.mark_as_read()
+    return shortcuts.redirect(request.GET.get("next"))
+
+
+def comic_page_src(request, comic_id, page_number):
+    comic = shortcuts.get_object_or_404(models.FileItem, pk=comic_id)
     try:
         page = file_handler.get_extracted_comic_page(comic, page_number)
         return serve(request, page, document_root="/")

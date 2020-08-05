@@ -1,4 +1,5 @@
 {% extends "reader/base.html" %}
+{% load static %}
 
 {% block content %}
 
@@ -27,11 +28,49 @@
                     {% for comic in comic_list %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
-                            <td>{{ comic.name }}</td>
+                            <td>
+                                {% if comic.is_read %}
+                                    <img src="{% static "img/check-circle.svg" %}" alt="Read">
+                                {% endif %}
+                                {{ comic.name }}
+                            </td>
                             <td class="text-right">
-                                <a class="btn btn-primary btn-sm" href="{% url "reader:read_comic_page" comic.id %}?page_number=0">Read</a>
-                                {% if comic.furthest_read_page %}
-                                    <a class="btn btn-primary btn-sm mt-1" href="{% url "reader:read_comic_page" comic.id %}?page_number={{ comic.furthest_read_page }}">Continue reading</a>
+                                {# Reading action #}
+                                {# If the comic has been read, offer to start from the beginning #}
+                                {% if comic.is_read %}
+                                    <a class="btn btn-primary btn-sm mb-1" href="{% url "reader:read_comic_page" comic.id %}?page_number=0">Read from the beginning</a>
+                                {# If the comic is in progress, offer to continue or to start from the beginning #}
+                                {% elif comic.furthest_read_page > 0 %}
+                                    <a class="btn btn-primary btn-sm mb-1" href="{% url "reader:read_comic_page" comic.id %}?page_number={{ comic.furthest_read_page }}">Continue reading</a>
+                                    <a class="btn btn-secondary btn-sm mb-1" href="{% url "reader:read_comic_page" comic.id %}?page_number=0">Read from the beginning</a>
+                                {# Otherwise simply offer to read it #}
+                                {% else %}
+                                    <a class="btn btn-primary btn-sm mb-1" href="{% url "reader:read_comic_page" comic.id %}?page_number=0">Read</a>
+                                {% endif %}
+
+                                {# Actions #}
+                                {% if comic.is_read %}
+                                    <form method="post"
+                                          action="{% url "reader:mark_as_unread" comic.id %}?next={% url "reader:directory" parent.id %}"
+                                    >
+                                        {% csrf_token %}
+                                        <button type="submit"
+                                                class="btn btn-warning btn-sm mb-1"
+                                        >
+                                            Mark as unread
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <form method="post"
+                                          action="{% url "reader:mark_as_read" comic.id %}?next={% url "reader:directory" parent.id %}"
+                                    >
+                                        {% csrf_token %}
+                                        <button type="submit"
+                                                class="btn btn-success btn-sm mb-1"
+                                        >
+                                            Mark as read
+                                        </button>
+                                    </form>
                                 {% endif %}
                             </td>
                         </tr>

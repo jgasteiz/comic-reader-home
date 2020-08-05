@@ -1,12 +1,7 @@
 import os
-from zipfile import ZipFile
 
 from django.conf import settings
 from django.db import models
-from django.utils import http
-from django.utils.functional import cached_property
-
-from rarfile import RarFile
 
 
 class FileItem(models.Model):
@@ -27,6 +22,7 @@ class FileItem(models.Model):
     )
 
     furthest_read_page = models.IntegerField(null=True)
+    is_read = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["-file_type", "name"]
@@ -47,31 +43,19 @@ class FileItem(models.Model):
 
     def set_furthest_read_page(self, page_number):
         self.furthest_read_page = page_number
+        # In case we've started re-reading a comic
+        self.is_read = False
+        self.save()
+
+    def mark_as_read(self):
+        self.is_read = True
+        self.save()
+
+    def mark_as_unread(self):
+        self.furthest_read_page = None
+        self.is_read = False
         self.save()
 
     @property
     def is_root(self):
         return self.path == settings.COMICS_ROOT
-
-    @cached_property
-    def num_pages(self):
-        if self.file_type == self.COMIC:
-            # Initialise the cb_file. This will raise a FileNotFoundError if
-            # zipfile/rarfile can't find the file.
-            if self.name.endswith(".cbz"):
-                self.cb_file = ZipFile(self.path)
-            else:
-                self.cb_file = RarFile(self.path)
-
-            # Set all the page names in order
-            all_pages = [
-                p
-                for p in self.cb_file.namelist()
-                if p.endswith(".jpg") or p.endswith(".jpeg") or p.endswith(".png")
-            ]
-            # Remove hidden files (files that start with `.`) from the pages list.
-            all_pages = list(
-                filter(lambda x: not x.split("/")[-1].startswith("."), all_pages)
-            )
-            return len(all_pages)
-        return 0
