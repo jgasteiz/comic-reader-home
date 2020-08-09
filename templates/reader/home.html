@@ -12,11 +12,11 @@
         </div>
     {% endif %}
 
-    {% if comic_list %}
+    {% if file_item_list %}
         <section>
             <div class="row">
                 <div class="col">
-                    <h2>Comics</h2>
+                    <h2>File items</h2>
                 </div>
                 <div class="col-auto">
                     <form method="post"
@@ -36,85 +36,63 @@
                 <thead>
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Comic name</th>
+                        <th scope="col">Name</th>
                         <th scope="col" class="text-right">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for comic in comic_list %}
+                    {% for file_item in file_item_list %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
                             <td>
-                                {% if comic.is_read %}
+                                {% if file_item.is_comic and file_item.is_read %}
                                     <img src="{% static "img/check-circle.svg" %}" alt="Read">
                                 {% endif %}
-                                {{ comic.name }}
+                                {{ file_item.name }}
                             </td>
                             <td class="text-right">
-                                {# Reading action #}
-                                {# If the comic has been read, offer to start from the beginning #}
-                                {% if comic.is_read %}
-                                    <a class="btn btn-primary btn-sm mb-1" href="{% url "reader:read_comic_page" comic.id %}?page_number=0">Read from the beginning</a>
-                                {# If the comic is in progress, offer to continue or to start from the beginning #}
-                                {% elif comic.furthest_read_page > 0 %}
-                                    <a class="btn btn-primary btn-sm mb-1" href="{% url "reader:read_comic_page" comic.id %}?page_number={{ comic.furthest_read_page }}">Continue reading</a>
-                                    <a class="btn btn-secondary btn-sm mb-1" href="{% url "reader:read_comic_page" comic.id %}?page_number=0">Read from the beginning</a>
-                                {# Otherwise simply offer to read it #}
-                                {% else %}
-                                    <a class="btn btn-primary btn-sm mb-1" href="{% url "reader:read_comic_page" comic.id %}?page_number=0">Read</a>
-                                {% endif %}
 
-                                {# Actions #}
-                                {% if comic.is_read %}
-                                    <form method="post"
-                                          action="{% url "reader:mark_as_unread" comic.id %}?next={% url "reader:directory" parent.id %}"
-                                    >
-                                        {% csrf_token %}
-                                        <button type="submit"
-                                                class="btn btn-warning btn-sm mb-1"
+                                {% if file_item.is_comic %}
+                                    {# Reading action #}
+                                    {# If the comic has been read, offer to start from the beginning #}
+                                    {% if file_item.is_read %}
+                                        <a class="btn btn-primary btn-sm mb-1" href="{% url "reader:read_comic_page" file_item.id %}?page_number=0">Read from the beginning</a>
+                                    {# If the comic is in progress, offer to continue or to start from the beginning #}
+                                    {% elif file_item.furthest_read_page > 0 %}
+                                        <a class="btn btn-primary btn-sm mb-1" href="{% url "reader:read_comic_page" file_item.id %}?page_number={{ file_item.furthest_read_page }}">Continue reading</a>
+                                        <a class="btn btn-secondary btn-sm mb-1" href="{% url "reader:read_comic_page" file_item.id %}?page_number=0">Read from the beginning</a>
+                                    {# Otherwise simply offer to read it #}
+                                    {% else %}
+                                        <a class="btn btn-primary btn-sm mb-1" href="{% url "reader:read_comic_page" file_item.id %}?page_number=0">Read</a>
+                                    {% endif %}
+
+                                    {# Actions #}
+                                    {% if file_item.is_read %}
+                                        <form method="post"
+                                              action="{% url "reader:mark_as_unread" file_item.id %}?next={% url "reader:directory" parent.id %}"
                                         >
-                                            Mark as unread
-                                        </button>
-                                    </form>
-                                {% else %}
-                                    <form method="post"
-                                          action="{% url "reader:mark_as_read" comic.id %}?next={% url "reader:directory" parent.id %}"
-                                    >
-                                        {% csrf_token %}
-                                        <button type="submit"
-                                                class="btn btn-success btn-sm mb-1"
+                                            {% csrf_token %}
+                                            <button type="submit"
+                                                    class="btn btn-warning btn-sm mb-1"
+                                            >
+                                                Mark as unread
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <form method="post"
+                                              action="{% url "reader:mark_as_read" file_item.id %}?next={% url "reader:directory" parent.id %}"
                                         >
-                                            Mark as read
-                                        </button>
-                                    </form>
+                                            {% csrf_token %}
+                                            <button type="submit"
+                                                    class="btn btn-success btn-sm mb-1"
+                                            >
+                                                Mark as read
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                {% else %}
+                                    <a class="btn btn-secondary btn-sm" href="{% url "reader:directory" file_item.id %}">Go</a>
                                 {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </section>
-    {% endif %}
-
-    {% if directory_list %}
-        <section>
-            <h2>Directories</h2>
-
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Directory name</th>
-                        <th scope="col" class="text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for directory in directory_list %}
-                        <tr>
-                            <td>{{ forloop.counter }}</td>
-                            <td>{{ directory.name }}</td>
-                            <td class="text-right">
-                                <a class="btn btn-secondary btn-sm" href="{% url "reader:directory" directory.id %}">Go</a>
                             </td>
                         </tr>
                     {% endfor %}

@@ -19,9 +19,8 @@ def test_directory_root(client):
 
     assert response.status_code == 200
     assert response.context["parent"] == root_directory
-    assert response.context["directory_list"].count() == 1
-    assert response.context["directory_list"].first() == comic_directory
-    assert response.context["comic_list"].count() == 0
+    assert response.context["file_item_list"].count() == 1
+    assert response.context["file_item_list"].first() == comic_directory
 
 
 def test_directory_detail(client):
@@ -39,9 +38,8 @@ def test_directory_detail(client):
 
     assert response.status_code == 200
     assert response.context["parent"] == comic_directory
-    assert response.context["directory_list"].count() == 0
-    assert response.context["comic_list"].count() == 1
-    assert response.context["comic_list"].first() == comic
+    assert response.context["file_item_list"].count() == 1
+    assert response.context["file_item_list"].first() == comic
 
 
 def test_comic_detail(client):

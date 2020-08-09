@@ -14,26 +14,14 @@ def directory(request, *args, **kwargs):
         parent = queryset.get(parent__isnull=True)
 
     if request.GET.get("q"):
-        directory_list = queryset.filter(
-            file_type=models.FileItem.DIRECTORY, name__icontains=request.GET.get("q")
-        )
-        comic_list = queryset.filter(
-            file_type=models.FileItem.COMIC, name__icontains=request.GET.get("q")
-        )
+        file_item_list = queryset.filter(name__icontains=request.GET.get("q"))
     else:
-        directory_list = queryset.filter(
-            parent=parent, file_type=models.FileItem.DIRECTORY
-        )
-        comic_list = queryset.filter(parent=parent, file_type=models.FileItem.COMIC)
+        file_item_list = queryset.filter(parent=parent)
 
     return shortcuts.render(
         request,
         template_name="reader/home.html",
-        context={
-            "parent": parent,
-            "directory_list": directory_list,
-            "comic_list": comic_list,
-        },
+        context={"parent": parent, "file_item_list": file_item_list,},
     )
 
 

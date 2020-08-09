@@ -59,3 +59,7 @@ class FileItem(models.Model):
     @property
     def is_root(self):
         return self.path == settings.COMICS_ROOT
+
+    @property
+    def is_comic(self):
+        return self.file_type == self.COMIC
