@@ -25,7 +25,7 @@ class FileItem(models.Model):
     is_read = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ["-file_type", "name"]
+        ordering = ["name"]
 
     def __str__(self):
         return self.name
