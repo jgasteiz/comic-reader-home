@@ -2,7 +2,7 @@
 import os
 import sys
 
-if os.environ.get("NO_DOCKER", "0") == "1":
+if os.environ.get("NO_DOCKER", "1") == "1":
     from dotenv import load_dotenv
 
     load_dotenv()
