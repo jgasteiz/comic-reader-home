@@ -1,9 +1,7 @@
 from django import http, shortcuts
 from django.views.static import serve
 
-from reader import models
-from reader.domain import file_handler
-from reader.domain.comics import operations, queries
+from reader import domain, models
 
 
 def directory(request, *args, **kwargs):
@@ -21,7 +19,10 @@ def directory(request, *args, **kwargs):
     return shortcuts.render(
         request,
         template_name="reader/home.html",
-        context={"parent": parent, "file_item_list": file_item_list,},
+        context={
+            "parent": parent,
+            "file_item_list": file_item_list,
+        },
     )
 
 
@@ -30,9 +31,9 @@ def read_comic_page(request, comic_id, *args, **kwargs):
     page_width = int(request.GET.get("page_width", "100"))
     comic = shortcuts.get_object_or_404(models.FileItem, pk=comic_id)
 
-    num_pages = queries.get_num_pages(comic)
+    num_pages = domain.get_num_pages(comic)
     # Update the comic status: set furthest read page and whether is finished or not.
-    operations.update_comic_status(comic, page_number)
+    domain.update_comic_status(comic, page_number)
 
     return shortcuts.render(
         request,
@@ -71,14 +72,14 @@ def mark_all_as_read(request, directory_id):
     if request.POST:
         comic_directory = shortcuts.get_object_or_404(models.FileItem, pk=directory_id)
         print(f"Marking all comics under directory {comic_directory} as read")
-        operations.mark_directory_comics_as_read(comic_directory)
+        domain.mark_directory_comics_as_read(comic_directory)
     return shortcuts.redirect(request.GET.get("next"))
 
 
 def comic_page_src(request, comic_id, page_number):
     comic = shortcuts.get_object_or_404(models.FileItem, pk=comic_id)
     try:
-        page = file_handler.get_extracted_comic_page(comic, page_number)
+        page = domain.get_comic_page_path(comic, page_number)
         return serve(request, page, document_root="/")
-    except http.Http404 as e:
+    except domain.UnableToExtractPage as e:
         return http.HttpResponse("Page not found. Reason: {}".format(e), status=404)
