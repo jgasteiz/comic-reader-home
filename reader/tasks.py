@@ -2,8 +2,7 @@ import os
 
 from django.conf import settings
 
-from reader import models
-from reader.domain import file_handler
+from reader import domain, models
 
 
 def delete_old_items():
@@ -18,7 +17,7 @@ def delete_old_items():
 
 
 def populate_db_from_path(path=settings.COMICS_ROOT, parent=None):
-    file_item = file_handler.get_or_create_file_item(path=path, parent=parent)
+    file_item = domain.get_or_create_file_item(path=path, parent=parent)
 
     # Start creating FileItem recursively.
     for path_name in os.listdir(path):
@@ -32,5 +31,5 @@ def populate_db_from_path(path=settings.COMICS_ROOT, parent=None):
         if os.path.isdir(child_path):
             populate_db_from_path(path=child_path, parent=file_item)
         # If it's a comic, simply create the file item.
-        elif file_handler.is_file_name_comic_file(path_name):
-            file_handler.get_or_create_file_item(path=child_path, parent=file_item)
+        elif domain.is_file_name_comic_file(path_name):
+            domain.get_or_create_file_item(path=child_path, parent=file_item)
