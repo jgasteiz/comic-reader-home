@@ -5,6 +5,7 @@ from zipfile import ZipFile
 
 from django.conf import settings
 from django.core.cache import cache
+
 from rarfile import RarFile
 from reader import models
 
@@ -100,7 +101,7 @@ def _is_file_name_cbz(file_name: str) -> bool:
 
 
 def _is_file_name_cbr(file_name: str) -> bool:
-    return file_name.endswith(".cbz")
+    return file_name.endswith(".cbr")
 
 
 def _is_file_name_a_hidden_file(file_name: str) -> bool:
