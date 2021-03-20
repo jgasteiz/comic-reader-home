@@ -56,14 +56,14 @@
                                     {# Reading action #}
                                     {# If the comic has been read, offer to start from the beginning #}
                                     {% if file_item.is_read %}
-                                        <a class="btn btn-primary btn-sm mb-1" href="{% url "reader:read_comic_page" file_item.id %}?page_number=0">Read from the beginning</a>
+                                        <a class="btn btn-primary btn-sm mb-1" href="{% url "reader:read_comic" file_item.id %}?page_number=0">Read from the beginning</a>
                                     {# If the comic is in progress, offer to continue or to start from the beginning #}
                                     {% elif file_item.furthest_read_page > 0 %}
-                                        <a class="btn btn-primary btn-sm mb-1" href="{% url "reader:read_comic_page" file_item.id %}?page_number={{ file_item.furthest_read_page }}">Continue reading</a>
-                                        <a class="btn btn-secondary btn-sm mb-1" href="{% url "reader:read_comic_page" file_item.id %}?page_number=0">Read from the beginning</a>
+                                        <a class="btn btn-primary btn-sm mb-1" href="{% url "reader:read_comic" file_item.id %}?page_number={{ file_item.furthest_read_page }}">Continue reading</a>
+                                        <a class="btn btn-secondary btn-sm mb-1" href="{% url "reader:read_comic" file_item.id %}?page_number=0">Read from the beginning</a>
                                     {# Otherwise simply offer to read it #}
                                     {% else %}
-                                        <a class="btn btn-primary btn-sm mb-1" href="{% url "reader:read_comic_page" file_item.id %}?page_number=0">Read</a>
+                                        <a class="btn btn-primary btn-sm mb-1" href="{% url "reader:read_comic" file_item.id %}?page_number=0">Read</a>
                                     {% endif %}
 
                                     {# Actions #}

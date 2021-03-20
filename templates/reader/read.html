@@ -18,21 +18,21 @@
 
         {# Comic page #}
         <div class="comic-page-container">
-            <img class="comic-page comic-page--{{ current_page_width }}" src="{% url "reader:comic_page_src" comic_id current_page_number %}" alt="Comic page">
+            <img class="comic-page comic-page--{{ current_page_width }}" src="{% url "reader:page_src" comic_id current_page_number %}" alt="Comic page">
 
             {% if previous_page_number >= 0 %}
-                <a href="{% url "reader:read_comic_page" comic_id %}?page_number={{ previous_page_number }}&page_width={{ current_page_width }}"
+                <a href="{% url "reader:read_comic" comic_id %}?page_number={{ previous_page_number }}&page_width={{ current_page_width }}"
                    class="page-navigation page-navigation--previous"></a>
             {% endif %}
             {% if next_page_number < num_pages %}
-                <a href="{% url "reader:read_comic_page" comic_id %}?page_number={{ next_page_number }}&page_width={{ current_page_width }}"
+                <a href="{% url "reader:read_comic" comic_id %}?page_number={{ next_page_number }}&page_width={{ current_page_width }}"
                    class="page-navigation page-navigation--next"></a>
             {% endif %}
         </div>
 
         {# Reading controls #}
         <div class="text-center bg-dark p-2">
-            <form class="form-horizontal d-inline-block mr-4" action="{% url 'reader:read_comic_page' comic_id %}" method="get">
+            <form class="form-horizontal d-inline-block mr-4" action="{% url 'reader:read_comic' comic_id %}" method="get">
                 <input type="hidden" name="page_width" value="{{ current_page_width }}">
                 <label for="id_page_number" class="text-white">Go to page</label>
                 <select name="page_number" id="id_page_number">
@@ -45,7 +45,7 @@
                 </select>
                 <button class="btn btn-primary btn-sm" type="submit">Go</button>
             </form>
-            <form class="form-horizontal d-inline-block mr-4" action="{% url 'reader:read_comic_page' comic_id %}" method="get">
+            <form class="form-horizontal d-inline-block mr-4" action="{% url 'reader:read_comic' comic_id %}" method="get">
                 <input type="hidden" name="page_number" value="{{ current_page_number }}">
                 <label for="id_page_width" class="text-white">Change width</label>
                 <select name="page_width" id="id_page_width">

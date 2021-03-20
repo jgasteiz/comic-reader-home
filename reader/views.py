@@ -18,7 +18,7 @@ def directory(request, *args, **kwargs):
 
     return shortcuts.render(
         request,
-        template_name="reader/home.html",
+        template_name="reader/directory.html",
         context={
             "parent": parent,
             "file_item_list": file_item_list,
@@ -26,7 +26,7 @@ def directory(request, *args, **kwargs):
     )
 
 
-def read_comic_page(request, comic_id, *args, **kwargs):
+def page(request, comic_id, *args, **kwargs):
     page_number = int(request.GET.get("page_number", "0"))
     page_width = int(request.GET.get("page_width", "100"))
     comic = shortcuts.get_object_or_404(models.FileItem, pk=comic_id)
@@ -76,7 +76,7 @@ def mark_all_as_read(request, directory_id):
     return shortcuts.redirect(request.GET.get("next"))
 
 
-def comic_page_src(request, comic_id, page_number):
+def page_src(request, comic_id, page_number):
     comic = shortcuts.get_object_or_404(models.FileItem, pk=comic_id)
     try:
         page = domain.get_comic_page_path(comic, page_number)

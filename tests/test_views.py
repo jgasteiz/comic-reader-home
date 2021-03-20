@@ -50,7 +50,7 @@ def test_comic_detail(client):
         file_type=models.FileItem.COMIC, parent=comic_directory
     )
 
-    url = shortcuts.reverse("reader:read_comic_page", kwargs={"comic_id": comic.id})
+    url = shortcuts.reverse("reader:read_comic", kwargs={"comic_id": comic.id})
     response = client.get(url)
 
     assert response.status_code == 200
