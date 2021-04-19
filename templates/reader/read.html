@@ -58,7 +58,7 @@
                 </select>
                 <button class="btn btn-primary btn-sm" type="submit">Change</button>
             </form>
-            <a class="btn btn-danger btn-sm exit-reader" href="{% url "reader:directory" parent_id %}">
+            <a class="btn btn-danger btn-sm exit-reader" href="{% url "reader:directory" parent_id %}#{{ comic_id }}">
                 <i class="material-icons">exit_to_app</i>
             </a>
         </div>

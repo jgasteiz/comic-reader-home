@@ -43,7 +43,7 @@
                 <tbody>
                     {% for file_item in file_item_list %}
                         <tr>
-                            <td>{{ forloop.counter }}</td>
+                            <td id="{{ file_item.id }}">{{ forloop.counter }}</td>
                             <td>
                                 {% if file_item.is_comic and file_item.is_read %}
                                     <img src="{% static "img/check-circle.svg" %}" alt="Read">
@@ -69,7 +69,7 @@
                                     {# Actions #}
                                     {% if file_item.is_read %}
                                         <form method="post"
-                                              action="{% url "reader:mark_as_unread" file_item.id %}?next={% url "reader:directory" parent.id %}"
+                                              action="{% url "reader:mark_as_unread" file_item.id %}?next={% url "reader:directory" parent.id %}#{{ file_item.id }}"
                                         >
                                             {% csrf_token %}
                                             <button type="submit"
@@ -80,7 +80,7 @@
                                         </form>
                                     {% else %}
                                         <form method="post"
-                                              action="{% url "reader:mark_as_read" file_item.id %}?next={% url "reader:directory" parent.id %}"
+                                              action="{% url "reader:mark_as_read" file_item.id %}?next={% url "reader:directory" parent.id %}#{{ file_item.id }}"
                                         >
                                             {% csrf_token %}
                                             <button type="submit"
