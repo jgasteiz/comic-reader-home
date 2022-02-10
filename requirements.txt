@@ -1,4 +1,4 @@
-Django==3.2.5
+Django==3.2.12
 rarfile==4.0
 ipdb==0.13.9
 pytest-django==4.4.0
