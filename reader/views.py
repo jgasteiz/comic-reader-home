@@ -2,6 +2,7 @@ from django import http, shortcuts
 from django.views.static import serve
 
 from reader import domain, models
+from reader.application import read
 
 
 def directory(request, *args, **kwargs):
@@ -52,38 +53,34 @@ def page(request, comic_id, *args, **kwargs):
     )
 
 
-def mark_as_unread(request, comic_id):
+def mark_comic_as_read(request, comic_id):
     if request.POST:
         comic = shortcuts.get_object_or_404(models.FileItem, pk=comic_id)
-        print(f"Marking {comic} as unread")
-        comic.mark_as_unread()
+        domain.mark_comic_as_read(comic)
     return shortcuts.redirect(request.GET.get("next"))
 
 
-def mark_as_read(request, comic_id):
+def mark_comic_as_unread(request, comic_id):
     if request.POST:
         comic = shortcuts.get_object_or_404(models.FileItem, pk=comic_id)
-        print(f"Marking {comic} as read")
-        comic.mark_as_read()
+        domain.mark_comic_as_unread(comic)
     return shortcuts.redirect(request.GET.get("next"))
 
 
-def mark_all_as_read(request, directory_id):
+def mark_directory_as_read(request, directory_id):
     if request.POST:
         comic_directory = shortcuts.get_object_or_404(models.FileItem, pk=directory_id)
-        print(f"Marking all comics under directory {comic_directory} as read")
-        domain.mark_directory_comics_as_read(comic_directory)
+        domain.mark_directory_as_read(comic_directory)
     return shortcuts.redirect(request.GET.get("next"))
 
 
 def page_src(request, comic_id, page_number):
     comic = shortcuts.get_object_or_404(models.FileItem, pk=comic_id)
     try:
-        page_path = domain.get_comic_page_path(
-            cb_file=domain.get_cb_file_for_comic(comic),
-            extract_path=domain.get_extract_path_for_comic(comic),
-            page_number=page_number,
+        return serve(
+            request=request,
+            path=read.get_page_path(comic=comic, page_number=page_number),
+            document_root="/",
         )
-        return serve(request, page_path, document_root="/")
     except domain.UnableToExtractPage as e:
         return http.HttpResponse("Page not found. Reason: {}".format(e), status=404)
