@@ -98,5 +98,5 @@ IGNORED_FILE_NAMES = [".DS_Store", ".yacreaderlibrary"]
 PAGE_NOT_FOUND = "/static/img/404.jpg"
 
 # Reader settings
-COMICS_ROOT = os.environ.get("COMICS_ROOT")
+COMICS_SRC_PATH = os.environ.get("COMICS_SRC_PATH")
 COMIC_EXTRACT_PATH = os.environ.get("COMIC_EXTRACT_PATH")

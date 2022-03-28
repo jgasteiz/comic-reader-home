@@ -16,7 +16,7 @@ def delete_old_items():
             file_item.delete()
 
 
-def populate_db_from_path(path=settings.COMICS_ROOT, parent=None):
+def populate_db_from_path(path=settings.COMICS_SRC_PATH, parent=None):
     file_item = domain.get_or_create_file_item(path=path, parent=parent)
 
     # Start creating FileItem recursively.

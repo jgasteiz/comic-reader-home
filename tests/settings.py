@@ -3,7 +3,7 @@ from core.settings import *
 SECRET_KEY = "123456"
 DEBUG = False
 
-COMICS_ROOT = os.path.join(BASE_DIR, "tests/fixtures/comics")
+COMICS_SRC_PATH = os.path.join(BASE_DIR, "tests/fixtures/comics")
 
 DATABASES["default"] = {
     "ENGINE": "django.db.backends.sqlite3",
