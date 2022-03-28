@@ -11,7 +11,9 @@ class FileItem(models.Model):
 
     name = models.CharField(max_length=512, blank=True)
     path = models.TextField(blank=True)
-    file_type = models.CharField(max_length=12, choices=FILE_TYPE_CHOICES, blank=True)
+    file_type = models.CharField(
+        max_length=12, choices=FILE_TYPE_CHOICES, db_index=True
+    )
 
     parent = models.ForeignKey(
         "FileItem",
