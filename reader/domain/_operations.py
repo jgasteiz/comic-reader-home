@@ -10,11 +10,26 @@ def update_comic_status(comic: models.FileItem, page_number: int):
         comic.mark_as_read()
 
 
-def mark_directory_comics_as_read(directory: models.FileItem):
+def mark_comic_as_read(comic: models.FileItem) -> None:
+    comic.mark_as_read()
+
+
+def mark_comic_as_unread(comic: models.FileItem) -> None:
+    comic.mark_as_unread()
+
+
+def mark_directory_as_read(directory: models.FileItem) -> None:
     for comic in models.FileItem.objects.filter(
         parent=directory, file_type=models.FileItem.COMIC
-    ):
-        comic.mark_as_read()
+    ).iterator():
+        mark_comic_as_read(comic)
+
+
+def mark_directory_as_unread(directory: models.FileItem) -> None:
+    for comic in models.FileItem.objects.filter(
+        parent=directory, file_type=models.FileItem.COMIC
+    ).iterator():
+        mark_comic_as_unread(comic)
 
 
 def get_or_create_file_item(path: str, parent: models.FileItem) -> models.FileItem:

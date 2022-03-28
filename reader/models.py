@@ -4,6 +4,14 @@ from django.conf import settings
 from django.db import models
 
 
+class QuerySet(models.QuerySet):
+    def comics(self) -> models.QuerySet:
+        return self.filter(file_type=FileItem.COMIC)
+
+    def directories(self) -> models.QuerySet:
+        return self.filter(file_type=FileItem.DIRECTORY)
+
+
 class FileItem(models.Model):
     COMIC = "comic"
     DIRECTORY = "directory"
@@ -11,7 +19,9 @@ class FileItem(models.Model):
 
     name = models.CharField(max_length=512, blank=True)
     path = models.TextField(blank=True)
-    file_type = models.CharField(max_length=12, choices=FILE_TYPE_CHOICES, blank=True)
+    file_type = models.CharField(
+        max_length=12, choices=FILE_TYPE_CHOICES, db_index=True
+    )
 
     parent = models.ForeignKey(
         "FileItem",
@@ -23,6 +33,8 @@ class FileItem(models.Model):
 
     furthest_read_page = models.IntegerField(null=True)
     is_read = models.BooleanField(default=False)
+
+    objects = QuerySet.as_manager()
 
     class Meta:
         ordering = ["name"]
