@@ -5,7 +5,6 @@ from zipfile import ZipFile
 
 from django.conf import settings
 from django.core.cache import cache
-
 from rarfile import RarFile
 from reader import models
 
@@ -27,7 +26,7 @@ def get_num_pages(file_item: models.FileItem) -> int:
         cache.set(cache_key, 0)
         return 0
 
-    cb_file = _get_cb_file_for_comic(file_item)
+    cb_file = get_cb_file_for_comic(file_item)
     num_pages = len(_get_comic_pages(cb_file))
     cache.set(cache_key, num_pages)
     return num_pages
@@ -44,12 +43,12 @@ def is_file_name_comic_file(file_name: str) -> bool:
     return True
 
 
-def get_comic_page_path(comic, page_number) -> str:
+def get_comic_page_path(
+    cb_file: Union[ZipFile, RarFile], extract_path: str, page_number: int
+) -> str:
     """
     Extract the given page number or do nothing if it has been extracted already.
     """
-    extract_path = _get_extract_path_for_comic(comic)
-    cb_file = _get_cb_file_for_comic(comic)
     comic_pages = _get_comic_pages(cb_file)
 
     try:
@@ -71,11 +70,11 @@ def get_comic_page_path(comic, page_number) -> str:
     return page_file_path
 
 
-def _get_extract_path_for_comic(comic: models.FileItem) -> str:
+def get_extract_path_for_comic(comic: models.FileItem) -> str:
     return os.path.join(settings.COMIC_EXTRACT_PATH, str(comic.pk))
 
 
-def _get_cb_file_for_comic(comic: models.FileItem) -> Union[ZipFile, RarFile]:
+def get_cb_file_for_comic(comic: models.FileItem) -> Union[ZipFile, RarFile]:
     if _is_file_name_cbz(comic.name):
         return ZipFile(comic.path)
     elif _is_file_name_cbr(comic.name):

@@ -79,7 +79,11 @@ def mark_all_as_read(request, directory_id):
 def page_src(request, comic_id, page_number):
     comic = shortcuts.get_object_or_404(models.FileItem, pk=comic_id)
     try:
-        page = domain.get_comic_page_path(comic, page_number)
-        return serve(request, page, document_root="/")
+        page_path = domain.get_comic_page_path(
+            cb_file=domain.get_cb_file_for_comic(comic),
+            extract_path=domain.get_extract_path_for_comic(comic),
+            page_number=page_number,
+        )
+        return serve(request, page_path, document_root="/")
     except domain.UnableToExtractPage as e:
         return http.HttpResponse("Page not found. Reason: {}".format(e), status=404)
