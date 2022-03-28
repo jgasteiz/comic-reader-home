@@ -44,7 +44,7 @@ def is_file_name_comic_file(file_name: str) -> bool:
 
 
 def get_comic_page_path(
-    cb_file: Union[ZipFile, RarFile], extract_path: str, page_number: int
+    *, cb_file: Union[ZipFile, RarFile], extract_path: str, page_number: int
 ) -> str:
     """
     Extract the given page number or do nothing if it has been extracted already.
@@ -68,6 +68,27 @@ def get_comic_page_path(
         os.makedirs(extract_path)
     cb_file.extract(page_file_name, extract_path)
     return page_file_path
+
+
+def get_comic_page_paths(
+    *, cb_file: Union[ZipFile, RarFile], extract_path: str
+) -> List[str]:
+    """
+    Extract all pages of a comic.
+    """
+    if not os.path.exists(extract_path):
+        os.makedirs(extract_path)
+
+    page_file_paths = []
+    for page_file_name in _get_comic_pages(cb_file):
+        page_file_path = os.path.join(extract_path, page_file_name)
+
+        if not os.path.exists(page_file_path):
+            cb_file.extract(page_file_name, extract_path)
+
+        page_file_paths.append(page_file_path)
+
+    return page_file_paths
 
 
 def get_extract_path_for_comic(comic: models.FileItem) -> str:
