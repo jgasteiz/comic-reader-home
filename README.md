@@ -12,6 +12,8 @@ This is an app to serve my cbr and cbz comic files on my home network.
 SECRET_KEY=123456
 # Absolute path to a directory with cbr/cbz files.
 COMICS_ROOT=/Users/javi.manzano/Data/comics
+# Absolute path where comics should be extracted.
+COMIC_EXTRACT_PATH=/Users/javi.manzano/Data/comics-extracted
 ```
 2. Run the following commands:
 ```shell
