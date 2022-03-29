@@ -92,7 +92,7 @@ def get_comic_page_paths(
 
 
 def get_extract_path_for_comic(comic: models.FileItem) -> str:
-    return os.path.join(settings.COMIC_EXTRACT_PATH, str(comic.pk))
+    return os.path.join(settings.COMICS_EXTRACT_PATH, str(comic.pk))
 
 
 def get_cb_file_for_comic(comic: models.FileItem) -> Union[ZipFile, RarFile]:

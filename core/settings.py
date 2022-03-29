@@ -99,4 +99,6 @@ PAGE_NOT_FOUND = "/static/img/404.jpg"
 
 # Reader settings
 COMICS_SRC_PATH = os.environ.get("COMICS_SRC_PATH")
-COMIC_EXTRACT_PATH = os.environ.get("COMIC_EXTRACT_PATH")
+COMICS_EXTRACT_PATH = os.environ.get(
+    "COMICS_EXTRACT_PATH", os.path.join(BASE_DIR, "static/comics/tmp")
+)
