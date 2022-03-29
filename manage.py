@@ -2,10 +2,9 @@
 import os
 import sys
 
-if os.environ.get("NO_DOCKER", "1") == "1":
-    from dotenv import load_dotenv
+from dotenv import load_dotenv
 
-    load_dotenv()
+load_dotenv()
 
 
 def main():
