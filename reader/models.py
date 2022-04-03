@@ -33,6 +33,7 @@ class FileItem(models.Model):
 
     furthest_read_page = models.IntegerField(null=True)
     is_read = models.BooleanField(default=False)
+    is_favorite = models.BooleanField(default=False)
 
     objects = QuerySet.as_manager()
 
@@ -66,6 +67,10 @@ class FileItem(models.Model):
     def mark_as_unread(self):
         self.furthest_read_page = None
         self.is_read = False
+        self.save()
+
+    def toggle_favorite(self):
+        self.is_favorite = not self.is_favorite
         self.save()
 
     @property
