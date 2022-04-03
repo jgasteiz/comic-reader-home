@@ -3,32 +3,34 @@
 
 {% block content %}
 
-    {% if parent.parent %}
+    {% if directory_detail.parent.parent %}
         <div class="row">
-            <h1 class="col">{{ parent.name }}</h1>
+            <h1 class="col">{{ directory_detail.parent.name }}</h1>
             <div class="col-auto">
-                <a class="btn btn-secondary" href="{% url "reader:directory" parent.parent.id %}">Back</a>
+                <a class="btn btn-secondary" href="{% url "reader:directory" directory_detail.parent.parent.id %}">Back</a>
             </div>
         </div>
     {% endif %}
 
-    {% if file_item_list %}
+    {% if directory_detail.file_items %}
         <section>
             <div class="row">
                 <div class="col">
                     <h2>File items</h2>
                 </div>
                 <div class="col-auto">
-                    <form method="post"
-                          action="{% url "reader:mark_all_as_read" parent.id %}?next={% url "reader:directory" parent.id %}"
-                    >
-                        {% csrf_token %}
-                        <button type="submit"
-                                class="btn btn-success btn-sm mb-1"
+                    {% if directory_detail.parent %}
+                        <form method="post"
+                              action="{% url "reader:mark_all_as_read" directory_detail.parent.id %}?next={% url "reader:directory" directory_detail.parent.id %}"
                         >
-                            Mark all as read
-                        </button>
-                    </form>
+                            {% csrf_token %}
+                            <button type="submit"
+                                    class="btn btn-success btn-sm mb-1"
+                            >
+                                Mark all as read
+                            </button>
+                        </form>
+                    {% endif %}
                 </div>
             </div>
 
@@ -41,7 +43,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for file_item in file_item_list %}
+                    {% for file_item in directory_detail.file_items %}
                         <tr>
                             <td id="{{ file_item.id }}">{{ forloop.counter }}</td>
                             <td>
@@ -69,7 +71,7 @@
                                     {# Actions #}
                                     {% if file_item.is_read %}
                                         <form method="post"
-                                              action="{% url "reader:mark_as_unread" file_item.id %}?next={% url "reader:directory" parent.id %}#{{ file_item.id }}"
+                                              action="{% url "reader:mark_as_unread" file_item.id %}?next={% url "reader:directory" directory_detail.parent.id %}#{{ file_item.id }}"
                                         >
                                             {% csrf_token %}
                                             <button type="submit"
@@ -80,7 +82,7 @@
                                         </form>
                                     {% else %}
                                         <form method="post"
-                                              action="{% url "reader:mark_as_read" file_item.id %}?next={% url "reader:directory" parent.id %}#{{ file_item.id }}"
+                                              action="{% url "reader:mark_as_read" file_item.id %}?next={% url "reader:directory" directory_detail.parent.id %}#{{ file_item.id }}"
                                         >
                                             {% csrf_token %}
                                             <button type="submit"

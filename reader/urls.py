@@ -8,7 +8,7 @@ app_name = "reader"
 urlpatterns = [
     # Directory views
     path("", views.directory, name="directory"),
-    path("directory/<int:fileitem_id>/", views.directory, name="directory"),
+    path("directory/<int:parent_id>/", views.directory, name="directory"),
     # Comic view
     path(
         "comic/<int:comic_id>/",

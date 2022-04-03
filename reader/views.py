@@ -3,26 +3,20 @@ from django.views.static import serve
 
 from reader import domain, models
 from reader.application import read
+from reader.domain import queries
 
 
 def directory(request, *args, **kwargs):
-    queryset = models.FileItem.objects.all()
-    if "fileitem_id" in kwargs:
-        parent = queryset.get(id=kwargs["fileitem_id"])
-    else:
-        parent = queryset.get(parent__isnull=True)
-
-    if request.GET.get("q"):
-        file_item_list = queryset.filter(name__icontains=request.GET.get("q"))
-    else:
-        file_item_list = queryset.filter(parent=parent)
+    directory_detail = queries.get_directory_details(
+        parent_id=kwargs.get("parent_id", None),
+        query=request.GET.get("q", ""),
+    )
 
     return shortcuts.render(
         request,
         template_name="reader/directory.html",
         context={
-            "parent": parent,
-            "file_item_list": file_item_list,
+            "directory_detail": directory_detail,
         },
     )
 
