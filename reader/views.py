@@ -1,4 +1,7 @@
+import json
+
 from django import http, shortcuts
+from django.views.decorators.csrf import csrf_exempt
 from django.views.static import serve
 
 from reader import domain, models
@@ -72,6 +75,43 @@ def mark_directory_as_read(request, directory_id):
         comic_directory = shortcuts.get_object_or_404(models.FileItem, pk=directory_id)
         domain.mark_directory_as_read(comic_directory)
     return shortcuts.redirect(request.GET.get("next"))
+
+
+def page_spa(request, comic_id):
+    page_number = int(request.GET.get("page_number", "0"))
+    comic = shortcuts.get_object_or_404(models.FileItem, pk=comic_id)
+
+    num_pages = domain.get_num_pages(comic)
+    domain.update_comic_status(comic, page_number)
+
+    comic_data = {
+        "comicId": comic_id,
+        "numPages": num_pages,
+        "initialPage": page_number,
+        "parentDirectoryUrl": shortcuts.reverse(
+            "reader:directory", kwargs={"fileitem_id": comic.parent.id}
+        ),
+        "pageSrcBaseUrl": f"/comic/{comic_id}/page/",
+        "progressUrl": f"/comic/{comic_id}/progress/",
+    }
+
+    return shortcuts.render(
+        request,
+        template_name="reader/read_spa.html",
+        context={"comic_data_json": json.dumps(comic_data)},
+    )
+
+
+@csrf_exempt
+def update_comic_progress(request, comic_id):
+    if request.method != "POST":
+        return http.JsonResponse({"error": "POST required"}, status=405)
+
+    comic = shortcuts.get_object_or_404(models.FileItem, pk=comic_id)
+    data = json.loads(request.body)
+    page_number = data["page_number"]
+    domain.update_comic_status(comic, page_number)
+    return http.JsonResponse({"status": "ok"})
 
 
 def page_src(request, comic_id, page_number):

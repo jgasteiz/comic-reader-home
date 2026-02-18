@@ -15,6 +15,18 @@ urlpatterns = [
         views.page,
         name="read_comic",
     ),
+    # SPA comic view
+    path(
+        "comic/<int:comic_id>/spa/",
+        views.page_spa,
+        name="read_comic_spa",
+    ),
+    # Comic progress update (for SPA)
+    path(
+        "comic/<int:comic_id>/progress/",
+        views.update_comic_progress,
+        name="update_comic_progress",
+    ),
     # Page detail view
     path(
         "comic/<int:comic_id>/page/<int:page_number>/",

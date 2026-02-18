@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <title>Read</title>
+    </head>
+    <body style="margin: 0; padding: 0; background: #000; overflow: hidden;">
+
+        <div id="comic-reader-root"></div>
+
+        <script>
+            window.__COMIC_DATA__ = {{ comic_data_json|safe }};
+        </script>
+        <script src="{% static 'lazylibs/react.production.min.js' %}"></script>
+        <script src="{% static 'lazylibs/react-dom.production.min.js' %}"></script>
+        <script src="{% static 'js/comic-reader-spa.js' %}"></script>
+    </body>
+</html>

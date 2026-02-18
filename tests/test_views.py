@@ -1,3 +1,5 @@
+import json
+
 import pytest
 from django import shortcuts
 
@@ -61,3 +63,45 @@ def test_comic_detail(client):
     assert response.context["num_pages"] == 3
     assert response.context["current_page_number"] == 0
     assert response.context["current_page_width"] == 100
+
+
+def test_comic_detail_spa(client):
+    comic_directory = models.FileItem.objects.get(
+        file_type=models.FileItem.DIRECTORY, parent__isnull=False
+    )
+    comic = models.FileItem.objects.get(
+        file_type=models.FileItem.COMIC, parent=comic_directory
+    )
+
+    url = shortcuts.reverse("reader:read_comic_spa", kwargs={"comic_id": comic.id})
+    response = client.get(url)
+
+    assert response.status_code == 200
+    comic_data = json.loads(response.context["comic_data_json"])
+    assert comic_data["comicId"] == comic.id
+    assert comic_data["numPages"] == 3
+    assert comic_data["parentDirectoryUrl"] == shortcuts.reverse(
+        "reader:directory", kwargs={"fileitem_id": comic_directory.id}
+    )
+
+
+def test_update_comic_progress(client):
+    comic_directory = models.FileItem.objects.get(
+        file_type=models.FileItem.DIRECTORY, parent__isnull=False
+    )
+    comic = models.FileItem.objects.get(
+        file_type=models.FileItem.COMIC, parent=comic_directory
+    )
+
+    url = shortcuts.reverse(
+        "reader:update_comic_progress", kwargs={"comic_id": comic.id}
+    )
+    response = client.post(
+        url,
+        data=json.dumps({"page_number": 1}),
+        content_type="application/json",
+    )
+
+    assert response.status_code == 200
+    comic.refresh_from_db()
+    assert comic.furthest_read_page == 1
