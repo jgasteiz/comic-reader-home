@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="theme-color" content="#343a40">
 
     <title>{% block page_title %}Comic reader{% endblock %}</title>
 
@@ -48,5 +49,10 @@
     <script src="{% static 'lazylibs/jquery-3.5.1.slim.min.js' %}?rev={{ SOURCE_REVISION }}"></script>
     <script src="{% static 'lazylibs/popper.min.js' %}?rev={{ SOURCE_REVISION }}"></script>
     <script src="{% static 'lazylibs/bootstrap.min.js' %}?rev={{ SOURCE_REVISION }}"></script>
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("{% static 'sw.js' %}");
+        }
+    </script>
 </body>
 </html>
