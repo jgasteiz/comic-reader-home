@@ -112,9 +112,10 @@
     function onContainerClick(e) {
       var rect = e.currentTarget.getBoundingClientRect();
       var x = e.clientX - rect.left;
-      if (x > rect.width / 2) {
+      var pct = x / rect.width;
+      if (pct >= 0.8) {
         goToPage(currentPage + 1);
-      } else {
+      } else if (pct <= 0.2) {
         goToPage(currentPage - 1);
       }
     }
