@@ -5,8 +5,33 @@
   var useState = React.useState;
   var useEffect = React.useEffect;
   var useCallback = React.useCallback;
+  var useRef = React.useRef;
 
   var data = window.__COMIC_DATA__;
+  var PREFETCH_AHEAD = 5;
+
+  function pageUrl(page) {
+    return data.pageSrcBaseUrl + page + "/";
+  }
+
+  function prefetchPages(center, cache) {
+    // Next pages first, then previous pages
+    var toFetch = [];
+    var i;
+    for (i = 1; i <= PREFETCH_AHEAD; i++) {
+      var next = center + i;
+      if (next < data.numPages && !cache[next]) toFetch.push(next);
+    }
+    for (i = 1; i <= PREFETCH_AHEAD; i++) {
+      var prev = center - i;
+      if (prev >= 0 && !cache[prev]) toFetch.push(prev);
+    }
+    toFetch.forEach(function (page) {
+      var img = new Image();
+      img.src = pageUrl(page);
+      cache[page] = img;
+    });
+  }
 
   function ComicReader() {
     var pageState = useState(data.initialPage);
@@ -16,6 +41,17 @@
     var loadingState = useState(true);
     var isLoading = loadingState[0];
     var setIsLoading = loadingState[1];
+
+    // Persistent cache of prefetched Image objects, keyed by page number
+    var cacheRef = useRef({});
+
+    // Prefetch surrounding pages whenever currentPage changes
+    useEffect(
+      function () {
+        prefetchPages(currentPage, cacheRef.current);
+      },
+      [currentPage]
+    );
 
     var goToPage = useCallback(
       function (page) {
@@ -83,7 +119,7 @@
       }
     }
 
-    var imgSrc = data.pageSrcBaseUrl + currentPage + "/";
+    var imgSrc = pageUrl(currentPage);
 
     // Styles
     var containerStyle = {
