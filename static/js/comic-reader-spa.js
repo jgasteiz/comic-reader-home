@@ -42,15 +42,41 @@
     var isLoading = loadingState[0];
     var setIsLoading = loadingState[1];
 
+    var initialZoom = Number(new URLSearchParams(window.location.search).get("width")) || 100;
+    var zoomState = useState(initialZoom);
+    var zoomPct = zoomState[0];
+    var setZoomPct = zoomState[1];
+
     // Persistent cache of prefetched Image objects, keyed by page number
     var cacheRef = useRef({});
+    var imageAreaRef = useRef(null);
 
-    // Prefetch surrounding pages whenever currentPage changes
+    // Scroll to top, update URL, and prefetch surrounding pages whenever currentPage changes
     useEffect(
       function () {
+        if (imageAreaRef.current) {
+          imageAreaRef.current.scrollTop = 0;
+        }
+        var url = new URL(window.location);
+        url.searchParams.set("page_number", currentPage);
+        window.history.replaceState(null, "", url);
         prefetchPages(currentPage, cacheRef.current);
       },
       [currentPage]
+    );
+
+    // Sync width to URL
+    useEffect(
+      function () {
+        var url = new URL(window.location);
+        if (zoomPct === 100) {
+          url.searchParams.delete("width");
+        } else {
+          url.searchParams.set("width", zoomPct);
+        }
+        window.history.replaceState(null, "", url);
+      },
+      [zoomPct]
     );
 
     var goToPage = useCallback(
@@ -133,17 +159,16 @@
     var imageAreaStyle = {
       flex: 1,
       display: "flex",
-      alignItems: "center",
       justifyContent: "center",
-      overflow: "hidden",
+      alignItems: "flex-start",
+      overflowY: "auto",
       cursor: "pointer",
       position: "relative",
     };
 
     var imgStyle = {
+      width: zoomPct + "%",
       maxWidth: "100%",
-      maxHeight: "100%",
-      objectFit: "contain",
     };
 
     var loadingStyle = {
@@ -173,10 +198,32 @@
       lineHeight: 1,
     };
 
+    var selectStyle = {
+      background: "#333",
+      color: "#fff",
+      border: "1px solid #555",
+      borderRadius: "4px",
+      padding: "4px 8px",
+      fontSize: "14px",
+      marginRight: "8px",
+    };
+
+    var pageOptions = [];
+    for (var p = 0; p < data.numPages; p++) {
+      pageOptions.push(
+        h("option", { key: p, value: p }, "Page " + (p + 1))
+      );
+    }
+
+    var ZOOM_OPTIONS = [100, 90, 80, 70, 60];
+    var zoomOptions = ZOOM_OPTIONS.map(function (pct) {
+      return h("option", { key: pct, value: pct }, pct + "%");
+    });
+
     return h("div", { style: containerStyle }, [
       h(
         "div",
-        { key: "image-area", style: imageAreaStyle, onClick: onContainerClick },
+        { key: "image-area", ref: imageAreaRef, style: imageAreaStyle, onClick: onContainerClick },
         [
           isLoading
             ? h("div", { key: "loading", style: loadingStyle }, "Loading...")
@@ -192,7 +239,33 @@
         ]
       ),
       h("div", { key: "bottom-bar", style: bottomBarStyle }, [
-        h("span", { key: "indicator" }, currentPage + 1 + " / " + data.numPages),
+        h("span", { key: "controls", style: { display: "flex", alignItems: "center" } }, [
+          h(
+            "select",
+            {
+              key: "page-select",
+              value: currentPage,
+              onChange: function (e) {
+                goToPage(Number(e.target.value));
+              },
+              style: selectStyle,
+            },
+            pageOptions
+          ),
+          h("span", { key: "indicator", style: { marginRight: "12px" } }, currentPage + 1 + " / " + data.numPages),
+          h(
+            "select",
+            {
+              key: "zoom-select",
+              value: zoomPct,
+              onChange: function (e) {
+                setZoomPct(Number(e.target.value));
+              },
+              style: selectStyle,
+            },
+            zoomOptions
+          ),
+        ]),
         h(
           "a",
           {
