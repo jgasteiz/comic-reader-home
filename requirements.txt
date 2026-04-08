@@ -7,3 +7,4 @@ python-dotenv
 black==22.1.0
 isort==5.10.1
 six
+gunicorn==23.0.0
