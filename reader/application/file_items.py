@@ -75,8 +75,13 @@ def populate_db_from_path(path: str=settings.COMICS_SRC_PATH):
                     parent=by_path.get(parent_path) if parent_path else None,
                 ))
             if to_create:
-                created = models.FileItem.objects.bulk_create(to_create)
-                for fi in created:
+                models.FileItem.objects.bulk_create(to_create)
+                # Re-fetch by path so each row has a PK populated, regardless
+                # of whether the DB backend returns PKs from bulk_create.
+                # The next depth's children rely on these PKs to resolve
+                # their parent FK.
+                paths_just_created = [obj.path for obj in to_create]
+                for fi in models.FileItem.objects.filter(path__in=paths_just_created):
                     by_path[fi.path] = fi
                     created_names.append(fi.name)
 
