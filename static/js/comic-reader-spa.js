@@ -47,9 +47,20 @@
     var zoomPct = zoomState[0];
     var setZoomPct = zoomState[1];
 
+    var fullscreenState = useState(false);
+    var isFullscreen = fullscreenState[0];
+    var setIsFullscreen = fullscreenState[1];
+
+    // The bottom bar is hidden whenever the user enters fullscreen, and can
+    // be toggled with a tap in the middle of the page.
+    var barState = useState(true);
+    var isBarVisible = barState[0];
+    var setIsBarVisible = barState[1];
+
     // Persistent cache of prefetched Image objects, keyed by page number
     var cacheRef = useRef({});
     var imageAreaRef = useRef(null);
+    var containerRef = useRef(null);
 
     // Scroll to top, update URL, and prefetch surrounding pages whenever currentPage changes
     useEffect(
@@ -143,8 +154,45 @@
         goToPage(currentPage + 1);
       } else if (pct <= 0.2) {
         goToPage(currentPage - 1);
+      } else {
+        setIsBarVisible(function (v) {
+          return !v;
+        });
       }
     }
+
+    // Sync isFullscreen state with the browser's fullscreen state, including
+    // changes the user makes outside our toggle (e.g. ESC, swipe-down).
+    useEffect(function () {
+      function onChange() {
+        var el =
+          document.fullscreenElement || document.webkitFullscreenElement;
+        var active = !!el;
+        setIsFullscreen(active);
+        setIsBarVisible(!active);
+      }
+      document.addEventListener("fullscreenchange", onChange);
+      document.addEventListener("webkitfullscreenchange", onChange);
+      return function () {
+        document.removeEventListener("fullscreenchange", onChange);
+        document.removeEventListener("webkitfullscreenchange", onChange);
+      };
+    }, []);
+
+    var toggleFullscreen = useCallback(function () {
+      var el = containerRef.current || document.documentElement;
+      var inFullscreen =
+        document.fullscreenElement || document.webkitFullscreenElement;
+      if (inFullscreen) {
+        var exit =
+          document.exitFullscreen || document.webkitExitFullscreen;
+        if (exit) exit.call(document);
+      } else {
+        var request =
+          el.requestFullscreen || el.webkitRequestFullscreen;
+        if (request) request.call(el);
+      }
+    }, []);
 
     var imgSrc = pageUrl(currentPage);
 
@@ -198,6 +246,22 @@
       lineHeight: 1,
     };
 
+    var iconButtonStyle = {
+      background: "transparent",
+      border: "none",
+      color: "#fff",
+      fontSize: "20px",
+      lineHeight: 1,
+      cursor: "pointer",
+      padding: "0 8px",
+    };
+
+    var rightControlsStyle = {
+      display: "flex",
+      alignItems: "center",
+      gap: "8px",
+    };
+
     var selectStyle = {
       background: "#333",
       color: "#fff",
@@ -220,7 +284,7 @@
       return h("option", { key: pct, value: pct }, pct + "%");
     });
 
-    return h("div", { style: containerStyle }, [
+    return h("div", { ref: containerRef, style: containerStyle }, [
       h(
         "div",
         { key: "image-area", ref: imageAreaRef, style: imageAreaStyle, onClick: onContainerClick },
@@ -238,44 +302,59 @@
           }),
         ]
       ),
-      h("div", { key: "bottom-bar", style: bottomBarStyle }, [
-        h("span", { key: "controls", style: { display: "flex", alignItems: "center" } }, [
-          h(
-            "select",
-            {
-              key: "page-select",
-              value: currentPage,
-              onChange: function (e) {
-                goToPage(Number(e.target.value));
-              },
-              style: selectStyle,
-            },
-            pageOptions
-          ),
-          h("span", { key: "indicator", style: { marginRight: "12px" } }, currentPage + 1 + " / " + data.numPages),
-          h(
-            "select",
-            {
-              key: "zoom-select",
-              value: zoomPct,
-              onChange: function (e) {
-                setZoomPct(Number(e.target.value));
-              },
-              style: selectStyle,
-            },
-            zoomOptions
-          ),
-        ]),
-        h(
-          "a",
-          {
-            key: "exit",
-            href: data.parentDirectoryUrl + "#" + data.comicId,
-            style: exitLinkStyle,
-          },
-          "\u2715"
-        ),
-      ]),
+      isBarVisible
+        ? h("div", { key: "bottom-bar", style: bottomBarStyle }, [
+            h("span", { key: "controls", style: { display: "flex", alignItems: "center" } }, [
+              h(
+                "select",
+                {
+                  key: "page-select",
+                  value: currentPage,
+                  onChange: function (e) {
+                    goToPage(Number(e.target.value));
+                  },
+                  style: selectStyle,
+                },
+                pageOptions
+              ),
+              h("span", { key: "indicator", style: { marginRight: "12px" } }, currentPage + 1 + " / " + data.numPages),
+              h(
+                "select",
+                {
+                  key: "zoom-select",
+                  value: zoomPct,
+                  onChange: function (e) {
+                    setZoomPct(Number(e.target.value));
+                  },
+                  style: selectStyle,
+                },
+                zoomOptions
+              ),
+            ]),
+            h("span", { key: "right-controls", style: rightControlsStyle }, [
+              h(
+                "button",
+                {
+                  key: "fullscreen",
+                  type: "button",
+                  onClick: toggleFullscreen,
+                  style: iconButtonStyle,
+                  "aria-label": isFullscreen ? "Exit fullscreen" : "Enter fullscreen",
+                },
+                isFullscreen ? "\u2922" : "\u26f6"
+              ),
+              h(
+                "a",
+                {
+                  key: "exit",
+                  href: data.parentDirectoryUrl + "#" + data.comicId,
+                  style: exitLinkStyle,
+                },
+                "\u2715"
+              ),
+            ]),
+          ])
+        : null,
     ]);
   }
 
