@@ -59,15 +59,14 @@
                                         <a class="btn btn-primary btn-sm mb-1" href="{% url "reader:read_comic_spa" file_item.id %}?page_number=0">Read from the beginning</a>
                                     {# If the comic is in progress, offer to continue or to start from the beginning #}
                                     {% elif file_item.furthest_read_page > 0 %}
-                                        <a class="btn btn-primary btn-sm mb-1" href="{% url "reader:read_comic_spa" file_item.id %}?page_number={{ file_item.furthest_read_page }}">Continue reading</a>
-                                        <a class="btn btn-secondary btn-sm mb-1" href="{% url "reader:read_comic_spa" file_item.id %}?page_number=0">Read from the beginning</a>
+                                        <a class="btn btn-primary btn-sm mb-1" href="{% url "reader:read_comic_spa" file_item.id %}?page_number={{ file_item.furthest_read_page }}">Continue from page {{ file_item.furthest_read_page }}</a>
                                     {# Otherwise simply offer to read it #}
                                     {% else %}
                                         <a class="btn btn-primary btn-sm mb-1" href="{% url "reader:read_comic_spa" file_item.id %}?page_number=0">Read</a>
                                     {% endif %}
 
                                     {# Actions #}
-                                    {% if file_item.is_read %}
+                                    {% if file_item.is_read or file_item.furthest_read_page > 0 %}
                                         <form method="post"
                                               action="{% url "reader:mark_as_unread" file_item.id %}?next={% url "reader:directory" parent.id %}#{{ file_item.id }}"
                                         >
@@ -78,7 +77,8 @@
                                                 Mark as unread
                                             </button>
                                         </form>
-                                    {% else %}
+                                    {% endif %}
+                                    {% if not file_item.is_read %}
                                         <form method="post"
                                               action="{% url "reader:mark_as_read" file_item.id %}?next={% url "reader:directory" parent.id %}#{{ file_item.id }}"
                                         >
