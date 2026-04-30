@@ -69,6 +69,7 @@
                                     {% if file_item.is_read or file_item.furthest_read_page > 0 %}
                                         <form method="post"
                                               action="{% url "reader:mark_as_unread" file_item.id %}?next={% url "reader:directory" parent.id %}#{{ file_item.id }}"
+                                              onsubmit="return confirm('Mark “{{ file_item.name|escapejs }}” as unread? This will reset your reading progress.');"
                                         >
                                             {% csrf_token %}
                                             <button type="submit"
@@ -81,6 +82,7 @@
                                     {% if not file_item.is_read %}
                                         <form method="post"
                                               action="{% url "reader:mark_as_read" file_item.id %}?next={% url "reader:directory" parent.id %}#{{ file_item.id }}"
+                                              onsubmit="return confirm('Mark “{{ file_item.name|escapejs }}” as read?');"
                                         >
                                             {% csrf_token %}
                                             <button type="submit"
