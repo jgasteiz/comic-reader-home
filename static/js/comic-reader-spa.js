@@ -152,7 +152,7 @@
     var containerStyle = {
       display: "flex",
       flexDirection: "column",
-      height: "100vh",
+      height: "100dvh",
       background: "#000",
     };
 
