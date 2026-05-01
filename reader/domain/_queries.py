@@ -1,11 +1,11 @@
 import logging
 import os
 from typing import List, Union
-from zipfile import ZipFile
+from zipfile import BadZipFile, ZipFile
 
 from django.conf import settings
 from django.core.cache import cache
-from rarfile import RarFile
+from rarfile import BadRarFile, RarFile
 from reader import models
 
 
@@ -56,8 +56,13 @@ def get_comic_page_path(
     # Otherwise, open the archive and extract.
     if not os.path.exists(extract_path):
         os.makedirs(extract_path)
-    cb_file = get_cb_file_for_comic(comic)
-    cb_file.extract(page_file_name, extract_path)
+    try:
+        cb_file = get_cb_file_for_comic(comic)
+        cb_file.extract(page_file_name, extract_path)
+    except (BadZipFile, BadRarFile) as e:
+        raise UnableToExtractPage(
+            f"Could not extract page {page_number} from {comic.name}: {e}"
+        )
     return page_file_path
 
 
@@ -85,8 +90,11 @@ def _get_page_names_for_comic(comic: models.FileItem) -> List[str]:
     cached = cache.get(cache_key)
     if cached is not None:
         return cached
-    cb_file = get_cb_file_for_comic(comic)
-    page_names = _get_comic_pages(cb_file)
+    try:
+        cb_file = get_cb_file_for_comic(comic)
+        page_names = _get_comic_pages(cb_file)
+    except (BadZipFile, BadRarFile) as e:
+        raise UnableToExtractPage(f"Could not read archive for {comic.name}: {e}")
     cache.set(cache_key, page_names)
     return page_names
 
