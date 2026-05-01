@@ -17,19 +17,9 @@ def get_num_pages(file_item: models.FileItem) -> int:
     """
     Get the number of pages of a comic.
     """
-    cache_key = f"num_pages_{file_item.pk}"
-    if cache.get(cache_key):
-        return cache.get(cache_key)
-
-    # Ensure the given FileItem is a comic.
     if not file_item.is_comic:
-        cache.set(cache_key, 0)
         return 0
-
-    cb_file = get_cb_file_for_comic(file_item)
-    num_pages = len(_get_comic_pages(cb_file))
-    cache.set(cache_key, num_pages)
-    return num_pages
+    return len(_get_page_names_for_comic(file_item))
 
 
 def is_file_name_comic_file(file_name: str) -> bool:
@@ -44,51 +34,31 @@ def is_file_name_comic_file(file_name: str) -> bool:
 
 
 def get_comic_page_path(
-    *, cb_file: Union[ZipFile, RarFile], extract_path: str, page_number: int
+    *, comic: models.FileItem, extract_path: str, page_number: int
 ) -> str:
     """
     Extract the given page number or do nothing if it has been extracted already.
     """
-    comic_pages = _get_comic_pages(cb_file)
+    page_names = _get_page_names_for_comic(comic)
 
     try:
-        page_file_name = comic_pages[page_number]
+        page_file_name = page_names[page_number]
     except IndexError:
         raise UnableToExtractPage(f"The page {page_number} could not be extracted.")
 
     page_file_path = os.path.join(extract_path, page_file_name)
 
-    # If it exists already, return it.
+    # If it exists already, return it without touching the archive.
     if os.path.exists(page_file_path):
         logging.info("Page exists, no need to extract it.")
         return page_file_path
 
-    # Otherwise, extract it.
+    # Otherwise, open the archive and extract.
     if not os.path.exists(extract_path):
         os.makedirs(extract_path)
+    cb_file = get_cb_file_for_comic(comic)
     cb_file.extract(page_file_name, extract_path)
     return page_file_path
-
-
-def get_comic_page_paths(
-    *, cb_file: Union[ZipFile, RarFile], extract_path: str
-) -> List[str]:
-    """
-    Extract all pages of a comic.
-    """
-    if not os.path.exists(extract_path):
-        os.makedirs(extract_path)
-
-    page_file_paths = []
-    for page_file_name in _get_comic_pages(cb_file):
-        page_file_path = os.path.join(extract_path, page_file_name)
-
-        if not os.path.exists(page_file_path):
-            cb_file.extract(page_file_name, extract_path)
-
-        page_file_paths.append(page_file_path)
-
-    return page_file_paths
 
 
 def get_extract_path_for_comic(comic: models.FileItem) -> str:
@@ -104,16 +74,31 @@ def get_cb_file_for_comic(comic: models.FileItem) -> Union[ZipFile, RarFile]:
         raise TypeError(f"Unable to get a cb file for {comic}")
 
 
+def _get_page_names_for_comic(comic: models.FileItem) -> List[str]:
+    """
+    Cached list of page filenames inside a comic's archive.
+
+    Avoids re-opening the archive on every page request — opening a CBR
+    in particular is expensive because rarfile shells out to `unrar`.
+    """
+    cache_key = f"page_names_{comic.pk}"
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return cached
+    cb_file = get_cb_file_for_comic(comic)
+    page_names = _get_comic_pages(cb_file)
+    cache.set(cache_key, page_names)
+    return page_names
+
+
 def _get_comic_pages(cb_file: Union[ZipFile, RarFile]) -> List[str]:
-    all_pages = sorted(
-        [
-            p
-            for p in cb_file.namelist()
-            if p.endswith(".jpg") or p.endswith(".jpeg") or p.endswith(".png")
-        ]
-    )
-    # Remove hidden files (files that start with `.`) from the pages list.
-    return list(filter(lambda x: not x.split("/")[-1].startswith("."), all_pages))
+    pages = [
+        p
+        for p in cb_file.namelist()
+        if p.lower().endswith((".jpg", ".jpeg", ".png"))
+        and not p.split("/")[-1].startswith(".")
+    ]
+    return sorted(pages)
 
 
 def _is_file_name_cbz(file_name: str) -> bool:
