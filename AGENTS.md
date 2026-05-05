@@ -44,7 +44,7 @@ static/             # CSS, JS libraries, extracted comic pages
    COMICS_SRC_PATH=/absolute/path/to/comics
    COMICS_EXTRACT_PATH=/absolute/path/to/extraction  # optional
    ```
-2. `pip install -r requirements.txt`
+2. `uv sync`
 3. `./manage.py migrate`
 4. `./manage.py populatedb`
 

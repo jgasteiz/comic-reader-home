@@ -19,6 +19,7 @@ COMICS_EXTRACT_PATH=/Users/javi.manzano/Data/comics-extracted
 ```
 2. Run the following commands:
 ```shell
+uv sync
 ./manage.py migrate
 ./manage.py populatedb
 ./manage.py runserver

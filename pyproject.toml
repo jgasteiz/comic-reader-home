@@ -1,0 +1,21 @@
+[project]
+name = "comic-reader-home"
+version = "0.1.0"
+description = "Django web application for serving CBR and CBZ comic files on a home network"
+requires-python = ">=3.11"
+dependencies = [
+    "Django==4.0.3",
+    "rarfile==4.0",
+    "psycopg2-binary==2.9.3",
+    "python-dotenv",
+    "six",
+    "gunicorn==23.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "ipdb==0.13.9",
+    "pytest-django==4.5.2",
+    "black==22.1.0",
+    "isort==5.10.1",
+]
