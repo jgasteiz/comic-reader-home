@@ -98,7 +98,7 @@ def page_spa(request, comic_id):
     return shortcuts.render(
         request,
         template_name="reader/read_spa.html",
-        context={"comic_data_json": json.dumps(comic_data)},
+        context={"comic_data_json": json.dumps(comic_data), "comic_name": comic.name},
     )
 
 
