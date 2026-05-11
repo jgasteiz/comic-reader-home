@@ -2,6 +2,8 @@ import os
 
 from django.conf import settings
 from django.db import models
+from django.db.models import F
+from django.utils import timezone
 
 
 class QuerySet(models.QuerySet):
@@ -12,7 +14,11 @@ class QuerySet(models.QuerySet):
         return self.filter(file_type=FileItem.DIRECTORY)
 
     def in_progress(self) -> models.QuerySet:
-        return self.comics().filter(is_read=False, furthest_read_page__gt=0)
+        return (
+            self.comics()
+            .filter(is_read=False, furthest_read_page__gt=0)
+            .order_by(F("updated_at").desc(nulls_last=True))
+        )
 
 
 class FileItem(models.Model):
@@ -37,6 +43,10 @@ class FileItem(models.Model):
     furthest_read_page = models.IntegerField(null=True)
     is_read = models.BooleanField(default=False)
     is_favorite = models.BooleanField(default=False)
+    # Last time the reading state changed (progress update, marked
+    # read, marked unread). Null until the user first interacts with
+    # the comic. Used to sort the "in progress" view by recency.
+    updated_at = models.DateTimeField(null=True, blank=True)
 
     objects = QuerySet.as_manager()
 
@@ -61,15 +71,18 @@ class FileItem(models.Model):
         self.furthest_read_page = page_number
         # In case we've started re-reading a comic
         self.is_read = False
+        self.updated_at = timezone.now()
         self.save()
 
     def mark_as_read(self):
         self.is_read = True
+        self.updated_at = timezone.now()
         self.save()
 
     def mark_as_unread(self):
         self.furthest_read_page = None
         self.is_read = False
+        self.updated_at = timezone.now()
         self.save()
 
     def toggle_favorite(self):

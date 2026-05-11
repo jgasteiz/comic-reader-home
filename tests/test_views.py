@@ -1,7 +1,9 @@
+import datetime
 import json
 
 import pytest
 from django import shortcuts
+from django.utils import timezone
 
 from reader import models
 
@@ -170,3 +172,61 @@ def test_update_comic_progress(client):
     assert response.status_code == 200
     comic.refresh_from_db()
     assert comic.furthest_read_page == 1
+
+
+def test_in_progress_view_orders_by_updated_at_desc(client):
+    comic_directory = models.FileItem.objects.get(
+        file_type=models.FileItem.DIRECTORY, parent__isnull=False
+    )
+    now = timezone.now()
+    older = models.FileItem.objects.create(
+        name="01 - Older.cbz",
+        path="/fake/01 - Older.cbz",
+        file_type=models.FileItem.COMIC,
+        parent=comic_directory,
+        furthest_read_page=1,
+        is_read=False,
+        updated_at=now - datetime.timedelta(hours=2),
+    )
+    newer = models.FileItem.objects.create(
+        name="02 - Newer.cbz",
+        path="/fake/02 - Newer.cbz",
+        file_type=models.FileItem.COMIC,
+        parent=comic_directory,
+        furthest_read_page=1,
+        is_read=False,
+        updated_at=now,
+    )
+    # A comic with no updated_at (never touched since the field was
+    # added) should still appear, but after the ones with a value.
+    never_updated = models.FileItem.objects.create(
+        name="03 - Never Updated.cbz",
+        path="/fake/03 - Never Updated.cbz",
+        file_type=models.FileItem.COMIC,
+        parent=comic_directory,
+        furthest_read_page=1,
+        is_read=False,
+        updated_at=None,
+    )
+
+    url = shortcuts.reverse("reader:in_progress")
+    response = client.get(url)
+
+    assert response.status_code == 200
+    comics = list(response.context["comics"])
+    assert comics == [newer, older, never_updated]
+
+
+def test_set_furthest_read_page_bumps_updated_at(client):
+    comic_directory = models.FileItem.objects.get(
+        file_type=models.FileItem.DIRECTORY, parent__isnull=False
+    )
+    comic = models.FileItem.objects.get(
+        file_type=models.FileItem.COMIC, parent=comic_directory
+    )
+    assert comic.updated_at is None
+
+    comic.set_furthest_read_page(1)
+
+    comic.refresh_from_db()
+    assert comic.updated_at is not None

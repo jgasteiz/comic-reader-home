@@ -31,7 +31,7 @@ def directory(request, *args, **kwargs):
 
 
 def in_progress(request):
-    comics = models.FileItem.objects.in_progress().order_by("name")
+    comics = models.FileItem.objects.in_progress()
     return shortcuts.render(
         request,
         template_name="reader/in_progress.html",
