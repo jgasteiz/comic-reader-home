@@ -143,6 +143,10 @@
     var imageAreaRef = useRef(null);
     // The element passed to requestFullscreen — i.e. the whole reader.
     var containerRef = useRef(null);
+    // Mirror of currentPage so the long-lived keydown handler can read
+    // the latest value without depending on it (the effect captures
+    // its closure once with `[]` deps).
+    var currentPageRef = useRef(data.initialPage);
 
     // ---- Effects --------------------------------------------------
 
@@ -150,6 +154,7 @@
     // prefetch neighbouring pages.
     useEffect(
       function () {
+        currentPageRef.current = currentPage;
         if (imageAreaRef.current) {
           imageAreaRef.current.scrollTop = 0;
         }
@@ -205,17 +210,7 @@
       function onKeyDown(e) {
         if (e.key === "ArrowRight") {
           e.preventDefault();
-          setCurrentPage(function (prev) {
-            var next = prev + 1;
-            if (next >= data.numPages) return prev;
-            setIsLoading(true);
-            fetch(data.progressUrl, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ page_number: next }),
-            }).catch(function () {});
-            return next;
-          });
+          goToPage(currentPageRef.current + 1);
         } else if (e.key === " ") {
           e.preventDefault();
           var area = imageAreaRef.current;
@@ -292,11 +287,22 @@
 
     // ---- Handlers -------------------------------------------------
 
-    // Move to a specific page and report progress. No-op for out-of-
-    // range pages so callers don't need to bounds-check.
+    // Move to a specific page and report progress. No-op for negative
+    // pages so callers don't need to bounds-check. Attempting to move
+    // past the last page offers to start the next comic in the same
+    // directory (if there is one) via a browser confirm dialog.
     var goToPage = useCallback(
       function (page) {
-        if (page < 0 || page >= data.numPages) return;
+        if (page < 0) return;
+        if (page >= data.numPages) {
+          if (
+            data.nextComic &&
+            window.confirm('Start reading "' + data.nextComic.name + '"?')
+          ) {
+            window.location.href = data.nextComic.url;
+          }
+          return;
+        }
         setIsLoading(true);
         setCurrentPage(page);
 

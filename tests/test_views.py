@@ -85,6 +85,71 @@ def test_comic_detail_spa(client):
     )
 
 
+def test_comic_detail_spa_with_no_next_comic(client):
+    comic_directory = models.FileItem.objects.get(
+        file_type=models.FileItem.DIRECTORY, parent__isnull=False
+    )
+    comic = models.FileItem.objects.get(
+        file_type=models.FileItem.COMIC, parent=comic_directory
+    )
+
+    url = shortcuts.reverse("reader:read_comic_spa", kwargs={"comic_id": comic.id})
+    response = client.get(url)
+
+    comic_data = json.loads(response.context["comic_data_json"])
+    assert comic_data["nextComic"] is None
+
+
+def test_comic_detail_spa_with_next_comic(client):
+    comic_directory = models.FileItem.objects.get(
+        file_type=models.FileItem.DIRECTORY, parent__isnull=False
+    )
+    comic = models.FileItem.objects.get(
+        file_type=models.FileItem.COMIC, parent=comic_directory
+    )
+    next_comic = models.FileItem.objects.create(
+        name="02 - The Next Comic.cbz",
+        path="/fake/02 - The Next Comic.cbz",
+        file_type=models.FileItem.COMIC,
+        parent=comic_directory,
+    )
+
+    url = shortcuts.reverse("reader:read_comic_spa", kwargs={"comic_id": comic.id})
+    response = client.get(url)
+
+    comic_data = json.loads(response.context["comic_data_json"])
+    assert comic_data["nextComic"] == {
+        "name": next_comic.name,
+        "url": shortcuts.reverse(
+            "reader:read_comic_spa", kwargs={"comic_id": next_comic.id}
+        )
+        + "?page_number=0",
+    }
+
+
+def test_comic_detail_spa_ignores_sibling_directories(client):
+    comic_directory = models.FileItem.objects.get(
+        file_type=models.FileItem.DIRECTORY, parent__isnull=False
+    )
+    comic = models.FileItem.objects.get(
+        file_type=models.FileItem.COMIC, parent=comic_directory
+    )
+    # A sibling directory sorted after the comic must not be considered
+    # the "next comic" — only siblings of type COMIC count.
+    models.FileItem.objects.create(
+        name="zzz - A Subdirectory",
+        path="/fake/zzz - A Subdirectory",
+        file_type=models.FileItem.DIRECTORY,
+        parent=comic_directory,
+    )
+
+    url = shortcuts.reverse("reader:read_comic_spa", kwargs={"comic_id": comic.id})
+    response = client.get(url)
+
+    comic_data = json.loads(response.context["comic_data_json"])
+    assert comic_data["nextComic"] is None
+
+
 def test_update_comic_progress(client):
     comic_directory = models.FileItem.objects.get(
         file_type=models.FileItem.DIRECTORY, parent__isnull=False

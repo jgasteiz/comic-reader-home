@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import List, Union
+from typing import List, Optional, Union
 from zipfile import BadZipFile, ZipFile
 
 from django.conf import settings
@@ -11,6 +11,23 @@ from reader import models
 
 class UnableToExtractPage(Exception):
     pass
+
+
+def get_next_comic_in_directory(
+    comic: models.FileItem,
+) -> Optional[models.FileItem]:
+    """
+    Next sibling comic in the same directory, ordered by name. None if
+    the comic has no parent or is the last one in its directory.
+    """
+    if comic.parent is None:
+        return None
+    return (
+        models.FileItem.objects.comics()
+        .filter(parent=comic.parent, name__gt=comic.name)
+        .order_by("name")
+        .first()
+    )
 
 
 def get_num_pages(file_item: models.FileItem) -> int:

@@ -93,6 +93,17 @@ def page_spa(request, comic_id):
     num_pages = domain.get_num_pages(comic)
     domain.update_comic_status(comic, page_number)
 
+    next_comic = domain.get_next_comic_in_directory(comic)
+    next_comic_data = None
+    if next_comic is not None:
+        next_comic_data = {
+            "name": next_comic.name,
+            "url": shortcuts.reverse(
+                "reader:read_comic_spa", kwargs={"comic_id": next_comic.id}
+            )
+            + "?page_number=0",
+        }
+
     comic_data = {
         "comicId": comic_id,
         "numPages": num_pages,
@@ -102,6 +113,7 @@ def page_spa(request, comic_id):
         ),
         "pageSrcBaseUrl": f"/comic/{comic_id}/page/",
         "progressUrl": f"/comic/{comic_id}/progress/",
+        "nextComic": next_comic_data,
     }
 
     return shortcuts.render(
