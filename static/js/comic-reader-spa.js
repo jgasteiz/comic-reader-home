@@ -167,9 +167,10 @@
       };
     }, []);
 
-    // Keyboard navigation: arrows turn pages, space scrolls the current
-    // page down, ESC leaves the reader and jumps back to this comic's
-    // row in the parent listing.
+    // Keyboard navigation: left/right arrows turn pages, up/down arrows
+    // scroll the current page by 15% of the viewport, space snaps
+    // through scroll stops on the current page, ESC leaves the reader
+    // and jumps back to this comic's row in the parent listing.
     useEffect(function () {
       function onKeyDown(e) {
         if (e.key === "ArrowRight") {
@@ -222,6 +223,16 @@
             }).catch(function () {});
             return next;
           });
+        } else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+          e.preventDefault();
+          var scrollArea = imageAreaRef.current;
+          if (scrollArea) {
+            var delta = scrollArea.clientHeight * 0.15;
+            scrollArea.scrollBy({
+              top: e.key === "ArrowDown" ? delta : -delta,
+              behavior: "smooth",
+            });
+          }
         } else if (e.key === "Escape") {
           window.location.href =
             data.parentDirectoryUrl + "#" + data.comicId;
