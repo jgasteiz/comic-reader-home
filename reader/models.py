@@ -11,6 +11,9 @@ class QuerySet(models.QuerySet):
     def directories(self) -> models.QuerySet:
         return self.filter(file_type=FileItem.DIRECTORY)
 
+    def in_progress(self) -> models.QuerySet:
+        return self.comics().filter(is_read=False, furthest_read_page__gt=0)
+
 
 class FileItem(models.Model):
     COMIC = "comic"
@@ -80,3 +83,12 @@ class FileItem(models.Model):
     @property
     def is_comic(self):
         return self.file_type == self.COMIC
+
+    @property
+    def is_in_progress(self):
+        return (
+            self.is_comic
+            and not self.is_read
+            and self.furthest_read_page is not None
+            and self.furthest_read_page > 0
+        )

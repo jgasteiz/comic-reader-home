@@ -9,6 +9,8 @@ urlpatterns = [
     # Directory views
     path("", views.directory, name="directory"),
     path("directory/<int:fileitem_id>/", views.directory, name="directory"),
+    # In-progress comics
+    path("in-progress/", views.in_progress, name="in_progress"),
     # Comic view
     path(
         "comic/<int:comic_id>/",

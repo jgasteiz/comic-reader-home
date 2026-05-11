@@ -35,6 +35,11 @@
             <a href="/" class="navbar-brand d-flex align-items-center">
                 <strong>Comic Reader</strong>
             </a>
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url "reader:in_progress" %}">In progress</a>
+                </li>
+            </ul>
             <form action="{% url "reader:directory" %}" class="form-inline my-2 my-lg-0" method="get">
                 <input type="search" class="form-control mr-sm-2" name="q" placeholder="Search for a comic or a directory">
                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>

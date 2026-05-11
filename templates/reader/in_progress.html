@@ -1,0 +1,65 @@
+{% extends "reader/base.html" %}
+{% load static %}
+
+{% block page_title %}In progress – Comic reader{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <h1 class="col">In progress</h1>
+    </div>
+
+    {% if comics %}
+        <section>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Location</th>
+                        <th scope="col" class="text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for comic in comics %}
+                        <tr>
+                            <td id="{{ comic.id }}">{{ forloop.counter }}</td>
+                            <td>{{ comic.name }}</td>
+                            <td>
+                                {% if comic.parent %}
+                                    <a href="{% url "reader:directory" comic.parent.id %}">{{ comic.parent.name }}</a>
+                                {% endif %}
+                            </td>
+                            <td class="text-right">
+                                <a class="btn btn-primary btn-sm mb-1"
+                                   href="{% url "reader:read_comic_spa" comic.id %}?page_number={{ comic.furthest_read_page }}">
+                                    Continue from page {{ comic.furthest_read_page }}
+                                </a>
+                                <form method="post"
+                                      action="{% url "reader:mark_as_unread" comic.id %}?next={% url "reader:in_progress" %}#{{ comic.id }}"
+                                      onsubmit="return confirm('Mark “{{ comic.name|escapejs }}” as unread? This will reset your reading progress.');"
+                                >
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-warning btn-sm mb-1">
+                                        Mark as unread
+                                    </button>
+                                </form>
+                                <form method="post"
+                                      action="{% url "reader:mark_as_read" comic.id %}?next={% url "reader:in_progress" %}"
+                                      onsubmit="return confirm('Mark “{{ comic.name|escapejs }}” as read?');"
+                                >
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success btn-sm mb-1">
+                                        Mark as read
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    {% else %}
+        <p>No comics in progress.</p>
+    {% endif %}
+{% endblock %}

@@ -30,6 +30,15 @@ def directory(request, *args, **kwargs):
     )
 
 
+def in_progress(request):
+    comics = models.FileItem.objects.in_progress().order_by("name")
+    return shortcuts.render(
+        request,
+        template_name="reader/in_progress.html",
+        context={"comics": comics},
+    )
+
+
 def page(request, comic_id, *args, **kwargs):
     page_number = int(request.GET.get("page_number", "0"))
     page_width = int(request.GET.get("page_width", "100"))
