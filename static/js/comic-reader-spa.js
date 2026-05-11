@@ -197,7 +197,7 @@
     }, []);
 
     // Keyboard navigation: left/right arrows turn pages, up/down arrows
-    // scroll the current page by 15% of the viewport, space snaps
+    // scroll the current page by 10% of the viewport, space snaps
     // through scroll stops on the current page, +/- step zoom in/out,
     // f toggles fullscreen, ESC leaves the reader and jumps back to
     // this comic's row in the parent listing.
@@ -257,7 +257,7 @@
           e.preventDefault();
           var scrollArea = imageAreaRef.current;
           if (scrollArea) {
-            var delta = scrollArea.clientHeight * 0.15;
+            var delta = scrollArea.clientHeight * 0.10;
             scrollArea.scrollBy({
               top: e.key === "ArrowDown" ? delta : -delta,
               behavior: "smooth",
