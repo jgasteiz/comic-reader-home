@@ -167,11 +167,12 @@
       };
     }, []);
 
-    // Keyboard navigation: arrows / space turn pages, ESC leaves the
-    // reader and jumps back to this comic's row in the parent listing.
+    // Keyboard navigation: arrows turn pages, space scrolls the current
+    // page down, ESC leaves the reader and jumps back to this comic's
+    // row in the parent listing.
     useEffect(function () {
       function onKeyDown(e) {
-        if (e.key === "ArrowRight" || e.key === " ") {
+        if (e.key === "ArrowRight") {
           e.preventDefault();
           setCurrentPage(function (prev) {
             var next = prev + 1;
@@ -184,6 +185,30 @@
             }).catch(function () {});
             return next;
           });
+        } else if (e.key === " ") {
+          e.preventDefault();
+          var area = imageAreaRef.current;
+          if (area) {
+            // Snap through a fixed set of stops so the user always
+            // reaches the bottom of the page in a predictable number
+            // of presses: 1 when most of the page already fits on
+            // screen, 2 otherwise (top -> middle -> bottom).
+            var maxScroll = area.scrollHeight - area.clientHeight;
+            if (maxScroll > 0) {
+              var stops =
+                area.clientHeight / area.scrollHeight > 0.5
+                  ? [0, maxScroll]
+                  : [0, maxScroll / 2, maxScroll];
+              var target = maxScroll;
+              for (var s = 0; s < stops.length; s++) {
+                if (stops[s] > area.scrollTop + 1) {
+                  target = stops[s];
+                  break;
+                }
+              }
+              area.scrollTo({ top: target, behavior: "smooth" });
+            }
+          }
         } else if (e.key === "ArrowLeft") {
           e.preventDefault();
           setCurrentPage(function (prev) {
