@@ -37,6 +37,35 @@
   // Higher = smoother but more bandwidth/memory.
   var PREFETCH_AHEAD = 5;
 
+  // Width presets exposed in the zoom dropdown, descending so the
+  // default (100%) is at the top. Kept at module scope so the keydown
+  // handler can step through them without re-binding on every render.
+  var ZOOM_OPTIONS = [100, 95, 90, 85, 80, 75, 70, 65, 60, 55, 50];
+
+  // Step zoom up (direction = +1) or down (direction = -1) through
+  // ZOOM_OPTIONS, clamping at the ends. If `current` isn't in the list
+  // (e.g. an arbitrary value loaded from the URL), snap to the closest
+  // option first.
+  function nextZoom(current, direction) {
+    var idx = ZOOM_OPTIONS.indexOf(current);
+    if (idx === -1) {
+      idx = 0;
+      for (var i = 1; i < ZOOM_OPTIONS.length; i++) {
+        if (
+          Math.abs(ZOOM_OPTIONS[i] - current) <
+          Math.abs(ZOOM_OPTIONS[idx] - current)
+        ) {
+          idx = i;
+        }
+      }
+    }
+    // ZOOM_OPTIONS is descending: larger zoom = lower index.
+    var next = idx - direction;
+    if (next < 0) next = 0;
+    if (next >= ZOOM_OPTIONS.length) next = ZOOM_OPTIONS.length - 1;
+    return ZOOM_OPTIONS[next];
+  }
+
   // ---------------------------------------------------------------
   // Helpers
   // ---------------------------------------------------------------
@@ -169,8 +198,9 @@
 
     // Keyboard navigation: left/right arrows turn pages, up/down arrows
     // scroll the current page by 15% of the viewport, space snaps
-    // through scroll stops on the current page, ESC leaves the reader
-    // and jumps back to this comic's row in the parent listing.
+    // through scroll stops on the current page, +/- step zoom in/out,
+    // f toggles fullscreen, ESC leaves the reader and jumps back to
+    // this comic's row in the parent listing.
     useEffect(function () {
       function onKeyDown(e) {
         if (e.key === "ArrowRight") {
@@ -233,6 +263,21 @@
               behavior: "smooth",
             });
           }
+        } else if (e.key === "f" || e.key === "F") {
+          e.preventDefault();
+          toggleFullscreen();
+        } else if (e.key === "+" || e.key === "=") {
+          // Accept "=" as well so the user doesn't have to hold Shift
+          // for "+" on US-style keyboards.
+          e.preventDefault();
+          setZoomPct(function (current) {
+            return nextZoom(current, 1);
+          });
+        } else if (e.key === "-" || e.key === "_") {
+          e.preventDefault();
+          setZoomPct(function (current) {
+            return nextZoom(current, -1);
+          });
         } else if (e.key === "Escape") {
           window.location.href =
             data.parentDirectoryUrl + "#" + data.comicId;
@@ -401,8 +446,6 @@
       );
     }
 
-    // Width presets exposed in the zoom dropdown.
-    var ZOOM_OPTIONS = [100, 90, 80, 70, 60];
     var zoomOptions = ZOOM_OPTIONS.map(function (pct) {
       return h("option", { key: pct, value: pct }, pct + "%");
     });
