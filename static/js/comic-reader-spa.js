@@ -199,7 +199,7 @@
     // Keyboard navigation: left/right arrows turn pages, up/down arrows
     // scroll the current page by 10% of the viewport, space snaps
     // through scroll stops on the current page, +/- step zoom in/out,
-    // f toggles fullscreen, ESC leaves the reader and jumps back to
+    // f toggles fullscreen, q leaves the reader and jumps back to
     // this comic's row in the parent listing.
     useEffect(function () {
       function onKeyDown(e) {
@@ -278,7 +278,8 @@
           setZoomPct(function (current) {
             return nextZoom(current, -1);
           });
-        } else if (e.key === "Escape") {
+        } else if (e.key === "q" || e.key === "Q") {
+          e.preventDefault();
           window.location.href =
             data.parentDirectoryUrl + "#" + data.comicId;
         }
