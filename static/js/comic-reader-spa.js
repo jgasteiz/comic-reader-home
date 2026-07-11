@@ -116,9 +116,11 @@
     var isLoading = loadingState[0];
     var setIsLoading = loadingState[1];
 
-    // Image width as a percent of the image area. Read from the URL so
-    // a refresh/share preserves the user's chosen zoom.
-    var initialZoom = Number(new URLSearchParams(window.location.search).get("width")) || 100;
+    // Image width as a percent of the image area. URL param takes
+    // precedence (preserves shared/bookmarked links); falls back to
+    // localStorage so the last-used zoom carries over between comics.
+    var initialZoom = Number(new URLSearchParams(window.location.search).get("width")) ||
+      Number(localStorage.getItem("reader.zoomPct")) || 100;
     var zoomState = useState(initialZoom);
     var zoomPct = zoomState[0];
     var setZoomPct = zoomState[1];
@@ -135,6 +137,12 @@
     var isBarVisible = barState[0];
     var setIsBarVisible = barState[1];
 
+    // Manga mode: reverses left/right navigation so left = next page
+    // and right = previous page (right-to-left reading order).
+    var mangaState = useState(localStorage.getItem("reader.mangaMode") === "1");
+    var isMangaMode = mangaState[0];
+    var setIsMangaMode = mangaState[1];
+
     // ---- Refs -----------------------------------------------------
 
     // Persistent { pageNumber -> Image } map for prefetched pages.
@@ -147,8 +155,17 @@
     // the latest value without depending on it (the effect captures
     // its closure once with `[]` deps).
     var currentPageRef = useRef(data.initialPage);
+    // Mirror of isMangaMode for the same reason.
+    var isMangaModeRef = useRef(false);
 
     // ---- Effects --------------------------------------------------
+
+    // Keep isMangaModeRef in sync with state so the keydown handler
+    // (which closes over the ref) always sees the current value.
+    useEffect(function () {
+      isMangaModeRef.current = isMangaMode;
+      localStorage.setItem("reader.mangaMode", isMangaMode ? "1" : "0");
+    }, [isMangaMode]);
 
     // On page change: scroll to top, mirror page in the URL, and
     // prefetch neighbouring pages.
@@ -177,6 +194,7 @@
           url.searchParams.set("width", zoomPct);
         }
         window.history.replaceState(null, "", url);
+        localStorage.setItem("reader.zoomPct", zoomPct);
       },
       [zoomPct]
     );
@@ -210,7 +228,21 @@
       function onKeyDown(e) {
         if (e.key === "ArrowRight") {
           e.preventDefault();
-          goToPage(currentPageRef.current + 1);
+          if (isMangaModeRef.current) {
+            setCurrentPage(function (prev) {
+              var next = prev - 1;
+              if (next < 0) return prev;
+              setIsLoading(true);
+              fetch(data.progressUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ page_number: next }),
+              }).catch(function () {});
+              return next;
+            });
+          } else {
+            goToPage(currentPageRef.current + 1);
+          }
         } else if (e.key === " ") {
           e.preventDefault();
           var area = imageAreaRef.current;
@@ -237,17 +269,21 @@
           }
         } else if (e.key === "ArrowLeft") {
           e.preventDefault();
-          setCurrentPage(function (prev) {
-            var next = prev - 1;
-            if (next < 0) return prev;
-            setIsLoading(true);
-            fetch(data.progressUrl, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ page_number: next }),
-            }).catch(function () {});
-            return next;
-          });
+          if (isMangaModeRef.current) {
+            goToPage(currentPageRef.current + 1);
+          } else {
+            setCurrentPage(function (prev) {
+              var next = prev - 1;
+              if (next < 0) return prev;
+              setIsLoading(true);
+              fetch(data.progressUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ page_number: next }),
+              }).catch(function () {});
+              return next;
+            });
+          }
         } else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
           e.preventDefault();
           var scrollArea = imageAreaRef.current;
@@ -327,9 +363,9 @@
       var x = e.clientX - rect.left;
       var pct = x / rect.width;
       if (pct >= 0.8) {
-        goToPage(currentPage + 1);
+        goToPage(isMangaMode ? currentPage - 1 : currentPage + 1);
       } else if (pct <= 0.2) {
-        goToPage(currentPage - 1);
+        goToPage(isMangaMode ? currentPage + 1 : currentPage - 1);
       } else {
         setIsBarVisible(function (v) {
           return !v;
@@ -507,6 +543,19 @@
                   style: selectStyle,
                 },
                 zoomOptions
+              ),
+              h(
+                "label",
+                { key: "manga-label", style: { display: "flex", alignItems: "center", gap: "4px", cursor: "pointer", userSelect: "none" } },
+                [
+                  h("input", {
+                    key: "manga-checkbox",
+                    type: "checkbox",
+                    checked: isMangaMode,
+                    onChange: function (e) { setIsMangaMode(e.target.checked); },
+                  }),
+                  "Manga",
+                ]
               ),
             ]),
             h("span", { key: "right-controls", style: rightControlsStyle }, [
