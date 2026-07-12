@@ -2,6 +2,47 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# ---------------------------------------------------------------------------
+# Datadog APM + logging
+# ---------------------------------------------------------------------------
+DD_ENABLED = os.environ.get("DD_ENABLED", "0") == "1"
+
+if DD_ENABLED:
+    from ddtrace import config as dd_config, patch_all
+
+    patch_all()
+
+    dd_config.django["service_name"] = os.environ.get("DD_SERVICE", "comic-reader-home")
+    dd_config.django["analytics_enabled"] = True
+
+    # ddtrace injects trace/span IDs into log records when DD_LOGS_INJECTION=true.
+    # The format below surfaces those fields so the Datadog Agent can correlate logs with traces.
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "datadog": {
+                "format": (
+                    "%(asctime)s %(levelname)s [%(name)s] [%(filename)s:%(lineno)d] "
+                    "[dd.service=%(dd.service)s dd.env=%(dd.env)s "
+                    "dd.version=%(dd.version)s "
+                    "dd.trace_id=%(dd.trace_id)s dd.span_id=%(dd.span_id)s] "
+                    "%(message)s"
+                ),
+            },
+        },
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "formatter": "datadog",
+            },
+        },
+        "root": {
+            "handlers": ["console"],
+            "level": os.environ.get("LOG_LEVEL", "INFO"),
+        },
+    }
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
