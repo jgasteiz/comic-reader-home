@@ -10,6 +10,7 @@ dependencies = [
     "python-dotenv",
     "six",
     "gunicorn==23.0.0",
+    "ddtrace>=2.0",
 ]
 
 [dependency-groups]
