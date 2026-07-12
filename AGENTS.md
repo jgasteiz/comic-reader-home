@@ -51,6 +51,8 @@ static/             # CSS, JS libraries, extracted comic pages
 ## Common Commands
 
 - **Run dev server:** `./manage.py runserver`
+- **Run with Datadog APM:** `DD_ENABLED=1 DD_ENV=dev ddtrace-run ./manage.py runserver`
+- **Run gunicorn with Datadog APM:** `DD_ENABLED=1 DD_ENV=prod ddtrace-run gunicorn core.wsgi`
 - **Populate DB from filesystem:** `./manage.py populatedb`
 - **Pre-extract all comics:** `./manage.py extractall`
 - **Run tests:** `pytest`
@@ -80,3 +82,10 @@ Tests live in `tests/`. Run with `pytest`. The test settings module is `tests.se
 | `DATABASE_USER` | No | PostgreSQL user (default: postgres) |
 | `DATABASE_PASSWORD` | No | PostgreSQL password (default: postgres) |
 | `DATABASE_PORT` | No | PostgreSQL port (default: 5432) |
+| `DD_ENABLED` | No | Set to "1" to enable Datadog APM + structured logging |
+| `DD_SERVICE` | No | Datadog service name (default: `comic-reader-home`) |
+| `DD_ENV` | No | Deployment environment tag (e.g. `prod`, `dev`) |
+| `DD_VERSION` | No | App version tag for Datadog (e.g. `1.0.0`) |
+| `DD_AGENT_HOST` | No | Datadog Agent host (default: `localhost`) |
+| `DD_LOGS_INJECTION` | No | Set to "true" to inject trace IDs into log lines (requires `DD_ENABLED=1`) |
+| `LOG_LEVEL` | No | Python log level when DD_ENABLED=1 (default: `INFO`) |
